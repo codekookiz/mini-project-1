@@ -6,12 +6,12 @@ import seaborn as sb
 
 import streamlit as st
 
-st.set_page_config(page_title="고객 추천 시스템", layout="wide")
+st.set_page_config(page_title="현대자동차", layout="wide")
 
 # 메인 화면 구성
 st.title("📌 고객 추천 시스템")
-st.image("images/banner.png", use_column_width=True)
-st.write("이 앱은 머신러닝을 활용하여 고객에게 맞춤형 제품을 추천하는 시스템입니다.")
+st.image("images/banner.png", use_container_width=True)
+st.write("이 앱은 머신러닝을 활용하여 고객에게 맞춤형 차량을 추천하는 시스템입니다.")
 
 # 사이드바 네비게이션
 st.sidebar.title("📂 페이지 탐색")
