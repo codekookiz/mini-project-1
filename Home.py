@@ -1,3 +1,12 @@
+# Home.py
+#
+#     앱 소개 화면 : 간단하게 앱 기능 소개, 앱 사용 방법 등 공지
+#         - 앱 개요 소개
+#             - 제작 목적
+#             - ...
+#         - 앱 기능 소개
+#         - 앱 예상 사용자
+
 import streamlit as st
 import pandas as pd
 import numpy as np
