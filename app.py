@@ -4,10 +4,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sb
 
+import streamlit as st
 
-def main():
-    pass
+st.set_page_config(page_title="고객 추천 시스템", layout="wide")
 
+# 메인 화면 구성
+st.title("📌 고객 추천 시스템")
+st.image("images/banner.png", use_column_width=True)
+st.write("이 앱은 머신러닝을 활용하여 고객에게 맞춤형 제품을 추천하는 시스템입니다.")
 
-if __name__ == '__main__':
-    main()
+# 사이드바 네비게이션
+st.sidebar.title("📂 페이지 탐색")
+st.sidebar.page_link("pages/1_📌_customer_input.py", label="📌 고객 정보 입력 & 제품 추천")
+st.sidebar.page_link("pages/2_📊_analysis.py", label="📊 분석 대시보드")
+st.sidebar.page_link("pages/3_📈_marketing.py", label="📈 마케팅 전략")
+st.sidebar.page_link("pages/4_ℹ️_app_info.py", label="ℹ️ 앱 소개")
