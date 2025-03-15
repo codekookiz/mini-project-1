@@ -5,8 +5,11 @@ import seaborn as sns
 import matplotlib.font_manager as fm
 import os
 
-# 한글 폰트 설정 (배포 환경에서도 사용되는 한글 폰트로 설정)
-plt.rcParams['font.family'] = 'Malgun Gothic'  # Malgun Gothic 폰트 사용
+# 로컬 환경에서 사용할 폰트 (Mac 기준)
+if os.name == 'posix':  # Mac 환경에서
+    plt.rcParams['font.family'] = 'AppleGothic'  # Mac 기본 한글 폰트
+else:
+    plt.rcParams['font.family'] = 'NanumGothic'  # 배포 환경에서 사용될 한글 폰트
 
 plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
