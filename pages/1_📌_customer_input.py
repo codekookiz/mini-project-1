@@ -22,14 +22,53 @@
 
 
 import streamlit as st
+import pandas as pd
+import joblib
+import numpy as np
 
-st.title("📌 고객 정보 입력 & 제품 추천")
+# 모델 로드 함수 (경로 수정)
+def load_models():
+    model_dir = "model/model"  # model 폴더 안에 있는 model 폴더 반영
+    models = {
+        "dtc": joblib.load(f"{model_dir}/dtc.pkl"),
+        "rfc": joblib.load(f"{model_dir}/rfc.pkl"),
+        "gbc": joblib.load(f"{model_dir}/gbc.pkl"),
+        "lgb": joblib.load(f"{model_dir}/lgb.pkl"),
+        "cb": joblib.load(f"{model_dir}/cb.pkl")
+    }
+    return models
 
-# 고객 정보 입력
-name = st.text_input("이름을 입력하세요:")
-age = st.number_input("나이 입력", min_value=18, max_value=100)
-category = st.selectbox("관심 카테고리", ["가전", "의류", "식품", "화장품"])
+# 모델 로드
+models = load_models()
 
-# 추천 버튼 (나중에 머신러닝 모델 연동 예정)
+st.title("고객 정보 입력 & 차량 추천")
+
+# 사용자 입력
+budget = st.number_input("예산 입력 (단위: 만원)", min_value=3300, max_value=200000, step=500)
+region = st.selectbox("거주 지역", ['인천광역시', '광주광역시', '부산광역시', '전라남도 목포시', '경기도 수원시', '울산광역시', '서울특별시',
+       '경상남도 창원시', '전라북도 전주시', '충청북도 청주시', '경기도 성남시', '경상북도 포항시',
+       '충청남도 천안시', '대구광역시', '대전광역시'])
+car_size = st.selectbox("차량 사이즈", ["소형", "준중형", "중형", "대형", "SUV"])
+car_type = st.selectbox("차량 유형", ["세단", "SUV", "트럭", "스포츠카"])
+fuel_type = st.selectbox("연료 구분", ["가솔린", "디젤", "전기", "하이브리드", "플러그인하이브리드", "수소"])
+
+# 추천 버튼
 if st.button("추천 받기"):
-    st.success(f"{name}님에게 추천하는 제품을 곧 제공할 예정입니다!")
+    # 사용자 입력 데이터를 모델이 예측할 수 있는 형태로 변환
+    user_data = np.array([[budget, region, car_size, car_type, fuel_type]])
+
+    # 각 모델을 통해 추천 결과 생성
+    recommended_cars = []
+    for model_name, model in models.items():
+        pred = model.predict(user_data)[0]  # 모델 예측
+        recommended_cars.append(pred)
+
+    # 중복 제거 및 정렬
+    recommended_cars = list(set(recommended_cars))
+
+    # 결과 출력
+    st.subheader("추천 차량 리스트")
+    st.write(", ".join(recommended_cars))
+
+    # 추가 혜택 제공 (예: 신용카드 혜택 안내)
+    st.info("신용카드로 구매 시 10% 포인트 적립 혜택을 받을 수 있습니다.")
