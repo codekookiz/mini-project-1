@@ -126,7 +126,7 @@ if marketing_class == "지역별":
     # 타겟 지역 선택
     st.subheader("🎯 타겟 지역별 마케팅 전략")
 
-    region = st.selectbox("타겟 지역 선택", ["서울특별시", "경기도 수원시", "울산광역시", "경기도 성남시", "충청남도 천안시"])
+    region = st.selectbox("타겟 지역 선택", ["-", "서울특별시", "경기도 수원시", "울산광역시", "경기도 성남시", "충청남도 천안시"])
 
     age_order = ["20대 초반", "20대 중반", "20대 후반", "30대 초반", "30대 중반", "30대 후반", "40대 초반", "40대 중반", "40대 후반",
              "50대 초반", "50대 중반", "50대 후반", "60대 초반", "60대 중반", "60대 후반", "70대 초반"]
@@ -150,37 +150,38 @@ if marketing_class == "지역별":
     size_counts = city.groupby("연령대")["차량 사이즈"].value_counts().unstack()
     type_counts = city.groupby("연령대")["차량 유형"].value_counts().unstack()
 
-    # 시각화 - 연령대별 선호 차량 사이즈
-    fig, ax = plt.subplots(figsize=(10, 5))
-    size_counts.plot(kind="bar", stacked=True, colormap="viridis", alpha=0.85, ax=ax)
+    if region != "-":
+        # 시각화 - 연령대별 선호 차량 사이즈
+        fig, ax = plt.subplots(figsize=(10, 5))
+        size_counts.plot(kind="bar", stacked=True, colormap="viridis", alpha=0.85, ax=ax)
 
-    ax.set_title(f"{region} 연령대별 선호 차량 사이즈")
-    ax.set_xlabel("연령대")
-    ax.set_ylabel("선호 차량 수")
-    ax.legend(title="차량 사이즈")
-    ax.set_xticklabels(size_counts.index, rotation=60)
-    ax.grid(axis="y", linestyle="--", alpha=0.7)
+        ax.set_title(f"{region} 연령대별 선호 차량 사이즈")
+        ax.set_xlabel("연령대")
+        ax.set_ylabel("선호 차량 수")
+        ax.legend(title="차량 사이즈")
+        ax.set_xticklabels(size_counts.index, rotation=60)
+        ax.grid(axis="y", linestyle="--", alpha=0.7)
 
-    st.pyplot(fig)
+        st.pyplot(fig)
 
-    st.write("")
+        st.write("")
 
-    # 시각화 - 연령대별 선호 차량 유형
-    fig, ax = plt.subplots(figsize=(10, 5))
-    type_counts.plot(kind="bar", stacked=True, colormap="plasma", alpha=0.85, ax=ax)
+        # 시각화 - 연령대별 선호 차량 유형
+        fig, ax = plt.subplots(figsize=(10, 5))
+        type_counts.plot(kind="bar", stacked=True, colormap="plasma", alpha=0.85, ax=ax)
 
-    ax.set_title(f"{region} 연령대별 선호 차량 유형")
-    ax.set_xlabel("연령대")
-    ax.set_ylabel("선호 차량 수")
-    ax.legend(title="차량 유형")
-    ax.set_xticklabels(type_counts.index, rotation=60)
-    ax.grid(axis="y", linestyle="--", alpha=0.7)
+        ax.set_title(f"{region} 연령대별 선호 차량 유형")
+        ax.set_xlabel("연령대")
+        ax.set_ylabel("선호 차량 수")
+        ax.legend(title="차량 유형")
+        ax.set_xticklabels(type_counts.index, rotation=60)
+        ax.grid(axis="y", linestyle="--", alpha=0.7)
 
-    st.pyplot(fig)
+        st.pyplot(fig)
 
-    st.write("")
+        st.write("")
 
-    st.write("📢 추천 마케팅 전략:", strategy[region])
+        st.write("📢 추천 마케팅 전략:", strategy[region])
 
 elif marketing_class == "연령대별":
     # 연료 구분 정렬 순서 지정
@@ -204,17 +205,108 @@ elif marketing_class == "연령대별":
 
     st.pyplot(fig)
 
+    st.write("""
+    **분석 결과**  
+- 휘발유 차량의 높은 점유율  
+    - 전 연령대에서 휘발유 차량이 가장 많이 판매됨  
+    - 특히 40대 초반~50대 초반 연령대에서 가장 큰 비중을 차지  
+- 디젤 차량의 강세  
+    - 60대 후반~70대 초반의 고연령층에서 디젤 차량이 높은 비중을 차지  
+    - 젊은 연령층으로 갈수록 디젤 차량의 비중이 점차 감소하는 경향  
+- 수소 차량의 점유율 증가  
+    - 50대 이상 연령층에서 수소차 비중이 높은 편  
+    - 20~30대에서는 수소 차량이 상대적으로 적음
+- 젊은 층의 전기차/하이브리드 구매  
+    - 젊은 층 (20~30대)에서만 일부 판매  
+    - 연령대가 올라갈수록 전기차 및 하이브리드 판매 비율이 줄어듦
+    """)
 
+    st.write("")
 
+    size_counts = df.groupby("최근 구매 연도")["고객 등급"].value_counts().unstack().fillna(0)
 
+    # 시각화 - 고객 등급별 최근 차량 구매 연도
+    fig, ax = plt.subplots(figsize=(10, 5))
 
-    age_group = st.selectbox("타겟 연령대 선택", ["20대", "30대", "40대", "50대"])
+    size_counts.plot(kind="line", marker="o", colormap="viridis", alpha=0.85, ax=ax)
 
-    # 마케팅 전략 추천 (샘플)
+    ax.set_xticks(size_counts.index)
+    ax.set_xticklabels(size_counts.index, rotation=0)
+
+    ax.set_title(f"연도별 차량 구매 건수")
+    ax.set_xlabel("연도")
+    ax.set_ylabel("선호 차량 수")
+    ax.grid(axis="y", linestyle="--", alpha=0.7)
+
+    st.pyplot(fig)
+
+    st.write("")
+
+    st.write("""
+    **분석 결과**
+    - 일반 고객의 감소와 VIP 고객의 증가
+        - 일반 고객의 감소는 기존 일반 고객의 신규 차량 구매가 활발하다는 의미
+        - 차량 재구매 시 혜택을 더욱 확대할 필요가 있음
+    - 신규 고객 유입 증가
+        - 신규 고객의 지속적인 유입을 위한 마케팅 전략 필요
+    """)
+
+    st.subheader("")
+
+    # 타겟 지역 선택
+    st.subheader("🎯 연령대별 마케팅 전략")
+
+    age_group = st.selectbox("타겟 연령대 선택", ["-", "20대", "30대", "40대", "50대", "60대 이상"])
+
+    # 연령대에 따른 마케팅 전략 추천
     strategy = {
-        "20대": "SNS 광고 & 무료 샘플 제공",
-        "30대": "구독형 멤버십 할인 제공",
-        "40대": "VIP 멤버십 혜택 확대",
-        "50대": "전통 미디어 광고 강화"
+        "20대": "\n\n**분석 결과**\n- 1. ",
+        "30대": "\n\n**분석 결과**\n- 1. ",
+        "40대": "\n\n**분석 결과**\n- 1. ",
+        "50대": "\n\n**분석 결과**\n- 1. ",
+        "60대 이상": "\n\n**분석 결과**\n- 1. "
     }
-    st.write("📢 추천 마케팅 전략:", strategy[age_group])
+
+    # 연령대에 따른 선호 차량 사이즈 및 유형
+    # 해당 연령대만 추출
+    if age_group == "60대 이상":
+        gen = df.loc[(df["연령대"].str.split(" ").str[0]).isin(["60대", "70대"]), :]
+    else:
+        gen = df.loc[df["연령대"].str.split(" ").str[0] == age_group, :]
+
+    # 고객 등급별 선호 차량 사이즈 및 유형 집계
+    size_counts = gen.groupby("연료 구분")["차량 사이즈"].value_counts().unstack()
+    type_counts = gen.groupby("연료 구분")["차량 유형"].value_counts().unstack()
+
+    if age_group != "-":
+        # 시각화 - 고객 등급별 선호 차량 사이즈
+        fig, ax = plt.subplots(figsize=(10, 5))
+        size_counts.plot(kind="bar", stacked=True, colormap="viridis", alpha=0.85, ax=ax)
+
+        ax.set_title(f"{age_group} 고객 등급별 선호 차량 사이즈")
+        ax.set_xlabel("고객 등급")
+        ax.set_ylabel("선호 차량 수")
+        ax.legend(title="차량 사이즈")
+        ax.set_xticklabels(size_counts.index, rotation=0)
+        ax.grid(axis="y", linestyle="--", alpha=0.7)
+
+        st.pyplot(fig)
+
+        st.write("")
+
+        # 시각화 - 고객 등급별 선호 차량 유형
+        fig, ax = plt.subplots(figsize=(10, 5))
+        type_counts.plot(kind="bar", stacked=True, colormap="plasma", alpha=0.85, ax=ax)
+
+        ax.set_title(f"{age_group} 고객 등급별 선호 차량 유형")
+        ax.set_xlabel("고객 등급")
+        ax.set_ylabel("선호 차량 수")
+        ax.legend(title="차량 유형")
+        ax.set_xticklabels(type_counts.index, rotation=0)
+        ax.grid(axis="y", linestyle="--", alpha=0.7)
+
+        st.pyplot(fig)
+
+        st.write("")
+
+        st.write("📢 추천 마케팅 전략:", strategy[age_group])
