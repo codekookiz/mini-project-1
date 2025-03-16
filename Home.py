@@ -9,7 +9,7 @@
 
 
 # 중요! 스트림릿 실행 코드 : 터미널에서 streamlit run Home.py
-# 서버에서 돌아가는 것 확인해보고 싶으시면 : https://mini-project-1-23bmqdpdnx9ctd2y38o9nx.streamlit.app/
+# 서버에서 돌아가는 것 확인해보고 싶다면 : https://mini-project-1-23bmqdpdnx9ctd2y38o9nx.streamlit.app/
 
 
 import streamlit as st
