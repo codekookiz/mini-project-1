@@ -5,21 +5,20 @@ import matplotlib.font_manager as fm
 import seaborn as sb
 import os
 
-# 현재 파일 위치를 기준으로 절대 경로 설정
-base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fonts"))
-font_path = os.path.join(base_dir, "NanumGothic.ttf")  # 또는 .otf 사용 가능
+# 차트 한글화 코드
+import platform
 
-# 디버깅: 폰트 경로 확인
-print("폰트 경로:", font_path)
-print("파일 존재 여부:", os.path.exists(font_path))
+from matplotlib import font_manager, rc
+plt.rcParams['axes.unicode_minus'] = False
 
-# 폰트 설정
-if os.path.exists(font_path):
-    font_prop = fm.FontProperties(fname=font_path)
-    plt.rcParams['font.family'] = font_prop.get_name()
-    plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
+if platform.system() == 'Darwin':
+    rc('font', family='AppleGothic')
+elif platform.system() == 'Windows':
+    path = "c:/Windows/Fonts/malgun.ttf"
+    font_name = font_manager.FontProperties(fname=path).get_name()
+    rc('font', family=font_name)
 else:
-    print("폰트 파일을 찾을 수 없습니다.")
+    print('Unknown system… sorry~~~~')
 
 # 데이터 로드
 df = pd.read_csv("data/고객db_전처리.csv")
@@ -340,8 +339,20 @@ with tab2 :
         ax.legend(title="연료 구분", loc="upper left")
         st.pyplot(fig1)
 
-        st.write("""
-        **분석 결과**
+        st.markdown("""
+        **📊 연료 유형별 차량 판매 트렌드 분석**  
+        - **휘발유 & 디젤 차량**: 여전히 판매량이 높지만, 점진적 감소 예상.  
+        - **전기차**: 2023년부터 급격히 성장하며, 2024년 4분기 최고 판매량 기록.  
+        - **하이브리드 & 플러그인 하이브리드**: 친환경 전환의 과도기적 선택지로 인기 증가.  
+        - **수소차**: 충전소 부족으로 인해 성장 정체, 보급 확대 필요.  
+        - **휘발유 & 디젤 소비자 전환**: 친환경 차량 구매 유도를 위한 정책 강화 필요.  
+        - **전기차 인프라 확충**: 충전소 확대 및 유지비 절감 마케팅 전략 중요.  
+        - **하이브리드 차량 활용**: 연료비 절감 강조, 전기차 전환 전 단계로 마케팅 가능.  
+        - **수소차 시장 공략**: 공공기관·법인 대상 B2B 시장 중심으로 보급 필요.  
+        - **전기차 보조금 정책**: 2024년 4분기 급증 원인 분석 후, 추가 지원 검토.  
+        - **마케팅 방향**: 연령·지역별 맞춤형 친환경 차량 프로모션 전략 필요.  
+
+        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
         """)
     with col2:
         pass
@@ -407,11 +418,22 @@ with tab2 :
     ax.set_xlabel("연령대", fontsize=12)
     ax.set_ylabel("판매량", fontsize=12)
     ax.legend(title="성별")
-    ax.set_xticklabels(df_pivot.index, rotation=0)
+    ax.set_xticklabels(df_pivot.index, rotation=30, ha="right")
     plt.tight_layout()
     st.pyplot(fig1)
 
     st.markdown("""
-    **📊 분석 결과**  
-    - 내용
-    """)
+        **📊 연령대별 차량 구매 패턴 분석**  
+        - **20대 중반 여성**: 졸업 후 취업으로 경제력이 형성되어 첫차 구매 증가.  
+        - **20대 후반 남성**: 군 복무를 마친 후 취업으로 인해 차량 구매 증가.  
+        - **30대 후반 남성**: 결혼과 가족 형성 시기에 접어들며 패밀리카로 교체 수요 증가.  
+        - **50대 중반 여성**: 자녀들의 통학 및 픽업을 위한 차량 구매 수요 증가.  
+        - **연령별 성별 차이**: 사회적·경제적 요인에 따라 구매 시점이 다르게 나타남.  
+        - **20~30대 초반**: 개인 라이프스타일 반영, 컴팩트 세단 및 경제형 SUV 선호.  
+        - **30대 후반~50대 초반**: 가족 중심 차량 선호, 중형·대형 SUV 및 미니밴 증가.  
+        - **50대 후반 이상**: 브랜드 가치와 유지보수를 고려한 프리미엄 차량 선호.  
+        - **마케팅 전략**: 연령·성별 특성을 반영한 금융 혜택 및 맞춤형 차량 추천 필요.  
+        - **데이터 활용**: 성별·연령별 구매 패턴을 고려한 세분화된 마케팅 필요.  
+
+        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
+        """)
