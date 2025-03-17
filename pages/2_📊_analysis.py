@@ -282,8 +282,6 @@ with tab2 :
 
         df["최근 구매 시점"] = pd.Categorical(df["최근 구매 시점"], categories=date_order, ordered=True)
 
-        st.dataframe(df.head())
-
         # 구매 기준 시점별 각 연료 구분의 개수 시각화
         fig1, ax = plt.subplots(figsize=(12, 8))
 
@@ -298,7 +296,7 @@ with tab2 :
         st.pyplot(fig1)
 
         st.write("""
-        **분석 결과 및 활용 방안**
+        **분석 결과**
         """)
     with col2:
         pass
