@@ -6,19 +6,19 @@ import matplotlib.font_manager as fm
 import seaborn as sb
 import os
 
-# 현재 파일(파이썬 코드) 기준 경로
-base_dir = os.path.dirname(__file__)  # 또는 os.getcwd()
-font_path = os.path.join(base_dir, "fonts", "NanumGothic.ttf")
+# 현재 파이썬 파일의 디렉토리
+base_dir = os.path.dirname(os.path.abspath(__file__))
 
+# 만약 fonts 폴더가 pages와 같은 상위 디렉토리에 있다면:
+# mini-project-1/pages/2_analysis.py
+# mini-project-1/fonts/NanumGothic.ttf
+# 따라서 상위 폴더(..)로 이동 후 fonts 폴더로 진입
+font_path = os.path.join(base_dir, "..", "fonts", "NanumGothic.ttf")
+
+# 폰트 프로퍼티 설정
 font_prop = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = font_prop.get_name()
 plt.rcParams['axes.unicode_minus'] = False
-
-
-# 한글 폰트 적용
-font_prop = fm.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = font_prop.get_name()
-plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 # 데이터 로드
 df = pd.read_csv("data/고객db_전처리.csv")
