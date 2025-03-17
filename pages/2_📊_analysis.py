@@ -23,8 +23,13 @@ df["최근 구매 날짜"] = pd.to_datetime(df["최근 구매 날짜"])
 st.set_page_config(page_title="고객 분석 대시보드", layout="wide")
 
 # 페이지 제목
-st.title("고객 분석 대시보드")
-st.write("고객 데이터를 기반으로 분석한 인사이트를 제공합니다.")
+st.title("분석 대시보드")
+
+st.markdown("---")
+
+# 고객 데이터 분석 섹션
+st.header("고객 데이터 분석")
+st.write("고객 데이터 기반의 분석 인사이트를 제공합니다.")
 
 # 분석 개요 섹션
 with st.expander("분석 개요 보기"):
@@ -63,27 +68,9 @@ st.pyplot(fig)
 
 st.write("""
 **분석 결과 및 활용 방안**  
-- 특정 연령대(30~40대)의 고객이 집중됨  
+- 특정 연령대(30~40대)에 고객이 집중됨  
 - 이 연령대에 맞춘 타겟 마케팅 전략이 효과적일 가능성 높음  
 - 가족 단위 차량 프로모션, 장기 렌트 혜택 제공 가능
-""")
-
-# ---- 구매 유형별 선호도 ----
-st.subheader("구매 유형별 선호도")
-st.write("고객들이 선호하는 구매 유형을 분석하여 그래프로 표현했습니다.")
-
-fig, ax = plt.subplots(figsize=(8, 5))
-df["선호 거래 방식"].value_counts().plot(kind="bar", color=["skyblue", "salmon", "lightgreen"], ax=ax)
-ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-ax.set_xlabel("구매 유형")
-ax.set_ylabel("고객 수")
-st.pyplot(fig)
-
-st.write("""
-**분석 결과 및 활용 방안**  
-- 대다수 고객이 온라인 및 대리점을 통한 구매를 선호  
-- 온라인 프로모션 강화 및 대리점별 특화 혜택 제공 필요  
-- 오프라인 고객 대상, 추가적인 서비스 패키지 제공 가능
 """)
 
 # ---- 지역별 고객 수 분석 ----
@@ -127,27 +114,6 @@ st.write("""
 - 40대 이상 고객 대상, 가족용 SUV 및 하이브리드 차량 프로모션 강화
 """)
 
-# ---- 전기차 vs. 내연기관차 구매 트렌드 비교 ----
-st.subheader("최근 3년간 전기차 구매 증가율 vs. 내연기관 차량 구매율 비교")
-st.write("최근 3년간 전기차와 내연기관 차량의 구매 트렌드를 비교했습니다.")
-
-recent_years = df[df["최근 구매 날짜"] >= (df["최근 구매 날짜"].max() - pd.DateOffset(years=3))]
-ev_vs_ice = recent_years["연료 구분"].value_counts()
-fig, ax = plt.subplots(figsize=(8, 5))
-ev_vs_ice.plot(kind="bar", color=["green", "gray"], ax=ax)
-ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-ax.set_xlabel("차량 유형")
-ax.set_ylabel("구매 수")
-ax.set_title("최근 3년간 전기차 vs. 내연기관차 구매 비교")
-st.pyplot(fig)
-
-st.write("""
-**분석 결과 및 활용 방안**  
-- 최근 3년간 전기차 판매량이 꾸준히 증가  
-- 내연기관차보다 전기차 구매 비율이 높아지는 추세  
-- 전기차 관련 금융 혜택 및 충전소 인프라 확장 필요
-""")
-
 # ---- 연령대별 친환경 차량 선호도 분석 ----
 st.subheader("연령대별 친환경 차량 선호도")
 st.write("각 연령대별 친환경 차량(전기, 수소, 하이브리드, 플러그인하이브리드)의 선호도를 분석했습니다.")
@@ -171,10 +137,64 @@ st.write("""
 """)
 
 # ---- 전체 요약 ----
-st.subheader("결론 및 요약")
+# st.subheader("결론 및 요약")
+# st.write("""
+# - 특정 연령대에서 고객 수가 집중되는 경향이 보인다.  
+# - 구매 유형별로 선호도가 다르게 나타나며, 이를 바탕으로 마케팅 전략을 세울 수 있다.  
+# - 연령대별 선호 차량 모델을 분석하여 타겟 마케팅에 활용 가능하다.  
+# - 최근 3년간 전기차 구매 비율이 상승했으며, 친환경 차량에 대한 선호도가 증가하고 있다.  
+# """)
+
+
+
+
+
+st.markdown("---")
+
+
+
+
+# 판매 데이터 분석 섹션
+st.header("판매 데이터 분석")
+st.write("판매 데이터 기반의 분석 인사이트를 제공합니다.")
+
+# ---- 구매 유형별 선호도 ----
+st.subheader("구매 유형별 선호도")
+st.write("고객들이 선호하는 구매 유형을 분석하여 그래프로 표현했습니다.")
+
+fig, ax = plt.subplots(figsize=(8, 5))
+df["선호 거래 방식"].value_counts().plot(kind="bar", color=["skyblue", "salmon", "lightgreen"], ax=ax)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+ax.set_xlabel("구매 유형")
+ax.set_ylabel("고객 수")
+st.pyplot(fig)
+
 st.write("""
-- 특정 연령대에서 고객 수가 집중되는 경향이 보인다.  
-- 구매 유형별로 선호도가 다르게 나타나며, 이를 바탕으로 마케팅 전략을 세울 수 있다.  
-- 연령대별 선호 차량 모델을 분석하여 타겟 마케팅에 활용 가능하다.  
-- 최근 3년간 전기차 구매 비율이 상승했으며, 친환경 차량에 대한 선호도가 증가하고 있다.  
+**분석 결과 및 활용 방안**  
+- 대다수 고객이 온라인 및 대리점을 통한 구매를 선호  
+- 온라인 프로모션 강화 및 대리점별 특화 혜택 제공 필요  
+- 오프라인 고객 대상, 추가적인 서비스 패키지 제공 가능
 """)
+
+# ---- 전기차 vs. 내연기관차 구매 트렌드 비교 ----
+st.subheader("최근 3년간 전기차 구매 증가율 vs. 내연기관 차량 구매율 비교")
+st.write("최근 3년간 전기차와 내연기관 차량의 구매 트렌드를 비교했습니다.")
+
+recent_years = df[df["최근 구매 날짜"] >= (df["최근 구매 날짜"].max() - pd.DateOffset(years=3))]
+ev_vs_ice = recent_years["연료 구분"].value_counts()
+fig, ax = plt.subplots(figsize=(8, 5))
+ev_vs_ice.plot(kind="bar", color=["green", "gray"], ax=ax)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+ax.set_xlabel("차량 유형")
+ax.set_ylabel("구매 수")
+ax.set_title("최근 3년간 전기차 vs. 내연기관차 구매 비교")
+st.pyplot(fig)
+
+st.write("""
+**분석 결과 및 활용 방안**  
+- 최근 3년간 전기차 판매량이 꾸준히 증가   
+- 내연기관차보다 전기차 구매 비율이 높아지는 추세 
+- 전기차 관련 금융 혜택 및 충전소 인프라 확장 필요
+""")
+
+st.warning("근거가 부족한 분석, 다시 확인 필요")
