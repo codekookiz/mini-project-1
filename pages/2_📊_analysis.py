@@ -5,7 +5,21 @@ import matplotlib.font_manager as fm
 import seaborn as sb
 import os
 
+# 현재 파일 위치를 기준으로 절대 경로 설정
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "fonts"))
+font_path = os.path.join(base_dir, "NanumGothic.ttf")  # 또는 .otf 사용 가능
 
+# 디버깅: 폰트 경로 확인
+print("폰트 경로:", font_path)
+print("파일 존재 여부:", os.path.exists(font_path))
+
+# 폰트 설정
+if os.path.exists(font_path):
+    font_prop = fm.FontProperties(fname=font_path)
+    plt.rcParams['font.family'] = font_prop.get_name()
+    plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
+else:
+    print("폰트 파일을 찾을 수 없습니다.")
 
 # 데이터 로드
 df = pd.read_csv("data/고객db_전처리.csv")
@@ -110,12 +124,19 @@ with tab1 :
         ax.set_title("연령대별 선호 차량 모델 (상위 3개)")
         st.pyplot(fig1)
 
-        st.write("""
-        **분석 결과 및 활용 방안**  
-        - 20~30대는 소형 및 스포츠카 선호, 40대 이상은 SUV 및 세단 선호  
-        - 젊은 고객층 대상, 스포티한 디자인과 최신 기술 강조  
-        - 40대 이상 고객 대상, 가족용 SUV 및 하이브리드 차량 프로모션 강화
+        st.text("")
+        
+        st.markdown("""
+        **📊 연령대별 선호 차량 모델 분석**  
+        - **20~30대 초반**: 소형 세단 및 스포츠카 선호 → 경제성 및 개성 중시.  
+        - **30대 후반~40대 후반**: 중형 세단 및 SUV 선호 → 패밀리카 및 실용성 강조.  
+        - **50대 후반 이상**: 대형 세단 및 프리미엄 차량 선호 → 승차감 및 브랜드 가치 중시.  
+        - **친환경 차량 증가**: 30~50대 고객층에서 전기차 및 하이브리드 차량 선호도 상승.  
+        - **마케팅 활용**: 연령별 선호 모델을 반영한 맞춤형 금융 혜택 및 차량 프로모션 전략 필요.  
+
+        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
         """)
+
     with col2:
         # ---- 연령대별 친환경 차량 선호도 분석 ----
         st.subheader("연령대별 친환경 차량 선호도")
@@ -129,11 +150,14 @@ with tab1 :
         ax.set_title("연령대별 친환경 차량 구매 선호도")
         st.pyplot(fig2)
     
-        st.write("""
-        **분석 결과 및 활용 방안**  
-        - 30~50대 고객층에서 친환경 차량 선호도가 높음  
-        - 친환경 차량 보조금 및 충전소 혜택을 강조한 마케팅 필요  
-        - 연령대별 맞춤형 친환경 차량 옵션 제공 가능
+        st.markdown("""
+        **📊 연령대별 친환경 차량 선호도 분석**  
+        - **30~50대 고객층**: 전기차 및 하이브리드 차량 선호도 높음 → 연료비 절감 및 환경 보호 인식 증가.  
+        - **친환경 차량 인프라 확대**: 충전소 및 유지보수 지원 정책 강화 필요.  
+        - **정부 지원 활용**: 친환경 차량 보조금 및 세금 감면 혜택을 강조한 마케팅 필요.  
+        - **맞춤형 차량 옵션 제공**: 연령대별 주행 패턴을 고려한 친환경 차량 추천 전략 필요.  
+
+        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
         """)
 
     st.markdown("---")
