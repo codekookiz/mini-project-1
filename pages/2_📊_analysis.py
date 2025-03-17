@@ -6,12 +6,11 @@ import matplotlib.font_manager as fm
 import seaborn as sb
 import os
 
-# 로컬 환경에서 사용할 폰트 (Mac 기준)
-if os.name == 'posix':  # Mac 환경에서
-    plt.rcParams['font.family'] = 'AppleGothic'  # Mac 기본 한글 폰트
-else:
-    plt.rcParams['font.family'] = 'NanumGothic'  # 배포 환경에서 사용될 한글 폰트
+FONT_PATH = os.path.join(os.getcwd(), "fonts", "NanumGothic.ttf")
 
+# 한글 폰트 설정
+font_prop = fm.FontProperties(fname=FONT_PATH)
+plt.rcParams['font.family'] = font_prop.get_name()
 plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 # 데이터 로드
@@ -282,17 +281,11 @@ with tab1 :
         참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
         """)
 
+    st.markdown("---")
 
-    # ---- 전체 요약 ----
-    # st.subheader("결론 및 요약")
-    # st.write("""
-    # - 특정 연령대에서 고객 수가 집중되는 경향이 보인다.  
-    # - 구매 유형별로 선호도가 다르게 나타나며, 이를 바탕으로 마케팅 전략을 세울 수 있다.  
-    # - 연령대별 선호 차량 모델을 분석하여 타겟 마케팅에 활용 가능하다.  
-    # - 최근 3년간 전기차 구매 비율이 상승했으며, 친환경 차량에 대한 선호도가 증가하고 있다.  
-    # """)
-
-
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
+        pass
 
 
 
@@ -355,25 +348,52 @@ with tab2 :
     - 오프라인 고객 대상, 추가적인 서비스 패키지 제공 가능
     """)
 
-    # ---- 전기차 vs. 내연기관차 구매 트렌드 비교 ----
-    st.subheader("최근 3년간 전기차 구매 증가율 vs. 내연기관 차량 구매율 비교")
-    st.write("최근 3년간 전기차와 내연기관 차량의 구매 트렌드를 비교했습니다.")
+    # # ---- 전기차 vs. 내연기관차 구매 트렌드 비교 ----
+    # st.subheader("최근 3년간 전기차 구매 증가율 vs. 내연기관 차량 구매율 비교")
+    # st.write("최근 3년간 전기차와 내연기관 차량의 구매 트렌드를 비교했습니다.")
 
-    recent_years = df[df["최근 구매 날짜"] >= (df["최근 구매 날짜"].max() - pd.DateOffset(years=3))]
-    ev_vs_ice = recent_years["연료 구분"].value_counts()
-    fig, ax = plt.subplots(figsize=(8, 5))
-    ev_vs_ice.plot(kind="bar", color=["green", "gray"], ax=ax)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-    ax.set_xlabel("차량 유형")
-    ax.set_ylabel("구매 수")
-    ax.set_title("최근 3년간 전기차 vs. 내연기관차 구매 비교")
-    st.pyplot(fig)
+    # recent_years = df[df["최근 구매 날짜"] >= (df["최근 구매 날짜"].max() - pd.DateOffset(years=3))]
+    # ev_vs_ice = recent_years["연료 구분"].value_counts()
+    # fig, ax = plt.subplots(figsize=(8, 5))
+    # ev_vs_ice.plot(kind="bar", color=["green", "gray"], ax=ax)
+    # ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+    # ax.set_xlabel("차량 유형")
+    # ax.set_ylabel("구매 수")
+    # ax.set_title("최근 3년간 전기차 vs. 내연기관차 구매 비교")
+    # st.pyplot(fig)
 
-    st.write("""
-    **분석 결과 및 활용 방안**  
-    - 최근 3년간 전기차 판매량이 꾸준히 증가   
-    - 내연기관차보다 전기차 구매 비율이 높아지는 추세 
-    - 전기차 관련 금융 혜택 및 충전소 인프라 확장 필요
-    """)
+    # st.write("""
+    # **분석 결과 및 활용 방안**  
+    # - 최근 3년간 전기차 판매량이 꾸준히 증가   
+    # - 내연기관차보다 전기차 구매 비율이 높아지는 추세 
+    # - 전기차 관련 금융 혜택 및 충전소 인프라 확장 필요
+    # """)
 
     st.warning("근거가 부족한 분석, 다시 확인 필요")
+
+
+    # ---- 연령대 및 성별 차량 구매 대수 ----
+    st.subheader("지역별 고객 분포")
+    st.write("고객들이 거주하는 지역별 분포를 나타냅니다.") 
+
+    # 연령대별 각 성별이 구매한 차량 수 합계
+    gender_df = df.groupby(["성별", "연령대"])["차량 사이즈"].count().reset_index()
+
+    df_pivot = gender_df.pivot_table(index="연령대", columns="성별", values="차량 사이즈", fill_value=0)
+
+    colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
+
+    fig1, ax = plt.subplots(figsize=(12, 8))
+    df_pivot.plot.bar(ax=ax, color=colors)
+    ax.set_title("연령대별 성별 차량 구매 수", fontsize=16)
+    ax.set_xlabel("연령대", fontsize=12)
+    ax.set_ylabel("판매량", fontsize=12)
+    ax.legend(title="성별")
+    ax.set_xticklabels(df_pivot.index, rotation=0)
+    plt.tight_layout()
+    st.pyplot(fig1)
+
+    st.markdown("""
+    **📊 분석 결과**  
+    - 내용
+    """)
