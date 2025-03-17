@@ -6,13 +6,14 @@ import matplotlib.font_manager as fm
 import seaborn as sb
 import os
 
-# OS에 따른 한글 폰트 경로 설정
-if os.name == 'posix':  # macOS
-    font_path = "/System/Library/Fonts/Supplemental/AppleSDGothicNeo.ttc"
-elif os.name == 'nt':  # Windows
-    font_path = "C:/Windows/Fonts/malgun.ttf"  # Windows 기본 한글 폰트
-else:  # Ubuntu, Linux
-    font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
+# 현재 파일(파이썬 코드) 기준 경로
+base_dir = os.path.dirname(__file__)  # 또는 os.getcwd()
+font_path = os.path.join(base_dir, "fonts", "NanumGothic.ttf")
+
+font_prop = fm.FontProperties(fname=font_path)
+plt.rcParams['font.family'] = font_prop.get_name()
+plt.rcParams['axes.unicode_minus'] = False
+
 
 # 한글 폰트 적용
 font_prop = fm.FontProperties(fname=font_path)
