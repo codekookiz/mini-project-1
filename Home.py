@@ -115,47 +115,67 @@ carousel_html = f"""
 # 캐러셀 표시
 st.components.v1.html(carousel_html, height=400)
 
-# 🔹 오픈채팅방 링크 설정
-kakao_open_chat_link = "https://open.kakao.com/o/sKl8ocmh"  # 본인의 오픈채팅 링크 입력
+# 본인의 카카오톡 채널 ID 입력
+channel_public_id = "_xfxhjXn"  # 올바른 채널 ID 반영
 
-# 🔹 플로팅 버튼 & "상담 하기" 텍스트 추가
-floating_button = f"""
+# 카카오톡 "채널 추가 버튼" & "채팅하기 버튼" HTML & JavaScript 코드
+kakao_buttons = f"""
 <style>
-.floating-container {{
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    text-align: center;
+/* 버튼 컨테이너 스타일 (가로 정렬) */
+.kakao-buttons-container {{
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    align-items: center;
+    gap: 15px; /* 버튼 간 간격 */
+    margin-top: 20px; /* 위쪽 여백 */
     z-index: 1000;
 }}
 
-.floating-text {{
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
-}}
-
-.floating-btn {{
-    background: none;
-    border: none;
-    cursor: pointer;
-}}
-
-.floating-btn img {{
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+.kakao-button {{
+    flex: 0 1 auto; /* 버튼 크기 자동 조정 */
 }}
 </style>
 
-<div class="floating-container">
-    <div class="floating-text">💬 상담 하기</div>
-    <a href="{kakao_open_chat_link}" target="_blank" class="floating-btn">
-        <img src="https://developers.kakao.com/assets/img/about/logos/kakaotalksharing/kakaotalk_sharing_btn_medium.png">
-    </a>
+<!-- 버튼 컨테이너 -->
+<div class="kakao-buttons-container">
+    <!-- 카카오 채널 추가 버튼 -->
+    <div id="kakao-talk-channel-add-button" class="kakao-button"
+         data-channel-public-id="{channel_public_id}"
+         data-size="large"
+         data-support-multiple-densities="true"></div>
+
+    <!-- 카카오 채팅하기 버튼 -->
+    <div id="kakao-talk-channel-chat-button" class="kakao-button"
+         data-channel-public-id="{channel_public_id}"
+         data-title="consult"
+         data-size="large"
+         data-color="yellow"
+         data-shape="pc"
+         data-support-multiple-densities="true"></div>
 </div>
+
+<!-- 카카오톡 JavaScript SDK -->
+<script>
+  window.kakaoAsyncInit = function() {{
+    Kakao.Channel.createAddChannelButton({{
+      container: '#kakao-talk-channel-add-button'
+    }});
+    Kakao.Channel.createChatButton({{
+      container: '#kakao-talk-channel-chat-button'
+    }});
+  }};
+
+  (function(d, s, id) {{
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.channel.min.js';
+    js.integrity = 'sha384-8oNFBbAHWVovcMLgR+mLbxqwoucixezSAzniBcjnEoumhfIbMIg4DrVsoiPEtlnt';
+    js.crossOrigin = 'anonymous';
+    fjs.parentNode.insertBefore(js, fjs);
+  }})(document, 'script', 'kakao-js-sdk');
+</script>
 """
 
-st.markdown(floating_button, unsafe_allow_html=True)
+# Streamlit에서 JavaScript 코드 실행 (버튼이 짤리지 않도록 높이 확보)
+st.components.v1.html(kakao_buttons, height=100)
