@@ -43,7 +43,7 @@ def search_branch(query, x=None, y=None):
         return []
 
 # Streamlit UI 구성
-st.title("카카오맵 장소 검색")
+st.title("대리점 및 지점 검색")
 
 # Streamlit 탭 생성 (대리점찾기, 지점 찾기)
 tabs = st.tabs(["대리점찾기", "지점 찾기"])
