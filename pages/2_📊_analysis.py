@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.font_manager as fm
+import seaborn as sb
 import os
 
 # 로컬 환경에서 사용할 폰트 (Mac 기준)
@@ -53,7 +54,7 @@ with tab1 :
         "40대 초반", "40대 중반", "40대 후반",
         "50대 초반", "50대 중반", "50대 후반",
         "60대 초반", "60대 중반", "60대 후반",
-        "70대 초반", "70대 중반", "70대 후반"
+        "70대 초반"
     ]
 
     col1, col2 = st.columns([0.9, 1])  # 좌우 여백 추가
@@ -143,6 +144,108 @@ with tab1 :
         - 30~50대 고객층에서 친환경 차량 선호도가 높음  
         - 친환경 차량 보조금 및 충전소 혜택을 강조한 마케팅 필요  
         - 연령대별 맞춤형 친환경 차량 옵션 제공 가능
+        """)
+
+    st.markdown("---")
+
+    category_df=df[["성별", "연령대", "최근 구매 당시 나이", "최근 구매 제품", "차량 사이즈", "차량 유형", "최근 거래 금액"]]
+    type_df=category_df.groupby(["성별", "연령대", "차량 유형"])[["최근 거래 금액"]].count().reset_index()
+
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
+        # ---- 성별에 따른 연령대별 선호 차량 유형 분석 ----
+        st.subheader("남성 고객 연령대별 선호 차량 유형 분석")
+        st.write("남성 고객들의 연령대별 선호 차량 유형을 분석하여 그래프로 표현했습니다.")
+
+        type_man=type_df[type_df["성별"]=="남"]
+
+        df_pivot = type_man.pivot_table(index='연령대', columns='차량 유형', values='최근 거래 금액', aggfunc='sum', fill_value=0)
+
+        colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
+
+        fig1, ax = plt.subplots(figsize=(12, 8))
+        df_pivot.plot(kind='bar', ax=ax, color=colors)
+        ax.set_title('연령대별 선호 차량 유형 (남)', fontsize=16)
+        ax.set_xlabel('연령대', fontsize=12)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+        ax.set_ylabel('판매량', fontsize=12)
+        plt.tight_layout()
+        st.pyplot(fig1)
+
+        st.write("""
+        **분석 결과 및 활용 방안**
+        """)
+    with col2:
+        ## ---- 성별에 따른 연령대별 선호 차량 유형 분석 ----
+        st.subheader("여성 고객 연령대별 선호 차량 유형 분석")
+        st.write("여성 고객들의 연령대별 선호 차량 유형을 분석하여 그래프로 표현했습니다.")
+        
+        type_woman=type_df[type_df["성별"]=="여"]
+
+        df_pivot = type_woman.pivot_table(index='연령대', columns='차량 유형', values='최근 거래 금액', aggfunc='sum', fill_value=0)
+
+        colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
+
+        fig2, ax = plt.subplots(figsize=(12, 8))
+        df_pivot.plot(kind='bar', ax=ax, color=colors)
+        ax.set_title('연령대별 선호 차량 유형 (여)', fontsize=16)
+        ax.set_xlabel('연령대', fontsize=12)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+        ax.set_ylabel('판매량', fontsize=12)
+        plt.tight_layout()
+        st.pyplot(fig2)
+
+        st.write("""
+        **분석 결과 및 활용 방안**
+        """)
+
+    st.markdown("---")
+
+    size_df=df[["성별","연령대","차량 사이즈","최근 거래 금액"]]
+    size_df=size_df.groupby(["성별","연령대","차량 사이즈"])[["최근 거래 금액"]].count().reset_index()
+
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
+        ## ---- 성별에 따른 연령대별 선호 차량 사이즈 분석 ----
+        st.subheader("남성 고객 연령대별 선호 차량 사이즈 분석")
+        st.write("남성 고객들의 연령대별 선호 차량 사이즈를 분석하여 그래프로 표현했습니다.")
+
+        size_man=size_df[size_df["성별"]=="남"]
+
+        df_pivot = size_man.pivot_table(index='연령대', columns='차량 사이즈', values='최근 거래 금액', aggfunc='sum', fill_value=0)
+
+        colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
+
+        fig1, ax = plt.subplots(figsize=(12, 8))
+        df_pivot.plot(kind='bar', ax=ax, color=colors)
+        ax.set_title('연령대별 선호 차량 사이즈 (남)', fontsize=16)
+        ax.set_xlabel('연령대', fontsize=12)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+        ax.set_ylabel('판매량', fontsize=12)
+        plt.tight_layout()
+        st.pyplot(fig1)
+
+        st.write("""
+        **분석 결과 및 활용 방안**
+        """)
+    with col2:
+        size_woman=size_df[size_df["성별"]=="여"]
+
+        df_pivot = size_woman.pivot_table(index='연령대', columns='차량 사이즈', values='최근 거래 금액', aggfunc='sum', fill_value=0)
+
+        colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
+
+        fig1, ax = plt.subplots(figsize=(12, 8))
+        df_pivot.plot(kind='bar', ax=ax, color=colors)
+        ax.set_title('연령대별 선호 차량 사이즈 (여)', fontsize=16)
+        ax.set_xlabel('연령대', fontsize=12)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+        ax.set_ylabel('판매량', fontsize=12)
+        plt.tight_layout()
+        st.pyplot(fig1)
+
+        st.write("""
+        **분석 결과 및 활용 방안**
         """)
 
     # ---- 전체 요약 ----
