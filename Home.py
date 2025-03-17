@@ -18,7 +18,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sb
 
-import streamlit as st
 
 st.set_page_config(page_title="현대자동차", layout="wide")
 

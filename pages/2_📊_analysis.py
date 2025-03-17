@@ -1,24 +1,22 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import matplotlib.font_manager as fm
 import seaborn as sb
 import os
 
-# 현재 파이썬 파일의 디렉토리
-base_dir = os.path.dirname(os.path.abspath(__file__))
+# OS에 따른 한글 폰트 경로 설정
+if os.name == 'posix':  # macOS
+    font_path = "/System/Library/Fonts/Supplemental/AppleSDGothicNeo.ttc"
+elif os.name == 'nt':  # Windows
+    font_path = "C:/Windows/Fonts/malgun.ttf"  # Windows 기본 한글 폰트
+else:  # Ubuntu, Linux
+    font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
 
-# 만약 fonts 폴더가 pages와 같은 상위 디렉토리에 있다면:
-# mini-project-1/pages/2_analysis.py
-# mini-project-1/fonts/NanumGothic.ttf
-# 따라서 상위 폴더(..)로 이동 후 fonts 폴더로 진입
-font_path = os.path.join(base_dir, "..", "fonts", "NanumGothic.ttf")
-
-# 폰트 프로퍼티 설정
+# 한글 폰트 적용 (Matplotlib 및 Seaborn 차트용)
 font_prop = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = font_prop.get_name()
-plt.rcParams['axes.unicode_minus'] = False
+plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 # 데이터 로드
 df = pd.read_csv("data/고객db_전처리.csv")
@@ -69,7 +67,7 @@ with tab1 :
         # 연령대 정렬 후 시각화
         df["연령대"] = pd.Categorical(df["연령대"], categories=age_order, ordered=True)
         fig1, ax = plt.subplots(figsize=(8, 5))
-        sns.histplot(df.sort_values("연령대")["연령대"], kde=True, color="blue", ax=ax)
+        sb.histplot(df.sort_values("연령대")["연령대"], kde=True, color="blue", ax=ax)
         ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
         ax.set_xlabel("연령대")
         ax.set_ylabel("고객 수")
@@ -116,7 +114,7 @@ with tab1 :
         st.write("연령대별로 선호하는 상위 3개 차량 모델을 선정하여 시각화했습니다.")
 
         fig1, ax = plt.subplots(figsize=(10, 6))
-        sns.barplot(data=top_models, x="연령대", y="count", hue="최근 구매 제품", palette="coolwarm", ax=ax)
+        sb.barplot(data=top_models, x="연령대", y="count", hue="최근 구매 제품", palette="coolwarm", ax=ax)
         ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
         ax.set_xlabel("연령대")
         ax.set_ylabel("선호 차량 모델 수")
