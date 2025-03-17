@@ -51,7 +51,7 @@ normal_client = df.loc[df["고객 등급"] == "일반", ["이름", "휴대폰 �
 normal_client.reset_index(drop=True, inplace=True)
 
 # 이메일 혹은 문자 메시지로 할인 혜택 설명
-st.write("일반 고객 리스트")
+st.write("**일반 등급** 고객 리스트")
 st.write(normal_client)
 
 # 메일 및 문자 예시 이미지 넣을 것

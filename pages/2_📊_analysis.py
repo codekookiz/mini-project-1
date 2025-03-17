@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import seaborn as sb
@@ -30,23 +31,20 @@ st.set_page_config(page_title="고객 분석 대시보드", layout="wide")
 # 페이지 제목
 st.title("분석 대시보드")
 
-tab1, tab2 = st.tabs(["##고객 데이터 분석", "판매 데이터 분석"])
+tab1, tab2 = st.tabs(["고객 데이터 분석", "판매 데이터 분석"])
 
 with tab1 :
     # 고객 데이터 분석 섹션
-
     st.write("고객 데이터 기반의 분석 인사이트를 제공합니다.")
 
     # 분석 개요 섹션
     with st.expander("분석 개요 보기"):
         st.write("""
         **프로젝트 목표**  
-        - 고객의 연령대, 거주 지역, 구매 선호도를 분석하여 비즈니스 인사이트 제공  
-        - 전기차 및 내연기관차의 트렌드 변화 확인  
-        - 데이터 기반으로 마케팅 전략 최적화  
-
+        - 
+        
         **사용된 데이터**  
-        - 고객 연령대, 거주 지역, 선호 차량 모델, 연료 유형, 최근 구매 날짜 등  
+        - 
         """)
 
     st.text("")
@@ -76,12 +74,6 @@ with tab1 :
         ax.set_ylabel("고객 수")
         st.pyplot(fig1)
 
-        st.write("""
-        **분석 결과 및 활용 방안**  
-        - 특정 연령대(30~40대)에 고객이 집중됨  
-        - 이 연령대에 맞춘 타겟 마케팅 전략이 효과적일 가능성 높음  
-        - 가족 단위 차량 프로모션, 장기 렌트 혜택 제공 가능
-        """)
     with col2:
         # ---- 지역별 고객 수 분석 ----
         st.subheader("지역별 고객 분포")
@@ -93,6 +85,15 @@ with tab1 :
         ax.set_ylabel("고객 수") 
         st.pyplot(fig2)
 
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
+        st.write("""
+        **분석 결과 및 활용 방안**  
+        - 특정 연령대(30~40대)에 고객이 집중됨  
+        - 이 연령대에 맞춘 타겟 마케팅 전략이 효과적일 가능성 높음  
+        - 가족 단위 차량 프로모션, 장기 렌트 혜택 제공 가능
+        """)
+    with col2:
         st.write("""
         **분석 결과 및 활용 방안**  
         - 특정 지역(서울, 경기)에 고객이 집중됨  
@@ -136,6 +137,8 @@ with tab1 :
 
         참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
         """)
+
+        st.warning("스포츠카? 우리 데이터에 스포츠카는 없습니다...")
 
     with col2:
         # ---- 연령대별 친환경 차량 선호도 분석 ----
@@ -232,8 +235,6 @@ with tab1 :
         참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
         """)
 
-
-
     st.markdown("---")
 
     col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
@@ -303,23 +304,50 @@ with tab1 :
 
     col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
     with col1:
-        pass
+        ## ---- 연령대에 따른 고객 등급 수 ----
+        st.subheader("연령대별 고객 등급 수")
+        st.write("고객들의 연령대별 고객 등급 수를 분석하여 그래프로 표현했습니다.")
 
+        customer_tier = df.groupby('연령대')['고객 등급'].value_counts().rename('등급 수').reset_index()
+        fig, ax = plt.subplots(figsize=(8, 5))
+        sb.barplot(data=customer_tier, x='연령대', y='등급 수', hue='고객 등급', ax=ax)
+        ax.set_title('연령대별 고객 등급', fontsize=16)
+        ax.set_xlabel("연령대", fontsize=12)
+        ax.set_ylabel("고객 수", fontsize=12)
+        plt.xticks(rotation=45, ha="right")
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
+        plt.legend(title="고객 등급")
+        st.pyplot(fig)
 
-
-st.markdown("---")
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
+        st.write("""
+        **분석 결과**
+        """)
+    
 
 
 
 
 with tab2 :
     # 판매 데이터 분석 섹션
-    st.header("판매 데이터 분석")
     st.write("판매 데이터 기반의 분석 인사이트를 제공합니다.")
+
+    # 분석 개요 섹션
+    with st.expander("분석 개요 보기"):
+        st.write("""
+        **프로젝트 목표**  
+        - 
+        
+        **사용된 데이터**
+        - 
+        """)
+
+    st.text("")
 
     col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
     with col1:
-        # ---- 구매 유형별 선호도 ----
+        # ---- 시기별 연료 구분 판매 현황 ----
         st.subheader("시기 및 연료 구분별 판매 대수")
         st.write("고객들이 선호하는 연료 구분을 분석하여 그래프로 표현했습니다.")
 
@@ -331,8 +359,8 @@ with tab2 :
         fig1, ax = plt.subplots(figsize=(12, 8))
 
         sb.lineplot(x="최근 구매 시점", y="연번", hue="연료 구분", data=df, marker="o", palette="Set2", lw=2, ax=ax)
-        ax.set_title("구매 기준 시점별 연료 구분별 판매 대수")
-        ax.set_xlabel("최근 구매 시점")
+        ax.set_title("구매 시점별 연료 구분별 판매 대수")
+        ax.set_xlabel("구매 시점")
         ax.set_ylabel("판매 대수")
         ax.set_xticks(range(len(date_order)))
         ax.set_xticklabels(date_order, rotation=30)
@@ -340,78 +368,146 @@ with tab2 :
         ax.legend(title="연료 구분", loc="upper left")
         st.pyplot(fig1)
 
+    with col2:
+        # ---- 고객 구분별 차량 구매 현황 ----
+        st.subheader("고객 구분별 차량 구매 현황")
+        st.write("고객들의 구매 유형에 따른 차량 구매 현황을 분석하여 그래프로 표현했습니다.")
+
+        fig, ax = plt.subplots(figsize=(12, 8))
+        sb.lineplot(x="최근 구매 시점", y="연번", hue="고객 구분", data=df, marker="o", palette="Set2", lw=2, ax=ax)
+        ax.set_title("고객 구분별 연료 구분별 판매 대수")
+        ax.set_xlabel("구매 시점")
+        ax.set_ylabel("판매 대수")
+        plt.xticks(rotation=30)
+        plt.grid(axis="y", linestyle="--")
+        plt.legend(title="고객 구분", loc="upper left")
+        st.pyplot(fig)
+
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
         st.write("""
-        **분석 결과**
+        **분석 결과**  
+        - 수소차 폭발 2024년 4분기에 잇따라... (https://biz.sbs.co.kr/article/20000208890?division=NAVER)  
+        - 수소차 판매량 2025년 1분기 기점으로 하락세  
+                 
+        - 다른 분석 내용
         """)
     with col2:
-        pass
+        st.write("""
+        **분석 결과**  
+        - 2023년 비트코인 가격 상승으로 인해 반도체 부족 현상 발생 (https://www.spglobal.com/mobility/en/info/kr/featured-headlines.html)  
+        - 반도체 부족 현상으로 인해 차량 생산량 감소  
+        - 2024년 2분기 이후도 비트코인 이슈로 인한 반도체 부족 현상 발생
+        """)
 
+    st.markdown("---")
 
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
+        # ---- 구매 유형별 선호도 ----
+        st.subheader("구매 유형별 선호도")
+        st.write("고객들이 선호하는 구매 유형을 분석하여 그래프로 표현했습니다.")
 
-    # ---- 구매 유형별 선호도 ----
-    st.subheader("구매 유형별 선호도")
-    st.write("고객들이 선호하는 구매 유형을 분석하여 그래프로 표현했습니다.")
+        fig, ax = plt.subplots(figsize=(12, 8))
+        df["선호 거래 방식"].value_counts().plot(kind="bar", color=["skyblue", "salmon", "lightgreen"], ax=ax)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
+        ax.set_xlabel("결제 방식")
+        ax.set_ylabel("판매 건수")
+        st.pyplot(fig)
+    with col2:
+        # ---- 연령대 및 성별 차량 구매 대수 ----
+        st.subheader("연령대 및 성별 차량 구매 대수")
+        st.write("고객들의 연령대 및 성별에 따른 차량 구매 대수를 분석하여 그래프로 표현했습니다.")
 
-    fig, ax = plt.subplots(figsize=(8, 5))
-    df["선호 거래 방식"].value_counts().plot(kind="bar", color=["skyblue", "salmon", "lightgreen"], ax=ax)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-    ax.set_xlabel("구매 유형")
-    ax.set_ylabel("고객 수")
-    st.pyplot(fig)
+        # 연령대별 각 성별이 구매한 차량 수 합계
+        gender_df = df.groupby(["성별", "연령대"])["차량 사이즈"].count().reset_index()
 
-    st.write("""
-    **분석 결과 및 활용 방안**  
-    - 대다수 고객이 온라인 및 대리점을 통한 구매를 선호  
-    - 온라인 프로모션 강화 및 대리점별 특화 혜택 제공 필요  
-    - 오프라인 고객 대상, 추가적인 서비스 패키지 제공 가능
-    """)
+        df_pivot = gender_df.pivot_table(index="연령대", columns="성별", values="차량 사이즈", fill_value=0)
 
-    # # ---- 전기차 vs. 내연기관차 구매 트렌드 비교 ----
-    # st.subheader("최근 3년간 전기차 구매 증가율 vs. 내연기관 차량 구매율 비교")
-    # st.write("최근 3년간 전기차와 내연기관 차량의 구매 트렌드를 비교했습니다.")
+        colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
 
-    # recent_years = df[df["최근 구매 날짜"] >= (df["최근 구매 날짜"].max() - pd.DateOffset(years=3))]
-    # ev_vs_ice = recent_years["연료 구분"].value_counts()
-    # fig, ax = plt.subplots(figsize=(8, 5))
-    # ev_vs_ice.plot(kind="bar", color=["green", "gray"], ax=ax)
-    # ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-    # ax.set_xlabel("차량 유형")
-    # ax.set_ylabel("구매 수")
-    # ax.set_title("최근 3년간 전기차 vs. 내연기관차 구매 비교")
-    # st.pyplot(fig)
+        fig1, ax = plt.subplots(figsize=(12, 8))
+        df_pivot.plot.bar(ax=ax, color=colors)
+        ax.set_title("연령대별 성별 차량 구매 수", fontsize=16)
+        ax.set_xlabel("연령대", fontsize=12)
+        ax.set_ylabel("판매량", fontsize=12)
+        ax.legend(title="성별")
+        ax.set_xticklabels(df_pivot.index, rotation=0)
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
+        plt.tight_layout()
+        st.pyplot(fig1)
 
-    # st.write("""
-    # **분석 결과 및 활용 방안**  
-    # - 최근 3년간 전기차 판매량이 꾸준히 증가   
-    # - 내연기관차보다 전기차 구매 비율이 높아지는 추세 
-    # - 전기차 관련 금융 혜택 및 충전소 인프라 확장 필요
-    # """)
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
+        st.write("""
+        **분석 결과**  
+        - 신용카드가 가장 많이 사용됨
+            - 실질적으로 현금 + 계좌이체 건수보다는 적음
+            - 할부 혜택 및 포인트 적립 등의 혜택 제공 필요
+        - 현금 결제 비율도 매우 높은 편
+            - 현금 결제 시 1,000만원 초과하게 되면 신고 의무 있음
+                - 이를 토대로 신용카드 사용을 유도하는 프로모션 가능
+        """)
+    with col2:
+        st.markdown("""
+        **📊 분석 결과**  
+        - 내용
+        """)
 
-    st.warning("근거가 부족한 분석, 다시 확인 필요")
+    st.markdown("---")
 
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
+        # ---- 고객 구분별 평균 거래 금액 ----
+        st.subheader("고객 구분별 평균 거래 금액")
+        st.write("고객들의 구매 유형에 따른 평균 거래 금액을 분석하여 그래프로 표현했습니다.")
 
-    # ---- 연령대 및 성별 차량 구매 대수 ----
-    st.subheader("지역별 고객 분포")
-    st.write("고객들이 거주하는 지역별 분포를 나타냅니다.") 
+        price_df=df[["연령대","최근 거래 금액","고객 구분"]]
 
-    # 연령대별 각 성별이 구매한 차량 수 합계
-    gender_df = df.groupby(["성별", "연령대"])["차량 사이즈"].count().reset_index()
+        age_order = ['20대 초반', '20대 중반', '20대 후반', '30대 초반', '30대 중반', '30대 후반', 
+                    '40대 초반', '40대 중반', '40대 후반', '50대 초반', '50대 중반', '50대 후반', 
+                    '60대 초반', '60대 중반', '60대 후반', "70대 초반"]
 
-    df_pivot = gender_df.pivot_table(index="연령대", columns="성별", values="차량 사이즈", fill_value=0)
+        price_df['연령대'] = pd.Categorical(price_df['연령대'], categories=age_order, ordered=True)
 
-    colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
+        # 연령대 기준으로 정렬
+        price_df=price_df.sort_values(by='연령대')
 
-    fig1, ax = plt.subplots(figsize=(12, 8))
-    df_pivot.plot.bar(ax=ax, color=colors)
-    ax.set_title("연령대별 성별 차량 구매 수", fontsize=16)
-    ax.set_xlabel("연령대", fontsize=12)
-    ax.set_ylabel("판매량", fontsize=12)
-    ax.legend(title="성별")
-    ax.set_xticklabels(df_pivot.index, rotation=0)
-    plt.tight_layout()
-    st.pyplot(fig1)
+        fig, ax = plt.subplots(figsize=(12, 7))
+        sb.barplot(data=price_df,x="연령대",y="최근 거래 금액",hue="고객 구분", ax=ax)
+        ax.set_title("고객 구분별 평균 거래 금액", fontsize=16)
+        ax.set_xlabel("연령대", fontsize=12)
+        ax.set_ylabel("평균 거래 금액", fontsize=12)
+        plt.xticks(rotation=30)
+        plt.legend(title="고객 구분")
+        st.pyplot(fig)
+    with col2:
+        # ---- 분기별 차량 판매 요일 ----
+        st.subheader("분기별 차량 판매 요일")
+        st.write("각 분기별 차량 판매 요일을 분석하여 그래프로 표현했습니다.")  
 
-    st.markdown("""
-    **📊 분석 결과**  
-    - 내용
-    """)
+        result = df.groupby(['최근 구매 시점', '최근 구매 요일'])['최근 거래 금액'].count().reset_index()
+        result.rename(columns={'최근 거래 금액' : '판매량', '최근 구매 시점' : '구매 시점', '최근 구매 요일' : '구매 요일'}, inplace=True)
+
+        # 분기별 구매 요일에 따른 판매량
+        fig, ax = plt.subplots(figsize=(10, 6))
+        sb.lineplot(data=result, x='구매 시점', y='판매량', hue='구매 요일', marker='o', palette='Set2', ax=ax)
+        ax.set_title('분기별 구매 요일별 판매량', fontsize=16)
+        ax.set_xlabel('구매 시점', fontsize=12)
+        ax.set_ylabel('판매량', fontsize=12)
+        plt.xticks(rotation=30)
+        plt.grid(axis='y', linestyle='--')
+        plt.legend(title='구매 요일', loc='upper left')
+        st.pyplot(fig)
+
+    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
+    with col1:
+        st.write("""
+        **분석 결과**  
+        - 내용
+        """)
+    with col2:
+        st.markdown("""
+        **📊 분석 결과**  
+        - 내용
+        """)    
