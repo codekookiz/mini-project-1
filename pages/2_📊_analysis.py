@@ -17,9 +17,6 @@ plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 # 데이터 로드
 df = pd.read_csv("data/고객db_전처리.csv")
 
-# 날짜 데이터 변환
-df["최근 구매 날짜"] = pd.to_datetime(df["최근 구매 날짜"])
-
 # Streamlit 페이지 설정
 st.set_page_config(page_title="고객 분석 대시보드", layout="wide")
 
@@ -72,13 +69,11 @@ with tab1 :
         ax.set_ylabel("고객 수")
         st.pyplot(fig1)
 
-        st.markdown("""
-        **📊 분석 결과 **  
-        - **20대 중반**: 사회 초년생으로 이동 수단의 필요성이 증가하며 차량 구매 고려  
-        - **30대 후반~40대**: 결혼 및 자녀 출산과 맞물려 가족 차량으로 교체 수요 증가  
-        - **경제적 부담**: 주거비, 육아비 증가로 인해 일부 소비자는 차량 구매를 미루는 경향  
-
-        참고 자료 출처 : [연합뉴스](https://www.yna.co.kr/view/AKR20241014066100530)
+        st.write("""
+        **분석 결과 및 활용 방안**  
+        - 특정 연령대(30~40대)에 고객이 집중됨  
+        - 이 연령대에 맞춘 타겟 마케팅 전략이 효과적일 가능성 높음  
+        - 가족 단위 차량 프로모션, 장기 렌트 혜택 제공 가능
         """)
     with col2:
         # ---- 지역별 고객 수 분석 ----
@@ -90,15 +85,12 @@ with tab1 :
         ax.set_xlabel("지역")
         ax.set_ylabel("고객 수") 
         st.pyplot(fig2)
-        st.text("")
-        st.text("")
-        st.markdown("""
-        **회원가입 분석 결과**  
-        - 서울·경기 지역에 회원이 집중됨 → 수도권 중심의 차량 구매 및 서비스 수요가 높음.
-        - 지방 거주 회원 비중이 상대적으로 낮음 → 비대면 서비스 및 온라인 계약 확대 필요.
-        - 대도시(광주, 부산, 대구)도 가입자 비율이 높음 → 해당 지역에서 맞춤형 마케팅 및 시승 행사 기획 가능.
-                    
-        참고 자료 출처 : KATECH Insight, 인구 사회구조 변화와 국내 자동차 시장 · 임현진 선임연구원
+
+        st.write("""
+        **분석 결과 및 활용 방안**  
+        - 특정 지역(서울, 경기)에 고객이 집중됨  
+        - 해당 지역에서 차량 전시회 및 시승 이벤트 기획 가능  
+        - 지방 거주 고객 대상, 비대면 서비스(라이브 상담, 온라인 계약 등) 확대 필요
         """)
 
     st.markdown("---")
@@ -144,15 +136,11 @@ with tab1 :
         ax.set_title("연령대별 친환경 차량 구매 선호도")
         st.pyplot(fig2)
     
-        st.markdown("""
-        **친환경 차량 구매 연령층 분석 결과**  
-        - **30~50대**가 친환경 차량 구매를 주도하며, 경제적 여유와 정부 지원이 주요 요인.  
-        - **가족 중심 소비 패턴**으로 인해 연료비 절감과 정숙성을 고려하여 친환경 차량을 선택.  
-        - **정부 보조금 및 세제 혜택**이 해당 연령층에 유리하게 작용하며 구매 결정에 영향을 줌.  
-        - **전기차 기술 발전과 충전 인프라 확충**으로 신뢰도가 상승하며 보급이 가속화됨.  
-        - **환경 보호 및 연비 절감 인식 증가**로 인해 친환경차 수요가 지속적으로 확대되는 추세.  
-
-        참고 자료 출처 : KATECH Insight, 인구 사회구조 변화와 국내 자동차 시장 · 임현진 선임연구원  
+        st.write("""
+        **분석 결과 및 활용 방안**  
+        - 30~50대 고객층에서 친환경 차량 선호도가 높음  
+        - 친환경 차량 보조금 및 충전소 혜택을 강조한 마케팅 필요  
+        - 연령대별 맞춤형 친환경 차량 옵션 제공 가능
         """)
 
     st.markdown("---")
@@ -287,24 +275,35 @@ with tab2 :
     col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
     with col1:
         # ---- 구매 유형별 선호도 ----
-        st.subheader("구매 유형별 선호도")
-        st.write("고객들이 선호하는 구매 유형을 분석하여 그래프로 표현했습니다.")
+        st.subheader("시기 및 연료 구분별 판매 대수")
+        st.write("고객들이 선호하는 연료 구분을 분석하여 그래프로 표현했습니다.")
 
-        fig, ax = plt.subplots(figsize=(8, 5))
-        df["선호 거래 방식"].value_counts().plot(kind="bar", color=["skyblue", "salmon", "lightgreen"], ax=ax)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-        ax.set_xlabel("구매 유형")
-        ax.set_ylabel("고객 수")
-        st.pyplot(fig)
+        date_order = ["2023 1분기", "2023 2분기", "2023 3분기", "2023 4분기", "2024 1분기", "2024 2분기", "2024 3분기", "2024 4분기", "2025 1분기"]
+
+        df["최근 구매 시점"] = pd.Categorical(df["최근 구매 시점"], categories=date_order, ordered=True)
+
+        st.dataframe(df.head())
+
+        # 구매 기준 시점별 각 연료 구분의 개수 시각화
+        fig1, ax = plt.subplots(figsize=(12, 8))
+
+        sb.lineplot(x="최근 구매 시점", y="연번", hue="연료 구분", data=df, marker="o", palette="Set2", lw=2, ax=ax)
+        ax.set_title("구매 기준 시점별 연료 구분별 판매 대수")
+        ax.set_xlabel("최근 구매 시점")
+        ax.set_ylabel("판매 대수")
+        ax.set_xticks(range(len(date_order)))
+        ax.set_xticklabels(date_order, rotation=30)
+        ax.grid(axis="y", linestyle="--")
+        ax.legend(title="연료 구분", loc="upper left")
+        st.pyplot(fig1)
 
         st.write("""
-        **분석 결과 및 활용 방안**  
-        - 대다수 고객이 온라인 및 대리점을 통한 구매를 선호  
-        - 온라인 프로모션 강화 및 대리점별 특화 혜택 제공 필요  
-        - 오프라인 고객 대상, 추가적인 서비스 패키지 제공 가능
+        **분석 결과 및 활용 방안**
         """)
     with col2:
         pass
+
+
 
     # ---- 구매 유형별 선호도 ----
     st.subheader("구매 유형별 선호도")
