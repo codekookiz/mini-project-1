@@ -6,12 +6,11 @@ import matplotlib.font_manager as fm
 import seaborn as sb
 import os
 
-# 로컬 환경에서 사용할 폰트 (Mac 기준)
-if os.name == 'posix':  # Mac 환경에서
-    plt.rcParams['font.family'] = 'AppleGothic'  # Mac 기본 한글 폰트
-else:
-    plt.rcParams['font.family'] = 'NanumGothic'  # 배포 환경에서 사용될 한글 폰트
+FONT_PATH = os.path.join(os.getcwd(), "fonts", "NanumGothic.ttf")
 
+# 한글 폰트 설정
+font_prop = fm.FontProperties(fname=FONT_PATH)
+plt.rcParams['font.family'] = font_prop.get_name()
 plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 # 데이터 로드
@@ -293,6 +292,33 @@ with tab1 :
     # """)
 
 
+    # 연령대별 각 성별이 구매한 차량 수 합계
+    gender_df = df.groupby(["성별", "연령대"])["차량 사이즈"].count().reset_index()
+
+    df_pivot = gender_df.pivot_table(index="연령대", columns="성별", values="차량 사이즈", fill_value=0)
+
+    colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
+
+    fig1, ax = plt.subplots(figsize=(12, 8))
+    df_pivot.plot.bar(ax=ax, color=colors)
+    ax.set_title("연령대별 성별 차량 구매 수", fontsize=16)
+    ax.set_xlabel("연령대", fontsize=12)
+    ax.set_ylabel("판매량", fontsize=12)
+    ax.legend(title="성별")
+    ax.set_xticklabels(df_pivot.index, rotation=0)
+    plt.tight_layout()
+    st.pyplot(fig1)
+
+    st.markdown("""
+    **📊 여성 고객 연령대별 선호 차량 사이즈 분석**  
+    - **20~30대 초반**: 준중형 차량 선호 → 경제성 및 도심 운전 편리성 중시.  
+    - **30대 후반~50대 초반**: 중형 차량 선호 증가 → 가족 이동 수요 증가 반영.  
+    - **50대 후반~60대 이후**: 중형 및 준중형 유지, 일부 프리미엄 차량 선택 증가.  
+    - **선호 요인**: 경제성, 유지비 절감, 주차 및 도심 운전 편의성.  
+    - **마케팅 전략**: 연령별 차량 특성을 고려한 맞춤형 프로모션 및 혜택 제공.  
+
+    참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
+    """)
 
 
 
