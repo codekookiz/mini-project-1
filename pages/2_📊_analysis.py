@@ -5,18 +5,7 @@ import matplotlib.font_manager as fm
 import seaborn as sb
 import os
 
-# OS에 따른 한글 폰트 경로 설정
-if os.name == 'posix':  # macOS
-    font_path = "/System/Library/Fonts/Supplemental/AppleSDGothicNeo.ttc"
-elif os.name == 'nt':  # Windows
-    font_path = "C:/Windows/Fonts/malgun.ttf"  # Windows 기본 한글 폰트
-else:  # Ubuntu, Linux
-    font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
 
-# 한글 폰트 적용 (Matplotlib 및 Seaborn 차트용)
-font_prop = fm.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = font_prop.get_name()
-plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
 # 데이터 로드
 df = pd.read_csv("data/고객db_전처리.csv")
