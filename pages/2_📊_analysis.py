@@ -6,10 +6,16 @@ import matplotlib.font_manager as fm
 import seaborn as sb
 import os
 
-FONT_PATH = os.path.join(os.getcwd(), "fonts", "NanumGothic.ttf")
+# OS에 따른 한글 폰트 경로 설정
+if os.name == 'posix':  # macOS
+    font_path = "/System/Library/Fonts/Supplemental/AppleSDGothicNeo.ttc"
+elif os.name == 'nt':  # Windows
+    font_path = "C:/Windows/Fonts/malgun.ttf"  # Windows 기본 한글 폰트
+else:  # Ubuntu, Linux
+    font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"
 
-# 한글 폰트 설정
-font_prop = fm.FontProperties(fname=FONT_PATH)
+# 한글 폰트 적용
+font_prop = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = font_prop.get_name()
 plt.rcParams['axes.unicode_minus'] = False  # 마이너스 기호 깨짐 방지
 
@@ -22,11 +28,11 @@ st.set_page_config(page_title="고객 분석 대시보드", layout="wide")
 # 페이지 제목
 st.title("분석 대시보드")
 
-tab1, tab2 = st.tabs(["고객 데이터 분석", "판매 데이터 분석"])
+tab1, tab2 = st.tabs(["##고객 데이터 분석", "판매 데이터 분석"])
 
 with tab1 :
     # 고객 데이터 분석 섹션
-    st.header("고객 데이터 분석")
+
     st.write("고객 데이터 기반의 분석 인사이트를 제공합니다.")
 
     # 분석 개요 섹션
