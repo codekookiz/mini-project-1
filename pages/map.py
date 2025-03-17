@@ -10,6 +10,12 @@ import time
 load_dotenv()
 API_KEY = os.getenv("GOOGLE_PLACES_API_KEY")  # .env 파일에 저장된 API 키 불러오기
 
+if not API_KEY:
+    print("❌ API 키를 불러오지 못했습니다. .env 파일을 확인하세요.")
+    print(API_KEY)
+else:
+    print("✅ API 키가 정상적으로 로드되었습니다.")
+
 # Google Geocoding API로 주소 -> 위도/경도 변환
 def get_lat_lon(address):
     url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={API_KEY}"
@@ -27,7 +33,8 @@ def get_hyundai_dealerships(location, radius=50000):
     params = {
         "location": location,
         "radius": radius,
-        "keyword": "현대자동차 대리점",
+        "keyword": "현대자동차",
+        "type":"car_dealer",
         "key": API_KEY
     }
     
