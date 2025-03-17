@@ -4,6 +4,7 @@ import folium
 from streamlit_folium import folium_static
 from dotenv import load_dotenv
 import os
+import time
 
 # .env 파일 로드 (API 키 보안 강화)
 load_dotenv()
@@ -34,13 +35,19 @@ def get_hyundai_dealerships(location, radius=50000):
     while True:
         response = requests.get(url, params=params)
         data = response.json()
-        
+
+        if data.get("status") != "OK":
+            st.error(f"Google Places API 요청 실패: {data.get('status')}")
+            return []
+
         if "results" in data:
             places.extend(data["results"])
 
         # Google Places API는 한 번 요청에 최대 20개만 반환 → 추가 요청 필요
-        if "next_page_token" in data:
-            params["pagetoken"] = data["next_page_token"]
+        next_page_token = data.get("next_page_token")
+        if next_page_token:
+            time.sleep(2)  # Google API의 next_page_token 활성화를 위해 대기
+            params["pagetoken"] = next_page_token
         else:
             break
     
