@@ -68,7 +68,7 @@ st.markdown("---")
 
 st.subheader("지역/연령대별 마케팅 전략 수립")
 
-marketing_class = st.selectbox("마케팅 전략 구분", ["선택", "연령대별", "지역별"])
+marketing_class = st.selectbox("마케팅 전략 구분", ["선택", "연령대별", "지역별", "고객 등급별", "거래 방식별"])
 
 if marketing_class == "지역별":
     # 연료 구분 정렬 순서 지정
@@ -260,11 +260,11 @@ elif marketing_class == "연령대별":
 
     # 연령대에 따른 마케팅 전략 추천
     strategy = {
-        "20대": "\n\n**분석 결과**\n- 1. ",
-        "30대": "\n\n**분석 결과**\n- 1. ",
-        "40대": "\n\n**분석 결과**\n- 1. ",
-        "50대": "\n\n**분석 결과**\n- 1. ",
-        "60대 이상": "\n\n**분석 결과**\n- 1. "
+        "20대": "\n\n**분석 결과**\n- 1. 중형 세단/SUV 선호\n- 2. 전기 및 하이브리드 차량의 선호도가 낮음\n    - 연비보다는 주행 성능이나 연료 충전 편의성을 더 중요하게 생각할 가능성\n- 3.	대형 및 해치백 차량은 인기가 낮음\n    - 가격, 실용성, 유지 비용 등의 요인이 반영된 결과\n\n**잠재적 마케팅 전략**\n- 전기 및 하이브리드 차량의 장점을 강조하는 마케팅 전략\n   - 보조금 및 충전 인프라 홍보 필요\n- 중형 세단/SUV 라인업 확대\n    - 중형 세단/SUV의 선호도가 높은 만큼 라인업 확대로 판매량 증대 가능\n- 대형 및 해치백 차량 저가 모델 출시\n    - 저가형 대형 및 해치백 차량 출시로 인기 증대 가능",
+        "30대": "\n\n**분석 결과**\n- 1. 중형 SUV 선호\n    - SUV에서 친환경 연료(수소) 선호도 증가\n- 2. 프리미엄 및 대형 차량 수요 증가\n    - 경제적인 여유 확보로 인한 결과물로 보임\n\n **잠재적 마케팅 전략**\n- 중형 SUV 라인업 확대\n    - 중형 SUV의 선호도가 높은 만큼 라인업 확대로 판매량 증대 가능\n- 프리미엄 및 대형 차량 라인업 확대\n    - 경제적 여유가 있는 30대를 위한 프리미엄 및 대형 차량 라인업 확대 필요",
+        "40대": "\n\n**분석 결과**\n- 1.중형과 대형 차량 선호\n     - 중형 차량 중 수소 연료 선호도 높음 (친환경 차량 수요 증가)\n      - 패밀리카, 브랜드 가치, 유지비 등을 고려하는 구매 경향\n- 2. 해치백은 거의 선택되지 않음\n    - 주행 안전성과 실내 공간을 고려하는 성향\n\n**잠재적 마케팅 전략**\n- 수소 연료 차량 홍보\n     - 수소 연료 차량의 친환경성을 강조하는 마케팅\n- 패밀리카 및 브랜드 가치 강조\n     - 친숙한 이미지 기반으로 패밀리어 마케팅 실시\n- 대형 및 해치백 차량 홍보 확대\n    - 카고 공간 및 주행 안전성을 강조하는 패밀리 마케팅 전략",
+        "50대": "\n\n**분석 결과**\n- 1. 친환경 연료(수소, 하이브리드) 선호도 다른 연령대에 비해 높음\n     - 연료 효율성과 유지비 절감을 고려하여 하이브리드 및 플러그인 하이브리드 선택 증가\n\n**잠재적 마케팅 전략**\n- 친환경 연료 차량 홍보\n     - 친환경 연료의 장점을 강조하는 마케팅 전략\n- 연료 효율성 및 유지비 절감을 강조하는 마케팅\n     - 연료 효율성 및 유지비 절감을 강조하는 마케팅 전략\n- 수소 및 하이브리드 차량 라인업 확대\n    - 친환경 연료 차량의 선호도가 높은 만큼 라인업 확대로 판매량 증대 가능",
+        "60대 이상": "\n\n**분석 결과**\n- 1. 타 연령대에 비해 높은 디젤 선호도\n   - 디젤 차량의 연료 효율성 및 주행 안정성을 중시하는 경향\n    - 디젤 차량의 승차감에 익숙한 장년층의 특성이 반영됨\n- 2. 전기 및 하이브리드 차량의 선호도 낮음\n   - 전기 및 하이브리드 차량의 충전 인프라 부족 및 주행 거리 등의 문제로 인한 선호도 저하\n\n**잠재적 마케팅 전략**\n- 디젤 차량 홍보\n    - 디젤 차량의 연료 효율성 및 주행 안정성을 강조하는 마케팅 전략\n- 전기 및 하이브리드 차량의 장점을 강조하는 마케팅\n    - 전기 및 하이브리드 차량의 장점을 강조하는 마케팅 전략\n     - 디젤 차량 이용 시 환경 부담금 발생한다는 점 강조\n- 디젤 차량 라인업 확대\n    - 디젤 차량의 선호도가 높은 만큼 라인업 확대로 판매량 증대 가능"
     }
 
     # 연령대에 따른 선호 차량 사이즈 및 유형
@@ -275,8 +275,8 @@ elif marketing_class == "연령대별":
         gen = df.loc[df["연령대"].str.split(" ").str[0] == age_group, :]
 
     # 고객 등급별 선호 차량 사이즈 및 유형 집계
-    size_counts = gen.groupby("연료 구분")["차량 사이즈"].value_counts().unstack()
-    type_counts = gen.groupby("연료 구분")["차량 유형"].value_counts().unstack()
+    size_counts = gen.groupby("차량 사이즈")["연료 구분"].value_counts().unstack()
+    type_counts = gen.groupby("차량 유형")["연료 구분"].value_counts().unstack()
 
     if age_group != "-":
         # 시각화 - 고객 등급별 선호 차량 사이즈
@@ -284,9 +284,9 @@ elif marketing_class == "연령대별":
         size_counts.plot(kind="bar", stacked=True, colormap="viridis", alpha=0.85, ax=ax)
 
         ax.set_title(f"{age_group} 고객 등급별 선호 차량 사이즈")
-        ax.set_xlabel("고객 등급")
+        ax.set_xlabel("차량 사이즈")
         ax.set_ylabel("선호 차량 수")
-        ax.legend(title="차량 사이즈")
+        ax.legend(title="연료 구분")
         ax.set_xticklabels(size_counts.index, rotation=0)
         ax.grid(axis="y", linestyle="--", alpha=0.7)
 
@@ -299,9 +299,9 @@ elif marketing_class == "연령대별":
         type_counts.plot(kind="bar", stacked=True, colormap="plasma", alpha=0.85, ax=ax)
 
         ax.set_title(f"{age_group} 고객 등급별 선호 차량 유형")
-        ax.set_xlabel("고객 등급")
+        ax.set_xlabel("차량 유형")
         ax.set_ylabel("선호 차량 수")
-        ax.legend(title="차량 유형")
+        ax.legend(title="연료 구분")
         ax.set_xticklabels(type_counts.index, rotation=0)
         ax.grid(axis="y", linestyle="--", alpha=0.7)
 
@@ -310,3 +310,22 @@ elif marketing_class == "연령대별":
         st.write("")
 
         st.write("📢 추천 마케팅 전략:", strategy[age_group])
+elif marketing_class == "고객 등급별":
+    marketing_order = ["신규", "일반", "VIP"]
+    fuel_order = ["전기", "하이브리드", "플러그인 하이브리드", "휘발유", "디젤", "수소"]
+
+    df["고객 등급"] = pd.Categorical(df["고객 등급"], categories=marketing_order, ordered=True)
+    df["연료 구분"] = pd.Categorical(df["연료 구분"], categories=fuel_order, ordered=True)
+
+    # 데이터 그룹화 및 시각화를 위한 준비
+    age_df = df.groupby(["고객 등급", "연료 구분"])["연번"].count().unstack()
+
+    fig, ax = plt.subplots(figsize=(12, 8))
+    age_df.reindex(columns=fuel_order).plot(kind="bar", stacked=True, ax=ax)
+
+    ax.set_title("고객 등급별 판매 차량 유형")
+    ax.set_xlabel("판매 대수")
+    ax.set_ylabel("연령대")
+    ax.set_xticklabels(age_df.index, rotation=0)
+
+    st.pyplot(fig)    
