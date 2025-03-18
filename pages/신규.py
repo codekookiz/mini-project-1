@@ -1,12 +1,14 @@
 import streamlit as st
 import pandas as pd
-import time
+import numpy as np
+import matplotlib.pyplot as plt
+import plotly.express as px
 
 df = pd.read_csv("data/고객db_전처리.csv")
 
 # 신규 고객에 대한 서비스 혜택 제공
 # 신규 고객 : 최근 6개월 이내 첫 구매 이력이 있는 고객
-st.write("## 신규 고객 대상 프로모션 1 : 웰컴 패키지 제공")
+st.write("## 웰컴 패키지 제공")
 st.subheader("서비스 혜택 세부 내용")
 
 st.markdown("""
@@ -20,59 +22,109 @@ st.markdown("""
   - 고객의 차량 종류나 구매 시기 등 데이터 활용해 맞춤형 혜택 제시
 """)
 
-st.write("## 2. 추천 프로그램 (Referral Program)")
-st.markdown("""
-- **양측 혜택 제공:**
-  - 신규 고객이 추천인 코드를 사용해 서비스 예약 시, 추천인과 신규 고객 모두에게 정비 할인, 포인트 적립 또는 무료 서비스 쿠폰 등 보상을 제공합니다.
-- **고유 추천 코드 시스템:**
-  - 각 고객에게 고유한 추천 코드를 발급해, 이를 통해 추천 현황 및 혜택 지급이 자동화되도록 시스템을 구축합니다.
-- **다양한 보상 옵션:**
-  - 할인 혜택 외에도, 포인트 적립, 차량용 액세서리 또는 추가 서비스 업그레이드 등 다양한 보상 방식을 마련해 고객 선택의 폭을 넓힙니다.
-- **홍보 및 참여 유도:**
-  - 이메일, 모바일 앱, SNS 채널 등 다양한 마케팅 채널을 통해 추천 프로그램을 적극 홍보합니다.
-  - 추천 성공 사례를 공유하거나, 추천 순위별 추가 보상을 제공하는 등 고객의 참여를 독려하는 이벤트를 병행할 수 있습니다.
-- **실시간 모니터링:**
-  - 고객 포털이나 앱 내에서 추천 진행 상황과 보상 내역을 실시간으로 확인할 수 있도록 하여, 투명한 프로세스를 구축합니다.
-""")
-
-st.write("## 3. 신규 고객 전용 이벤트")
+st.write("## 차량 구매가 처음인 고객을 위한 커뮤니티 혜택")
 st.markdown("""
 - **교육 및 세미나 개최:**
-  - 차량 관리, 정비 팁, 안전 운전 강의 등 주제로 온·오프라인 세미나나 워크숍을 정기적으로 개최합니다.
-  - 전문가 초청 강연이나 실시간 Q&A 세션을 통해 고객이 직접 궁금한 점을 해소할 수 있도록 합니다.
-- **커뮤니티 형성:**
-  - 신규 고객들 간의 네트워킹 이벤트나 소규모 모임을 기획해, 경험 공유 및 브랜드에 대한 신뢰감을 형성합니다.
-  - 이벤트 후 고객 후기를 SNS나 웹사이트에 공유하여, 다른 고객들의 참여를 유도합니다.
+  - 차량 관리, 정비 팁, 안전 운전 강의 등 주제로 정기적인 온·오프라인 세미나/워크숍 제공
+  - 실시간 Q&A 세션을 통해 고객이 직접 궁금증 해소
 - **참여 인센티브:**
-  - 이벤트 참가자에게는 할인 쿠폰, 포인트 적립 또는 다음 서비스 예약 시 사용할 수 있는 특별 혜택을 제공합니다.
-  - 이벤트 참여 인증(예: SNS 포스팅) 시 추가 혜택을 제공해, 자연스러운 바이럴 마케팅 효과를 노릴 수 있습니다.
+  - 이벤트 참가자에게 할인 쿠폰, 포인트 적립 또는 다음 서비스 예약 시 사용할 수 있는 특별 혜택 제공
+  - 이벤트 참여 인증(예: SNS 포스팅) 시 추가 혜택을 제공 : 자연스러운 바이럴 마케팅 효과
 - **온/오프라인 통합 운영:**
-  - 코로나 이후 변화된 환경에 맞춰, 온라인 라이브 세미나나 웨비나 형태로도 진행할 수 있도록 유연한 이벤트 운영 방안을 마련합니다.
-  - 오프라인 이벤트와 연계된 온라인 콘텐츠(녹화 영상, 자료집 등)를 제공해, 참여하지 못한 고객도 혜택을 누릴 수 있게 합니다.
+  - 오프라인 이벤트와 연계된 온라인 콘텐츠(녹화 영상, 자료집 등) 제공 : 추가적인 정보 제공
 """)
 
 new_client = df.loc[df["고객 등급"] == "신규", ["이름", "휴대폰 번호", "이메일"]]
 new_client.reset_index(drop=True, inplace=True)
 
-st.markdown("### 일반 고객 리스트")
+st.markdown("### 신규 고객 리스트")
 st.dataframe(new_client)
 
-st.markdown("### 할인 혜택 안내 예시 (이메일 및 문자)")
-col1, col2 = st.columns(2)
-with col1:
-    st.image("images/email_sample.png", caption="할인 안내 이메일 예시")
-with col2:
-    st.image("images/sms_sample.png", caption="할인 안내 문자 예시")
+# --- 맞춤형 커뮤니케이션 상세 발송 건수 ---
+st.markdown("#### 맞춤형 커뮤니케이션 상세 발송 건수")
+# 2025년 3월 1일부터 3월 31일까지의 일별 데이터 생성 (난수 활용, seed 고정)
+dates = pd.date_range(start="2025-03-01", end="2025-03-31")
+np.random.seed(42)
+email_counts = np.random.randint(140, 180, size=len(dates))
+sms_counts = np.random.randint(70, 90, size=len(dates))
 
-if st.button("할인 혜택 발송 시작"):
-    st.info("각 고객에게 할인 혜택 안내 메시지를 전송 중입니다. 잠시만 기다려주세요.")
-    
-    # 발송 시뮬레이션: 진행 상태 표시
-    progress_bar = st.progress(0)
-    for percent in range(1, 101):
-        time.sleep(0.01)  # 실제 전송 과정에서는 API 호출 등이 이루어질 수 있음
-        progress_bar.progress(percent)
-    
-    st.success("모든 고객에게 할인 혜택 안내 메시지를 성공적으로 전송하였습니다.")
+df_comm = pd.DataFrame({
+    "날짜": dates,
+    "이메일 발송 건수": email_counts,
+    "문자 발송 건수": sms_counts
+})
 
-st.markdown("---")
+# 1) 데이터 Long Format으로 변환
+df_melted = df_comm.melt(id_vars="날짜", var_name="variable", value_name="발송 건수")
+
+# 2) Plotly Express로 한 그래프 안에 여러 선을 겹쳐서 표시
+fig_comm = px.line(
+    df_melted, 
+    x="날짜", 
+    y="발송 건수", 
+    color="variable",       # variable 값(이메일/문자)에 따라 선 색상 구분
+    markers=True,
+    title="2025년 3월 맞춤형 커뮤니케이션 발송 건수"
+)
+
+fig_comm.update_layout(
+    xaxis_title="날짜",
+    yaxis_title="발송 건수",
+    hovermode="x unified"
+)
+
+st.plotly_chart(fig_comm, use_container_width=True)
+
+# --- 상세 세미나 일정 타임라인 (날짜 선택 없이 전체 일정 표시) ---
+st.markdown("#### 상세 세미나 일정 타임라인")
+# 세미나 일정 데이터: 장소 정보 포함
+seminar_data = {
+    "세미나 제목": [
+        "차량 관리 워크숍", "정비 팁 세미나", "안전 운전 강의",
+        "고객 Q&A 세션", "신제품 소개", "전문가 패널 토론", 
+        "서비스 후기 공유", "고객 맞춤형 상담", "신규 고객 환영회", "서비스 체험 이벤트"
+    ],
+    "시작일": [
+        "2025-03-20 09:30", "2025-03-20 11:00", "2025-03-21 14:00",
+        "2025-03-21 15:00", "2025-03-22 10:00", "2025-03-22 13:30", 
+        "2025-03-22 15:00", "2025-03-23 10:00", "2025-03-24 18:00", "2025-03-25 09:00"
+    ],
+    "종료일": [
+        "2025-03-20 13:00", "2025-03-20 12:30", "2025-03-21 17:30",
+        "2025-03-21 18:00", "2025-03-22 11:30", "2025-03-22 15:00", 
+        "2025-03-22 16:30", "2025-03-23 14:00", "2025-03-24 20:00", "2025-03-25 15:00"
+    ],
+    "진행 방식": [
+        "온라인", "오프라인", "온라인", "오프라인", "온라인", 
+        "오프라인", "온라인", "오프라인", "온라인", "오프라인"
+    ],
+    "장소": [
+        "Zoom 미팅", "서울 강남 컨퍼런스룸", "Webex", 
+        "부산 해운대 센터", "Teams", "대구 동성로 컨퍼런스룸", 
+        "Zoom 미팅", "인천 컨벤션 센터", "서울 코엑스", "광주 문화센터"
+    ]
+}
+df_seminar = pd.DataFrame(seminar_data)
+df_seminar["시작일"] = pd.to_datetime(df_seminar["시작일"])
+df_seminar["종료일"] = pd.to_datetime(df_seminar["종료일"])
+
+# Plotly 타임라인 차트 생성
+fig_seminar = px.timeline(
+    df_seminar, 
+    x_start="시작일", 
+    x_end="종료일", 
+    y="세미나 제목", 
+    color="진행 방식",
+    title="세미나 일정 타임라인 (상세)",
+    labels={"진행 방식": "진행 방식"},
+    hover_data=["장소"]
+)
+# y축을 역순으로 하여 위쪽에 먼저 진행하는 이벤트가 표시되도록 함
+fig_seminar.update_yaxes(autorange="reversed")
+fig_seminar.update_layout(
+    xaxis_title="세미나 시간",
+    yaxis_title="세미나 제목",
+    hovermode="closest",
+    transition_duration=500
+)
+st.plotly_chart(fig_seminar, use_container_width=True)
