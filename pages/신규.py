@@ -45,7 +45,7 @@ st.markdown("---")
 # 📧 맞춤형 커뮤니케이션 발송
 st.subheader("📩 이메일 & 문자 발송")
 st.write("")
-col1, col2, _ = st.columns([1, 1, 3])
+col1, col2, _ = st.columns([1, 1, 8])
 with col1:
     email_sent = st.button("📧 이메일 발송")
 with col2:
