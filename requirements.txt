@@ -9,6 +9,5 @@ lightgbm
 catboost
 joblib
 folium
-geopy
 streamlit-folium
 python-dotenv
