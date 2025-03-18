@@ -40,7 +40,6 @@ dtc_path = os.path.join(model_dir, "DecisionTree 모델.pkl")
 rfc_path = os.path.join(model_dir, "RandomForest 모델.pkl")
 gbc_path = os.path.join(model_dir, "GradientBoosting 모델.pkl")
 lgb_path = os.path.join(model_dir, "LightGBM 모델.pkl")
-cb_path = os.path.join(model_dir, "CatBoost 모델.pkl")
 
 def load_model(path):
     if not os.path.exists(path):
@@ -51,7 +50,6 @@ dtc = load_model(dtc_path)
 rfc = load_model(rfc_path)
 gbc = load_model(gbc_path)
 lgb = load_model(lgb_path)
-cb = load_model(cb_path)
 
 
 # 데이터셋 로드
@@ -208,7 +206,7 @@ if st.button("추천 받기"):
     for idx, car_name in enumerate(recom_list):
         # 차량 이미지 URL 가져오기
         image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
-        img_tag = f'<img src="{image_url}" width="230">' if image_url else "이미지 없음"
+        img_tag = f'<img src="{image_url}" width="250">' if image_url else "이미지 없음"
 
         # 차량 정보 정리
         fuel_type = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
@@ -284,7 +282,7 @@ if st.button("추천 받기"):
         for idx, car_name in enumerate(filtered_cred_list):
             # 차량 이미지 URL 가져오기
             image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
-            img_tag = f'<img src="{image_url}" width="230">' if image_url else "이미지 없음"
+            img_tag = f'<img src="{image_url}" width="250">' if image_url else "이미지 없음"
 
             # 차량 정보 정리
             fuel_type = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
@@ -372,7 +370,7 @@ if st.button("추천 받기"):
             for idx, car_name in enumerate(recom_elec):
                 # 차량 이미지 URL 가져오기
                 image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
-                img_tag = f'<img src="{image_url}" width="230">' if image_url else "이미지 없음"
+                img_tag = f'<img src="{image_url}" width="250">' if image_url else "이미지 없음"
 
                 # 차량 정보 정리
                 fuel_type = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
