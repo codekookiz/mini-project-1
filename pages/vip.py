@@ -43,9 +43,8 @@ if purchase_amount >= 10000:
             format_purchase = purchase_1 + purchase_2.lstrip("0,").lstrip("0")
     else:
         format_purchase = purchase_1 + purchase_2
-
 else:
-    format_purchase = format(purchase_amount, ",")
+    format_purchase = format(purchase_amount, ",") + "만 "
 
 # 프로모션 적용 결과 출력
 st.markdown("---")
@@ -57,11 +56,12 @@ st.write(f"**추가 제공 혜택:** {extra_benefits}")
 
 #  할인 적용 후 예상 결제 금액 계산
 if discount > 0:
-    final_price = purchase_amount * (1 - discount / 100)
+    final_price = round(purchase_amount * (1 - discount / 100))
+    format_final = ""
     if final_price >= 10000:
         format_final = format(final_price, ",")
-        final_1 = format_final[:-7] + "억 "
-        final_2 = format_final[-7:-2] + "만 "
+        final_1 = format_final[:-5] + "억 "
+        final_2 = format_final[-5:] + "만 "
         if final_2.startswith("0"):
             if final_2 == "0,000만 ":
                 format_final = final_1
@@ -69,6 +69,8 @@ if discount > 0:
                 format_final = final_1 + final_2.lstrip("0,").lstrip("0")
         else:
             format_final = final_1 + final_2
+    else:
+        format_final = format(final_price, ",") + "만 "
         
     st.write(f"**💰 할인 적용 후 예상 결제 금액:** {format_final}원")
 else:
