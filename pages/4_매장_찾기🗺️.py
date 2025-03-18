@@ -1,9 +1,11 @@
 import streamlit as st
 import requests
 import folium
-from streamlit_folium import folium_static
 import os
 import streamlit.components.v1 as components
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
 
 def get_api_key():
     key = os.environ.get('KAKAO_API_KEY')
@@ -77,6 +79,8 @@ def create_popup_html(place):
 # ------------------------------
 # 4) Streamlit UI
 # ------------------------------
+
+search_query = ''
 
 tab1, tab2 = st.tabs(['지점 찾기', '정비소 찾기'])
 with tab1:
