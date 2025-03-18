@@ -132,33 +132,30 @@ st.components.v1.html(carousel_html, height=400)
 # 본인의 카카오톡 채널 ID 입력
 channel_public_id = "_xfxhjXn"  # 올바른 채널 ID 반영
 
-# 카카오톡 "채널 추가 버튼" & "채팅하기 버튼" HTML & JavaScript 코드
+# 카카오톡 버튼 HTML & JavaScript 코드
+channel_public_id = "_xfxhjXn"
 kakao_buttons = f"""
 <style>
-/* 버튼 컨테이너 스타일 (가로 정렬) */
 .kakao-buttons-container {{
     display: flex;
-    justify-content: center; /* 가운데 정렬 */
+    justify-content: center;
     align-items: center;
-    gap: 15px; /* 버튼 간 간격 */
-    margin-top: 20px; /* 위쪽 여백 */
+    gap: 15px;
+    margin-top: 20px;
     z-index: 1000;
 }}
 
 .kakao-button {{
-    flex: 0 1 auto; /* 버튼 크기 자동 조정 */
+    flex: 0 1 auto;
 }}
 </style>
 
-<!-- 버튼 컨테이너 -->
 <div class="kakao-buttons-container">
-    <!-- 카카오 채널 추가 버튼 -->
     <div id="kakao-talk-channel-add-button" class="kakao-button"
          data-channel-public-id="{channel_public_id}"
          data-size="large"
          data-support-multiple-densities="true"></div>
 
-    <!-- 카카오 채팅하기 버튼 -->
     <div id="kakao-talk-channel-chat-button" class="kakao-button"
          data-channel-public-id="{channel_public_id}"
          data-title="consult"
@@ -168,7 +165,6 @@ kakao_buttons = f"""
          data-support-multiple-densities="true"></div>
 </div>
 
-<!-- 카카오톡 JavaScript SDK -->
 <script>
   window.kakaoAsyncInit = function() {{
     Kakao.Channel.createAddChannelButton({{
@@ -191,5 +187,6 @@ kakao_buttons = f"""
 </script>
 """
 
-# Streamlit에서 JavaScript 코드 실행 (버튼이 짤리지 않도록 높이 확보)
-st.components.v1.html(kakao_buttons, height=100)
+# 사이드바에 카카오톡 버튼 적용
+with st.sidebar:
+    st.components.v1.html(kakao_buttons, height=100)
