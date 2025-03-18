@@ -43,26 +43,39 @@ st.markdown("---")
 
 # 1. 일반 고객 대상 재구매 할인 혜택 제공
 # 일반 고객 : 최근 6개월 이내 차량 구매 기록이 없고, 구매 이력이 1회인 고객
+st.subheader("재구매 할인 혜택 안내 시스템")
+st.write("## 일반 고객 대상 재구매 할인 혜택 제공")
 
-st.subheader("일반 고객 대상 재구매 할인 혜택 제공")
+# 할인 혜택 상세 내용
+st.markdown("""
+- **할인율:** 차종에 따라 최대 500만원 할인
+- **할인 기간:** 2025년 4월 1일 ~ 2025년 12월 31일
+- **추가 혜택:**  
+    - 무상 차량 점검 쿠폰 (엔진 오일 교환, 에어컨 필터 교환 등)
+    - 차량 보호 패키지 (내/외부 세차, 도배 보호 코팅 등)
+""")
 
 # 일반 고객 리스트 추출
 normal_client = df.loc[df["고객 등급"] == "일반", ["이름", "휴대폰 번호", "이메일"]]
 normal_client.reset_index(drop=True, inplace=True)
 
-# 이메일 혹은 문자 메시지로 할인 혜택 설명
-st.write("**일반 등급** 고객 리스트")
-st.write(normal_client)
+st.markdown("## 일반 고객 리스트")
+st.markdown("""
+- **6개월 이내 차량 구매 이력:** 없음
+- **총 구매 이력:** 1회
+""")
+st.dataframe(normal_client)
 
-# 메일 및 문자 예시 이미지 넣을 것
-
-col1, col2 = st.columns([2, 1])
+st.markdown("## 할인 혜택 안내 예시 (이메일 및 문자)")
+col1, col2 = st.columns([1, 1])
 with col1:
-    # 메일 예시
-    st.image("images/email_sample.png")
+    st.image("images/email_sample.png", caption="할인 안내 이메일 예시")
 with col2:
-    # 문자 메시지 예시
-    st.image("images/sms_sample.png")
+    st.image("images/sms_sample.png", caption="할인 안내 문자 예시")
+
+if st.button("할인 혜택 발송 시작"):
+    st.success("할인 혜택 발송 요청이 접수되었습니다.")
+    st.info("각 고객에게 할인 혜택 안내 메시지를 전송 중입니다. 잠시만 기다려주세요.")
 
 st.markdown("---")
 
