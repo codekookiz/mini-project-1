@@ -257,3 +257,4 @@ with tab2:
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
         plt.tight_layout()
         st.pyplot(fig1)
+
