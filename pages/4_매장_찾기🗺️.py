@@ -6,12 +6,14 @@ from dotenv import load_dotenv
 import os
 
 def get_api_key():
-    key = os.environ.get('KAKAO_API_KEY')
+    key = os.environ.get("KAKAO_API_KEY")
     if key is None:
-        key = st.secrets.get('KAKAO_API_KEY')
+        key = st.secrets.get("KAKAO_API_KEY")
     return key
 
 KAKAO_API_KEY = get_api_key()
+
+print(f"Kakao API Key: {KAKAO_API_KEY}")
 
 url = "https://dapi.kakao.com/v2/local/search/keyword.json"
 headers = {"Authorization": f"KakaoAK {KAKAO_API_KEY}"}
