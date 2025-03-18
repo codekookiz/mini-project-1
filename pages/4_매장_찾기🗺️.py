@@ -13,14 +13,7 @@ def get_api_key():
 
 KAKAO_API_KEY = get_api_key()
 
-print(f"Kakao API Key: {KAKAO_API_KEY}")
-
-url = "https://dapi.kakao.com/v2/local/search/keyword.json"
-headers = {"Authorization": f"KakaoAK {KAKAO_API_KEY}"}
-params = {"query": "현대자동차 대리점", "size": 5}
-
-response = requests.get(url, headers=headers, params=params)
-st.write(response.status_code, response.text)
+st.write(f"Kakao API Key: {KAKAO_API_KEY}")
 
 # 대리점 검색 함수
 def search_dealership(query, x=None, y=None):
