@@ -14,8 +14,10 @@
 
 import streamlit as st
 
-st.set_page_config(page_title="현대자동차 고객 추천 시스템", layout="wide")
-
+st.set_page_config(
+    page_title="현대자동차 고객추천시스템",  # 웹사이트 제목
+    page_icon="./images/favicon.ico",  # 파비콘 적용
+)
 # 메인 화면 구성
 st.markdown("""
 <h1 style="display:flex; align-items:center;">
