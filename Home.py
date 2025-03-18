@@ -190,3 +190,5 @@ kakao_buttons = f"""
 # 사이드바에 카카오톡 버튼 적용
 with st.sidebar:
     st.components.v1.html(kakao_buttons, height=100)
+
+    
