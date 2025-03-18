@@ -32,10 +32,25 @@ else:
     discount = 0
     extra_benefits = "❌ 추가 혜택 없음"
 
+if purchase_amount >= 10000:
+    format_purchase = format(purchase_amount, ",")
+    purchase_1 = format_purchase[:-5] + "억 "
+    purchase_2 = format_purchase[-5:] + "만 "
+    if purchase_2.startswith("0"):
+        if purchase_2 == "0,000만 ":
+            format_purchase = purchase_1
+        else:
+            format_purchase = purchase_1 + purchase_2.lstrip("0,").lstrip("0")
+    else:
+        format_purchase = purchase_1 + purchase_2
+
+else:
+    format_purchase = format(purchase_amount, ",")
+
 # 프로모션 적용 결과 출력
 st.markdown("---")
 st.subheader(" VIP 고객 맞춤 프로모션 적용 결과")
-st.write(f"**누적 구매 금액:** {purchase_amount:,}만 원")
+st.write(f"**누적 구매 금액:** {format_purchase}원")
 st.write(f"**고객 등급:** {grade}")
 st.write(f"**적용 할인율:** {discount}%")
 st.write(f"**추가 제공 혜택:** {extra_benefits}")
@@ -43,7 +58,19 @@ st.write(f"**추가 제공 혜택:** {extra_benefits}")
 #  할인 적용 후 예상 결제 금액 계산
 if discount > 0:
     final_price = purchase_amount * (1 - discount / 100)
-    st.write(f"**💰 할인 적용 후 예상 결제 금액:** {final_price:,.0f}만 원")
+    if final_price >= 10000:
+        format_final = format(final_price, ",")
+        final_1 = format_final[:-7] + "억 "
+        final_2 = format_final[-7:-2] + "만 "
+        if final_2.startswith("0"):
+            if final_2 == "0,000만 ":
+                format_final = final_1
+            else:
+                format_final = final_1 + final_2.lstrip("0,").lstrip("0")
+        else:
+            format_final = final_1 + final_2
+        
+    st.write(f"**💰 할인 적용 후 예상 결제 금액:** {format_final}원")
 else:
     st.write("❌ 할인이 적용되지 않습니다.")
 

@@ -6,9 +6,7 @@ import os
 import time
 
 
-
 base_dir = os.path.dirname(os.path.abspath(__file__))
-
 
 # 모델 로드
 model_dir = os.path.join(base_dir, "..", "model", "models")
@@ -17,7 +15,6 @@ def load_model(path):
     if not os.path.exists(path):
         raise FileNotFoundError(f"모델 파일을 찾을 수 없습니다: {path}")
     return joblib.load(path)
-
 
 # 데이터셋 로드
 data_dir = os.path.join(base_dir, "..", "data")
