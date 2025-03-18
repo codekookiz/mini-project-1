@@ -13,8 +13,6 @@ def get_api_key():
 
 KAKAO_API_KEY = get_api_key()
 
-st.write(f"Kakao API Key: {KAKAO_API_KEY}")
-
 # 대리점 검색 함수
 def search_dealership(query, x=None, y=None):
     # 입력받은 검색어에 "현대자동차 대리점" 추가
