@@ -128,10 +128,9 @@ if st.button("추천 받기"):
 
 
     # 사용자 입력 데이터를 모델이 예측할 수 있는 형태로 변환
-    user_data = np.hstack([budget * 10000, region_list[region], car_size_list[car_size], car_type_list[car_type],
-                          fuel_type_list[fuel_type]]).reshape(1, -1)[0]
+    user_data = np.hstack([budget * 10000, region_list[region], car_size_list[car_size], car_type_list[car_type]]).reshape(1, -1)[0]
     
-    user_data = np.array(user_data).reshape(1, 30)
+    user_data = np.array(user_data).reshape(1, 24)
 
 
     # 각 모델을 통해 추천 결과 생성
@@ -239,10 +238,9 @@ if st.button("추천 받기"):
         # 사용자가 설정한 예산의 150% 수준의 차량 추천
         st.info("신용카드로 구매 시 10% 포인트 적립 혜택을 받을 수 있습니다!")
 
-        cred_data = np.hstack([budget * 15000, region_list[region], car_size_list[car_size], car_type_list[car_type],
-                            fuel_type_list[fuel_type]]).reshape(1, -1)[0]
+        cred_data = np.hstack([budget * 15000, region_list[region], car_size_list[car_size], car_type_list[car_type]]).reshape(1, -1)[0]
         
-        cred_data = np.array(cred_data).reshape(1, 30)
+        cred_data = np.array(cred_data).reshape(1, 24)
 
         cred_list = []
         cred_list.append(dtc.predict(cred_data)[0])
@@ -258,6 +256,7 @@ if st.button("추천 받기"):
         # 가격대 조금 더 높은 제품 추천
         # 최초 추천 리스트와 동일한 결과 나올 경우 실시 X
         # 실시하더라도 최초 추천 리스트에는 존재하지 않는 차종만 추천
+        
         if cred_list != recom_list:
             st.subheader("추천 차량 리스트")
             with st.spinner("추천 결과를 생성 중입니다..."):
@@ -341,7 +340,8 @@ if st.button("추천 받기"):
             st.info(f"{region}의 전기차 보조금은 {comma(elec_car_compen[region])}원입니다.")
 
             compen = elec_car_compen[region]
-            recom_elec = df.loc[(df["최근 거래 금액"] <= budget * 10000 + compen) & (df["연료 구분"].isin(["전기", "플러그인 하이브리드", "하이브리드"])), "최근 구매 제품"].to_numpy()[0:3]
+            recom_elec = df.loc[(df["최근 거래 금액"] <= budget * 10000 + compen) & (df["연료 구분"].isin(["전기", "플러그인 하이브리드", "하이브리드"])), "최근 구매 제품"].unique()[:3]
+            print(recom_elec)
 
             st.subheader("추천 차량 리스트")
             with st.spinner("추천 결과를 생성 중입니다..."):

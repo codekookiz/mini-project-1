@@ -43,68 +43,41 @@ st.markdown("---")
 
 # 1. 일반 고객 대상 재구매 할인 혜택 제공
 # 일반 고객 : 최근 6개월 이내 차량 구매 기록이 없고, 구매 이력이 1회인 고객
+st.subheader("재구매 할인 혜택 안내 시스템")
+st.write("## 일반 고객 대상 재구매 할인 혜택 제공")
 
-st.subheader("일반 고객 대상 재구매 할인 혜택 제공")
+# 할인 혜택 상세 내용
+st.markdown("""
+- **할인율:** 차종에 따라 최대 500만원 할인
+- **할인 기간:** 2025년 4월 1일 ~ 2025년 12월 31일
+- **추가 혜택:**  
+    - 무상 차량 점검 쿠폰 (엔진 오일 교환, 에어컨 필터 교환 등)
+    - 차량 보호 패키지 (내/외부 세차, 도배 보호 코팅 등)
+""")
 
 # 일반 고객 리스트 추출
 normal_client = df.loc[df["고객 등급"] == "일반", ["이름", "휴대폰 번호", "이메일"]]
 normal_client.reset_index(drop=True, inplace=True)
 
-# 이메일 혹은 문자 메시지로 할인 혜택 설명
-st.write("**일반 등급** 고객 리스트")
-st.write(normal_client)
+st.markdown("## 일반 고객 리스트")
+st.markdown("""
+- **6개월 이내 차량 구매 이력:** 없음
+- **총 구매 이력:** 1회
+""")
+st.dataframe(normal_client)
 
-# 메일 및 문자 예시 이미지 넣을 것
-
-col1, col2 = st.columns([3, 2])
+st.markdown("## 할인 혜택 안내 예시 (이메일 및 문자)")
+col1, col2 = st.columns([1, 1])
 with col1:
-    # 메일 예시
-    st.image("images/email_sample.png")
+    st.image("images/email_sample.png", caption="할인 안내 이메일 예시")
 with col2:
-    # 문자 메시지 예시
-    st.image("images/sms_sample.png")
+    st.image("images/sms_sample.png", caption="할인 안내 문자 예시")
+
+if st.button("할인 혜택 발송 시작"):
+    st.success("할인 혜택 발송 요청이 접수되었습니다.")
+    st.info("각 고객에게 할인 혜택 안내 메시지를 전송 중입니다. 잠시만 기다려주세요.")
 
 st.markdown("---")
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
 
 # 2. 신용카드 이용 구매 유도 위해 카드사 제휴 확대
 st.subheader("🚗 신용카드 이용 구매 유도 위해 카드사 제휴 확대")
@@ -201,9 +174,9 @@ ax2.tick_params(axis='x', labelrotation=0)
 st.pyplot(fig2)
 st.markdown("---")
 
-# 3. 지역/연령대별 마케팅 전략 수립
+# 3. 카테고리별 마케팅 전략 수립
 
-st.subheader("지역/연령대별 마케팅 전략 수립")
+st.subheader("카테고리별 마케팅 전략 수립")
 
 marketing_class = st.selectbox("마케팅 전략 구분", ["선택", "연령대별", "지역별", "고객 등급별"])
 
@@ -268,8 +241,7 @@ if marketing_class == "지역별":
     # 타겟 지역 선택
     st.subheader("🎯 타겟 지역별 마케팅 전략")
 
-    region = st.selectbox("타겟 지역 선택", ["-", "서울특별시", "부산광역시", "인천광역시", "대구광역시", "울산광역시", "대전광역시", "광주광역시", "경기도 수원시",
-        "경기도 성남시", "충청북도 청주시", "충청남도 천안시", "전라북도 전주시", "전라남도 목포시", "경상북도 포항시", "경상남도 창원시"])
+    region = st.selectbox("타겟 지역 선택", ["-", "서울특별시", "경기도 수원시", "울산광역시", "경기도 성남시", "충청남도 천안시"])
 
     age_order = ["20대 초반", "20대 중반", "20대 후반", "30대 초반", "30대 중반", "30대 후반", "40대 초반", "40대 중반", "40대 후반",
              "50대 초반", "50대 중반", "50대 후반", "60대 초반", "60대 중반", "60대 후반", "70대 초반"]
@@ -282,17 +254,7 @@ if marketing_class == "지역별":
         "경기도 수원시": "\n\n- 1. 40대 초반과 60대 중반이 가장 많이 구매 : 주 타겟층\n  - 선호 차량 유형 : 준중형 세단\n- 2. 전반적으로 중형~준중형 사이즈 차량 수요 높음\n    - 차종 역시 세단 선호도가 높음\n",
         "울산광역시": "\n\n- 1. 30대 후반과 50대 중반 : 주 타겟층\n    - 중형 SUV 선호\n- 2. 비교적 전 연령대에서 고른 구매 수요를 보임\n   - 중형 SUV 및 세단 선호도 높음\n- 3. SUV의 선호도가 타지역에 비해 두드러짐\n    - SUV 라인업 확대 필요\n",
         "경기도 성남시": "\n\n- 1. 40대 초반과 50대 중후반 : 주 타겟층\n  - 중형 세단 선호\n- 2. 40대 이상의 연령대에서 주된 구매 수요를 보임\n  - 준중형/중형 세단 선호도 높음\n- 3. 30대 이하의 연령대에서 차량 구매 수요가 낮은 편\n  - 저가 전략 혹은 젊은 세대를 위한 마케팅 필요\n",
-        "충청남도 천안시": "\n\n- 1. 40대 후반 : 주 타겟층\n    - 준중형 세단/해치백 선호\n- 2. 전반적인 수요가 높지 않음\n    - 사람들의 차량 구매를 유도할 수 있는 마케팅 필요\n",
-        "부산광역시": "\n\n- 1. \n",
-        "전라남도 목포시": "\n\n- 1. \n",
-        "전라북도 전주시": "\n\n- 1. \n",
-        "대구광역시": "\n\n- 1. \n",
-        "대전광역시": "\n\n- 1. \n",
-        "충청북도 청주시": "\n\n- 1. \n",
-        "인천광역시": "\n\n- 1. \n",
-        "광주광역시": "\n\n- 1. \n",
-        "경상북도 포항시": "\n\n- 1. \n",
-        "경상남도 창원시": "\n\n- 1. \n"
+        "충청남도 천안시": "\n\n- 1. 40대 후반 : 주 타겟층\n    - 준중형 세단/해치백 선호\n- 2. 전반적인 수요가 높지 않음\n    - 사람들의 차량 구매를 유도할 수 있는 마케팅 필요\n"
     }
 
     strategy = {
@@ -300,17 +262,7 @@ if marketing_class == "지역별":
         "경기도 수원시": "\n\n- 전통적 미디어(신문, TV 등)를 통한 광고\n     - 40대와 60대를 위한 패밀리카 마케팅이 필요\n- 준중형 세단 라인업 확대\n     - 판매량이 높은 세단의 장점을 강조하는 마케팅\n",
         "울산광역시": "\n\n- 패밀리카 및 SUV 라인업 홍보\n     - 30대와 50대를 위한 SUV 위주 마케팅 필요\n- SUV 라인업 확대 필요\n    - SUV의 선호도가 높은 만큼 라인업 확대로 판매량 증대 가능\n",
         "경기도 성남시": "\n\n- 40대와 50대를 위해 친숙한 이미지 강조하는 마케팅\n   - 현대자동차의 익숙하면서도 안정적인 이미지 강조\n  - 중형 세단 라인업 홍보\n- 젊은 세대를 위한 저가 전략 마케팅\n   - 30대 이하 연령대의 저조한 구매 수요를 증대하기 위한 전략 필요\n",
-        "충청남도 천안시": "\n\n- 차량 구매 유도를 위한 저가/할인 마케팅 전략\n    - 전반적으로 차량 구매 수요가 그리 높지 않기 때문에 이를 유도하기 위해 할인 혜택 마케팅 필요\n- 디자인/성능 등에서 사람들의 이목을 끌 수 있는 마케팅\n    - 차량에 관심이 낮은 사람들의 차량 구매 관심도를 조금이나마 높일 수 있는 방안\n",
-        "부산광역시": "\n\n- \n",
-        "전라남도 목포시": "\n\n- \n",
-        "전라북도 전주시": "\n\n- \n",
-        "대구광역시": "\n\n- \n",
-        "대전광역시": "\n\n- \n",
-        "충청북도 청주시": "\n\n- \n",
-        "인천광역시": "\n\n- \n",
-        "광주광역시": "\n\n- \n",
-        "경상북도 포항시": "\n\n- \n",
-        "경상남도 창원시": "\n\n- \n"
+        "충청남도 천안시": "\n\n- 차량 구매 유도를 위한 저가/할인 마케팅 전략\n    - 전반적으로 차량 구매 수요가 그리 높지 않기 때문에 이를 유도하기 위해 할인 혜택 마케팅 필요\n- 디자인/성능 등에서 사람들의 이목을 끌 수 있는 마케팅\n    - 차량에 관심이 낮은 사람들의 차량 구매 관심도를 조금이나마 높일 수 있는 방안\n"
     }
 
     col1, col2 = st.columns([1, 1])
