@@ -56,11 +56,14 @@ st.write(normal_client)
 
 # 메일 및 문자 예시 이미지 넣을 것
 
-# 메일 예시
-# st.image("images/email_sample.png", use_container_width=True)
-
-# 문자 메시지 예시
-# st.image("images/sms_sample.png", use_container_width=True)
+col1, col2 = st.columns([1, 1])
+with col1:
+    # 메일 예시
+    st.image("images/email_sample.png", width=600)
+with col2:
+    # 문자 메시지 예시
+    # st.image("images/sms_sample.png", use_container_width=True)
+    pass
 
 st.markdown("---")
 
