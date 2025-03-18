@@ -161,9 +161,9 @@ ax2.tick_params(axis='x', labelrotation=0)
 st.pyplot(fig2)
 st.markdown("---")
 
-# 3. 지역/연령대별 마케팅 전략 수립
+# 3. 카테고리별 마케팅 전략 수립
 
-st.subheader("지역/연령대별 마케팅 전략 수립")
+st.subheader("카테고리별 마케팅 전략 수립")
 
 marketing_class = st.selectbox("마케팅 전략 구분", ["선택", "연령대별", "지역별", "고객 등급별"])
 
