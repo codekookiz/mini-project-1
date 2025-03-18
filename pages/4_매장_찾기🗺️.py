@@ -5,8 +5,13 @@ from streamlit_folium import folium_static
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # <-- .env 파일 로드
-KAKAO_API_KEY = os.getenv("KAKAO_API_KEY")
+def get_api_key():
+    key = os.environ.get('KAKAO_API_KEY')
+    if key is None:
+        key = st.secrets.get('KAKAO_API_KEY')
+    return key
+
+KAKAO_API_KEY = get_api_key()
 
 # 대리점 검색 함수
 def search_dealership(query, x=None, y=None):
