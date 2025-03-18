@@ -1,54 +1,48 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
 import seaborn as sb
-import os
-
-# 차트 한글화 코드
 import platform
-
 from matplotlib import font_manager, rc
-plt.rcParams['axes.unicode_minus'] = False
 
+# Streamlit 페이지 설정
+st.set_page_config(page_title="고객 분석 대시보드", layout="wide")
+
+# 한글 폰트 설정 (OS별 적용)
+plt.rcParams['axes.unicode_minus'] = False
 if platform.system() == 'Darwin':
     rc('font', family='AppleGothic')
 elif platform.system() == 'Windows':
     path = "c:/Windows/Fonts/malgun.ttf"
     font_name = font_manager.FontProperties(fname=path).get_name()
     rc('font', family=font_name)
-else:
-    print('Unknown system… sorry~~~~')
 
 # 데이터 로드
-df = pd.read_csv("data/고객db_전처리.csv")
+df = pd.read_csv("data/고객db_전처리.csv").fillna(0)
 
-# Streamlit 페이지 설정
-st.set_page_config(page_title="고객 분석 대시보드", layout="wide")
-
-# 페이지 제목
-st.title("분석 대시보드")
-
+# 🚀 **탭 생성**
 tab1, tab2 = st.tabs(["고객 데이터 분석", "판매 데이터 분석"])
 
-with tab1 :
-    # 고객 데이터 분석 섹션
-    st.write("고객 데이터 기반의 분석 인사이트를 제공합니다.")
-
-    # 분석 개요 섹션
-    with st.expander("분석 개요 보기"):
+# 📊 **고객 데이터 분석 탭**
+with tab1:
+    # 📌 분석 개요 (최상단으로 이동)
+    with st.expander("🔍 분석 개요 보기"):
         st.write("""
-        **프로젝트 목표**  
-        - 
-        
-        **사용된 데이터**  
-        - 
+        **📌 프로젝트 목표**  
+        - 고객 데이터를 분석하여 최적의 마케팅 전략을 수립하고 수요 예측을 개선하는 것  
+
+        **📌 사용된 데이터**  
+        - 차량 판매 시점, 구매 유형, 연료 구분 등  
         """)
 
-    st.text("")
+    # 하위 탭 생성 (연령대별 고객 분포, 지역별 고객 분포 등)
+    subtab1, subtab2, subtab3, subtab4, subtab5, subtab6 = st.tabs(
+        ["연령대별 고객 분포", "지역별 고객 분포", "연령대별 선호 차량 모델", 
+         "연령대별 친환경 차량 선호도", "성별 및 연령대별 차량 선호도", "고객 등급 분석"]
+    )
 
-    # 연령대 정렬을 위한 순서 지정
+
+        # 연령대 정렬을 위한 순서 지정
     age_order = [
         "20대 초반", "20대 중반", "20대 후반",
         "30대 초반", "30대 중반", "30대 후반",
@@ -58,9 +52,8 @@ with tab1 :
         "70대 초반"
     ]
 
-    col1, col2 = st.columns([0.9, 1])  # 좌우 여백 추가
-    with col1:
-        # ---- 연령대별 고객 분포 ----
+    # 📊 연령대별 고객 분포
+    with subtab1:
         st.subheader("연령대별 고객 분포")
         st.write("고객의 연령대별 분포를 히스토그램으로 표현했습니다.")  
 
@@ -73,8 +66,10 @@ with tab1 :
         ax.set_ylabel("고객 수")
         st.pyplot(fig1)
 
-    with col2:
-        # ---- 지역별 고객 수 분석 ----
+
+
+    # 🗺️ 지역별 고객 분포
+    with subtab2:
         st.subheader("지역별 고객 분포")
         st.write("고객들이 거주하는 지역별 분포를 나타냅니다.") 
 
@@ -84,274 +79,58 @@ with tab1 :
         ax.set_ylabel("고객 수") 
         st.pyplot(fig2)
 
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        st.write("""
-        **분석 결과 및 활용 방안**  
-        - 특정 연령대(30~40대)에 고객이 집중됨  
-        - 이 연령대에 맞춘 타겟 마케팅 전략이 효과적일 가능성 높음  
-        - 가족 단위 차량 프로모션, 장기 렌트 혜택 제공 가능
-        """)
-    with col2:
-        st.write("""
-        **분석 결과 및 활용 방안**  
-        - 특정 지역(서울, 경기)에 고객이 집중됨  
-        - 해당 지역에서 차량 전시회 및 시승 이벤트 기획 가능  
-        - 지방 거주 고객 대상, 비대면 서비스(라이브 상담, 온라인 계약 등) 확대 필요
-        """)
 
-    st.markdown("---")
-    
-    # 연령대별 상위 3개 차량 모델 선정
-    top_models = df.groupby(["연령대", "최근 구매 제품"]).size().reset_index(name="count")
-    top_models = top_models.sort_values(["연령대", "count"], ascending=[True, False])
-    top_models = top_models.groupby("연령대").head(3)  # 각 연령대에서 상위 3개 모델 선택
+    # 🚗 연령대별 선호 차량 모델
+    with subtab3:
+        st.subheader("🚗 연령대별 선호 차량 모델")
+        top_models = df.groupby(["연령대", "최근 구매 제품"]).size().reset_index(name="count")
+        top_models = top_models.sort_values(["연령대", "count"], ascending=[True, False])
+        top_models = top_models.groupby("연령대").head(3)
 
-    eco_friendly_types = ["전기", "수소", "하이브리드", "플러그인하이브리드"]
-    ev_preference = df[df["연료 구분"].isin(eco_friendly_types)].groupby("연령대")["연료 구분"].count()
-
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        # ---- 차량 브랜드 & 모델별 선호도 분석 ----
-        st.subheader("고객 연령대별 선호 차량 모델 분석")
-        st.write("연령대별로 선호하는 상위 3개 차량 모델을 선정하여 시각화했습니다.")
-
-        fig1, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(10, 6))
         sb.barplot(data=top_models, x="연령대", y="count", hue="최근 구매 제품", palette="coolwarm", ax=ax)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-        ax.set_xlabel("연령대")
-        ax.set_ylabel("선호 차량 모델 수")
-        ax.set_title("연령대별 선호 차량 모델 (상위 3개)")
-        st.pyplot(fig1)
-
-        st.text("")
-        
-        st.markdown("""
-        **📊 연령대별 선호 차량 모델 분석**  
-        - **20~30대 초반**: 소형 세단 및 스포츠카 선호 → 경제성 및 개성 중시.  
-        - **30대 후반~40대 후반**: 중형 세단 및 SUV 선호 → 패밀리카 및 실용성 강조.  
-        - **50대 후반 이상**: 대형 세단 및 프리미엄 차량 선호 → 승차감 및 브랜드 가치 중시.  
-        - **친환경 차량 증가**: 30~50대 고객층에서 전기차 및 하이브리드 차량 선호도 상승.  
-        - **마케팅 활용**: 연령별 선호 모델을 반영한 맞춤형 금융 혜택 및 차량 프로모션 전략 필요.  
-
-        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
-        """)
-
-        st.warning("스포츠카? 우리 데이터에 스포츠카는 없습니다...")
-
-    with col2:
-        # ---- 연령대별 친환경 차량 선호도 분석 ----
-        st.subheader("연령대별 친환경 차량 선호도")
-        st.write("각 연령대별 친환경 차량(전기, 수소, 하이브리드, 플러그인하이브리드)의 선호도를 분석했습니다.")   
-
-        fig2, ax = plt.subplots(figsize=(8, 5))
-        ev_preference.plot(kind="bar", color="lightgreen", ax=ax)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-        ax.set_xlabel("연령대")
-        ax.set_ylabel("친환경 차량 구매 수")
-        ax.set_title("연령대별 친환경 차량 구매 선호도")
-        st.pyplot(fig2)
-    
-        st.markdown("""
-        **📊 연령대별 친환경 차량 선호도 분석**  
-        - **30~50대 고객층**: 전기차 및 하이브리드 차량 선호도 높음 → 연료비 절감 및 환경 보호 인식 증가.  
-        - **친환경 차량 인프라 확대**: 충전소 및 유지보수 지원 정책 강화 필요.  
-        - **정부 지원 활용**: 친환경 차량 보조금 및 세금 감면 혜택을 강조한 마케팅 필요.  
-        - **맞춤형 차량 옵션 제공**: 연령대별 주행 패턴을 고려한 친환경 차량 추천 전략 필요.  
-
-        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
-        """)
-
-    st.markdown("---")
-
-    category_df=df[["성별", "연령대", "최근 구매 당시 나이", "최근 구매 제품", "차량 사이즈", "차량 유형", "최근 거래 금액"]]
-    type_df=category_df.groupby(["성별", "연령대", "차량 유형"])[["최근 거래 금액"]].count().reset_index()
-
-    size_df=df[["성별","연령대","차량 사이즈","최근 거래 금액"]]
-    size_df=size_df.groupby(["성별","연령대","차량 사이즈"])[["최근 거래 금액"]].count().reset_index()
-
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        # ---- 성별에 따른 연령대별 선호 차량 유형 분석 ----
-        st.subheader("남성 고객 연령대별 선호 차량 유형 분석")
-        st.write("남성 고객들의 연령대별 선호 차량 유형을 분석하여 그래프로 표현했습니다.")
-
-        type_man=type_df[type_df["성별"]=="남"]
-
-        df_pivot = type_man.pivot_table(index='연령대', columns='차량 유형', values='최근 거래 금액', aggfunc='sum', fill_value=0)
-
-        colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
-
-        fig1, ax = plt.subplots(figsize=(12, 8))
-        df_pivot.plot(kind='bar', ax=ax, color=colors)
-        ax.set_title('연령대별 선호 차량 유형 (남)', fontsize=16)
-        ax.set_xlabel('연령대', fontsize=12)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-        ax.set_ylabel('판매량', fontsize=12)
-        plt.tight_layout()
-        st.pyplot(fig1)
-
-        st.markdown("""
-        **📊 남성 고객 연령대별 선호 차량 사이즈 분석**  
-        - **20~30대 초반**: 준중형 & 중형 차량 선호 → 경제성 및 실용성이 중요.  
-        - **30대 후반~50대 초반**: 중형 & 대형 차량 선호 → 가족 및 업무용 수요 증가.  
-        - **50대 후반 이상**: 프리미엄 & 대형 차량 선호 → 승차감 및 브랜드 가치 중시.  
-        - **중형 차량의 지속적인 인기**: 실용성과 가격 대비 성능이 균형을 이루는 선택지.  
-        - **마케팅 활용**: 연령별 니즈를 반영한 맞춤형 차량 추천 및 프로모션 전략 필요.  
-
-        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
-        """)
-
-
-    with col2:
-        ## ---- 성별에 따른 연령대별 선호 차량 사이즈 분석 ----
-        st.subheader("남성 고객 연령대별 선호 차량 사이즈 분석")
-        st.write("남성 고객들의 연령대별 선호 차량 사이즈를 분석하여 그래프로 표현했습니다.")
-
-        size_man=size_df[size_df["성별"]=="남"]
-
-        df_pivot = size_man.pivot_table(index='연령대', columns='차량 사이즈', values='최근 거래 금액', aggfunc='sum', fill_value=0)
-
-        colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
-
-        fig1, ax = plt.subplots(figsize=(12, 8))
-        df_pivot.plot(kind='bar', ax=ax, color=colors)
-        ax.set_title('연령대별 선호 차량 사이즈 (남)', fontsize=16)
-        ax.set_xlabel('연령대', fontsize=12)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-        ax.set_ylabel('판매량', fontsize=12)
-        plt.tight_layout()
-        st.pyplot(fig1)
-
-        st.markdown("""
-        **📊 남성 고객 연령대별 선호 차량 유형 분석**  
-        - **20~30대 초반**: 세단 선호도 높음 → 경제성 및 유지비 고려.  
-        - **30대 후반~50대 초반**: SUV 선호도 증가 → 가족 및 레저 활동 수요 반영.  
-        - **50대 후반~60대 이후**: SUV 선호 유지 → 운전 편의성과 안정성 중요.  
-        - **SUV 인기 요인**: 공간 활용성, 높은 시야 확보, 하이브리드·전기차 옵션 증가.  
-        - **마케팅 전략**: 연령대별 니즈 반영한 맞춤형 프로모션 및 차량 추천 필요.  
-
-        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
-        """)
-
-    st.markdown("---")
-
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        ## ---- 성별에 따른 연령대별 선호 차량 유형 분석 ----
-        st.subheader("여성 고객 연령대별 선호 차량 유형 분석")
-        st.write("여성 고객들의 연령대별 선호 차량 유형을 분석하여 그래프로 표현했습니다.")
-        
-        type_woman=type_df[type_df["성별"]=="여"]
-
-        df_pivot = type_woman.pivot_table(index='연령대', columns='차량 유형', values='최근 거래 금액', aggfunc='sum', fill_value=0)
-
-        colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
-
-        fig2, ax = plt.subplots(figsize=(12, 8))
-        df_pivot.plot(kind='bar', ax=ax, color=colors)
-        ax.set_title('연령대별 선호 차량 유형 (여)', fontsize=16)
-        ax.set_xlabel('연령대', fontsize=12)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-        ax.set_ylabel('판매량', fontsize=12)
-        plt.tight_layout()
-        st.pyplot(fig2)
-
-        st.markdown("""
-        **📊 여성 고객 연령대별 선호 차량 유형 분석**  
-        - **20~30대 초반**: SUV 선호도 높음 → 높은 시야 확보 및 주행 안전성 고려.  
-        - **30대 후반~50대 초반**: 세단 선호도 증가 → 경제성과 유지비 절감 요인이 작용.  
-        - **50대 후반~60대 이후**: 세단 유지, SUV 수요 증가 → 장거리 운전 및 편의성 중시.  
-        - **SUV 인기 요인**: 레저·패밀리카 수요 증가, 전기차·하이브리드 선택 확대.  
-        - **마케팅 전략**: 연령별 라이프스타일 맞춤형 차량 추천 및 프로모션 제공.  
-
-        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
-        """)
-
-    with col2:
-        ## ---- 성별에 따른 연령대별 선호 차량 사이즈 분석 ----
-        st.subheader("여성 고객 연령대별 선호 차량 사이즈 분석")
-        st.write("여성 고객들의 연령대별 선호 차량 사이즈를 분석하여 그래프로 표현했습니다.")
-
-        size_woman=size_df[size_df["성별"]=="여"]
-
-        df_pivot = size_woman.pivot_table(index='연령대', columns='차량 사이즈', values='최근 거래 금액', aggfunc='sum', fill_value=0)
-
-        colors = sb.color_palette("Set2", n_colors=len(df_pivot.columns))
-
-        fig1, ax = plt.subplots(figsize=(12, 8))
-        df_pivot.plot(kind='bar', ax=ax, color=colors)
-        ax.set_title('연령대별 선호 차량 사이즈 (여)', fontsize=16)
-        ax.set_xlabel('연령대', fontsize=12)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
-        ax.set_ylabel('판매량', fontsize=12)
-        plt.tight_layout()
-        st.pyplot(fig1)
-
-        st.markdown("""
-        **📊 여성 고객 연령대별 선호 차량 사이즈 분석**  
-        - **20~30대 초반**: 준중형 차량 선호 → 경제성 및 도심 운전 편리성 중시.  
-        - **30대 후반~50대 초반**: 중형 차량 선호 증가 → 가족 이동 수요 증가 반영.  
-        - **50대 후반~60대 이후**: 중형 및 준중형 유지, 일부 프리미엄 차량 선택 증가.  
-        - **선호 요인**: 경제성, 유지비 절감, 주차 및 도심 운전 편의성.  
-        - **마케팅 전략**: 연령별 차량 특성을 고려한 맞춤형 프로모션 및 혜택 제공.  
-
-        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
-        """)
-
-    st.markdown("---")
-
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        ## ---- 연령대에 따른 고객 등급 수 ----
-        st.subheader("연령대별 고객 등급 수")
-        st.write("고객들의 연령대별 고객 등급 수를 분석하여 그래프로 표현했습니다.")
-
-        customer_tier = df.groupby('연령대')['고객 등급'].value_counts().rename('등급 수').reset_index()
-        fig, ax = plt.subplots(figsize=(8, 5))
-        sb.barplot(data=customer_tier, x='연령대', y='등급 수', hue='고객 등급', ax=ax)
-        ax.set_title('연령대별 고객 등급', fontsize=16)
-        ax.set_xlabel("연령대", fontsize=12)
-        ax.set_ylabel("고객 수", fontsize=12)
-        plt.xticks(rotation=45, ha="right")
-        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
-        plt.legend(title="고객 등급")
+        plt.xticks(rotation=30, ha="right")
         st.pyplot(fig)
 
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        st.write("""
-        **분석 결과**
-        - **20~30대 초반**:  VIP 고객 비율 높음 ->경제력을 갖춘 젊은 층이 프리미엄 서비스를 선호하는 경향을 반영
-        - **30대 후반~50대 초반**: VIP 고객  유지, 일반 고객 감소 -> 경제적 여유가 생기면서 일반 등급에서 VIP 등급으로 전환되는 경향이 있음
-        - **50대 후반~60대 이후**  VIP고객 유지, 일반 고객 증가 -> 은퇴 이후 경제적 부담을 고려한 소비 패턴 변화
-        - **VIP고객 비율 높은 요인**: 프리미엄 서비스를 선호하는 경향을 반영
-        - **마케팅 전략**: 20-30대 초반은 프리미엄 혜택, 30-40대는 VIP 전환, 50-60대 이상은 로열티 프로그램과 실용성 강조
-        """)
-    
+    # ⚡ 연령대별 친환경 차량 선호도
+    with subtab4:
+        st.subheader("⚡ 연령대별 친환경 차량 선호도")
+        eco_types = ["전기", "수소", "하이브리드"]
+        ev_preference = df[df["연료 구분"].isin(eco_types)].groupby("연령대")["연료 구분"].count()
 
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ev_preference.plot(kind="bar", color="lightgreen", ax=ax)
+        plt.xticks(rotation=30, ha="right")
+        st.pyplot(fig)
 
+    # 🚹🚺 성별 및 연령대별 차량 선호도
+    with subtab5:
+        st.subheader("🚹🚺 성별 및 연령대별 차량 선호도")
+        gender_df = df.groupby(["성별", "연령대"])["차량 유형"].count().reset_index()
 
+        fig, ax = plt.subplots(figsize=(12, 8))
+        sb.barplot(data=gender_df, x="연령대", y="차량 유형", hue="성별", palette="Set2", ax=ax)
+        plt.xticks(rotation=30, ha="right")
+        st.pyplot(fig)
 
-with tab2 :
-    # 판매 데이터 분석 섹션
-    st.write("판매 데이터 기반의 분석 인사이트를 제공합니다.")
+    # ⭐ 고객 등급 분석
+    with subtab6:
+        st.subheader("⭐ 고객 등급 분석")
+        customer_tier = df.groupby('연령대')['고객 등급'].value_counts().rename('등급 수').reset_index()
 
-    # 분석 개요 섹션
-    with st.expander("분석 개요 보기"):
-        st.write("""
-        **프로젝트 목표**  
-        - 
-        
-        **사용된 데이터**
-        - 
-        """)
+        fig, ax = plt.subplots(figsize=(8, 5))
+        sb.barplot(data=customer_tier, x="연령대", y="등급 수", hue="고객 등급", ax=ax)
+        plt.xticks(rotation=30, ha="right")
+        st.pyplot(fig)
 
-    st.text("")
+# 🏷️ **판매 데이터 분석 탭**
+with tab2:
+    subtab1, subtab2, subtab3, subtab4 = st.tabs(
+        ["시기 및 연료 구분별 판매 대수", "고객 구분별 차량 구매 현황", "연령대 및 성별 차량 구매 대수", "분기별 차량 판매 요일"]
+    )
 
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        # ---- 시기별 연료 구분 판매 현황 ----
+    # 🚘 시기 및 연료 구분별 판매 대수
+    with subtab1:
         st.subheader("시기 및 연료 구분별 판매 대수")
         st.write("고객들이 선호하는 연료 구분을 분석하여 그래프로 표현했습니다.")
 
@@ -361,18 +140,10 @@ with tab2 :
 
         # 구매 기준 시점별 각 연료 구분의 개수 시각화
         fig1, ax = plt.subplots(figsize=(12, 8))
+        st.pyplot(fig)
 
-        sb.lineplot(x="최근 구매 시점", y="연번", hue="연료 구분", data=df, marker="o", palette="Set2", lw=2, ax=ax)
-        ax.set_title("구매 시점별 연료 구분별 판매 대수")
-        ax.set_xlabel("구매 시점")
-        ax.set_ylabel("판매 대수")
-        ax.set_xticks(range(len(date_order)))
-        ax.set_xticklabels(date_order, rotation=30)
-        ax.grid(axis="y", linestyle="--")
-        ax.legend(title="연료 구분", loc="upper left")
-        st.pyplot(fig1)
-    with col2:
-        # ---- 고객 구분별 차량 구매 현황 ----
+    # 🚘 고객 구분별 차량 구매 현황
+    with subtab2:
         st.subheader("고객 구분별 차량 구매 현황")
         st.write("고객들의 구매 유형에 따른 차량 구매 현황을 분석하여 그래프로 표현했습니다.")
 
@@ -386,41 +157,10 @@ with tab2 :
         plt.legend(title="고객 구분", loc="upper left")
         st.pyplot(fig)
 
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        st.write("""
-        **📊 연료 유형별 차량 판매 트렌드 분석**  
-        - **휘발유 & 디젤 차량**: 여전히 판매량이 높지만, 점진적 감소 예상.  
-        - **전기차**: 2023년부터 급격히 성장하며, 2024년 4분기 최고 판매량 기록.  
-        - **하이브리드 & 플러그인 하이브리드**: 친환경 전환의 과도기적 선택지로 인기 증가.  
-        - **수소차**: 충전소 부족으로 인해 성장 정체, 보급 확대 필요.  
-        - **휘발유 & 디젤 소비자 전환**: 친환경 차량 구매 유도를 위한 정책 강화 필요.  
-        - **전기차 인프라 확충**: 충전소 확대 및 유지비 절감 마케팅 전략 중요.  
-        - **하이브리드 차량 활용**: 연료비 절감 강조, 전기차 전환 전 단계로 마케팅 가능.  
-        - **수소차 시장 공략**: 공공기관·법인 대상 B2B 시장 중심으로 보급 필요.  
-        - **전기차 보조금 정책**: 2024년 4분기 급증 원인 분석 후, 추가 지원 검토.  
-        - **마케팅 방향**: 연령·지역별 맞춤형 친환경 차량 프로모션 전략 필요.  
 
-        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
-        - 수소차 폭발 2024년 4분기에 잇따라... (https://biz.sbs.co.kr/article/20000208890?division=NAVER)  
-        - 수소차 판매량 2025년 1분기 기점으로 하락세  
-                 
-        - 다른 분석 내용
-        """)
-    with col2:
-        st.write("""
-        **분석 결과**  
-        - 2023년 비트코인 가격 상승으로 인해 반도체 부족 현상 발생 (https://www.spglobal.com/mobility/en/info/kr/featured-headlines.html)  
-        - 반도체 부족 현상으로 인해 차량 생산량 감소  
-        - 2024년 2분기 이후도 비트코인 이슈로 인한 반도체 부족 현상 발생
-        """)
-
-    st.markdown("---")
-
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        # ---- 구매 유형별 선호도 ----
-        st.subheader("구매 유형별 선호도")
+    # 🚘 연령대 및 성별 차량 구매 대수
+    with subtab3:
+        st.subheader("📊 연령대 및 성별 차량 구매 대수")
         st.write("고객들이 선호하는 구매 유형을 분석하여 그래프로 표현했습니다.")
 
         fig, ax = plt.subplots(figsize=(12, 8))
@@ -429,9 +169,10 @@ with tab2 :
         ax.set_xlabel("결제 방식")
         ax.set_ylabel("판매 건수")
         st.pyplot(fig)
-    with col2:
-        # ---- 연령대 및 성별 차량 구매 대수 ----
-        st.subheader("연령대 및 성별 차량 구매 대수")
+
+    # 📅 분기별 차량 판매 요일
+    with subtab4:
+        st.subheader("📊 분기별 차량 판매 요일")
         st.write("고객들의 연령대 및 성별에 따른 차량 구매 대수를 분석하여 그래프로 표현했습니다.")
 
         # 연령대별 각 성별이 구매한 차량 수 합계
@@ -451,102 +192,3 @@ with tab2 :
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: int(x)))
         plt.tight_layout()
         st.pyplot(fig1)
-
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        st.write("""
-        **분석 결과**  
-        - 신용카드가 가장 많이 사용됨
-            - 실질적으로 현금 + 계좌이체 건수보다는 적음
-            - 할부 혜택 및 포인트 적립 등의 혜택 제공 필요
-        - 현금 결제 비율도 매우 높은 편
-            - 현금 결제 시 1,000만원 초과하게 되면 신고 의무 있음
-                - 이를 토대로 신용카드 사용을 유도하는 프로모션 가능
-        """)
-    with col2:
-        st.markdown("""
-        **📊 연령대별 차량 구매 패턴 분석**  
-        - **20대 중반 여성**: 졸업 후 취업으로 경제력이 형성되어 첫차 구매 증가.  
-        - **20대 후반 남성**: 군 복무를 마친 후 취업으로 인해 차량 구매 증가.  
-        - **30대 후반 남성**: 결혼과 가족 형성 시기에 접어들며 패밀리카로 교체 수요 증가.  
-        - **50대 중반 여성**: 자녀들의 통학 및 픽업을 위한 차량 구매 수요 증가.  
-        - **연령별 성별 차이**: 사회적·경제적 요인에 따라 구매 시점이 다르게 나타남.  
-        - **20~30대 초반**: 개인 라이프스타일 반영, 컴팩트 세단 및 경제형 SUV 선호.  
-        - **30대 후반~50대 초반**: 가족 중심 차량 선호, 중형·대형 SUV 및 미니밴 증가.  
-        - **50대 후반 이상**: 브랜드 가치와 유지보수를 고려한 프리미엄 차량 선호.  
-        - **마케팅 전략**: 연령·성별 특성을 반영한 금융 혜택 및 맞춤형 차량 추천 필요.  
-        - **데이터 활용**: 성별·연령별 구매 패턴을 고려한 세분화된 마케팅 필요.  
-
-        참고 자료 출처: KATECH Insight, 국토교통부 자동차 등록 통계, 현대차·기아 연구 보고서  
-        """)
-
-    st.markdown("---")
-
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        # ---- 고객 구분별 평균 거래 금액 ----
-        st.subheader("고객 구분별 평균 거래 금액")
-        st.write("고객들의 구매 유형에 따른 평균 거래 금액을 분석하여 그래프로 표현했습니다.")
-
-        price_df=df[["연령대","최근 거래 금액","고객 구분"]]
-
-        age_order = ['20대 초반', '20대 중반', '20대 후반', '30대 초반', '30대 중반', '30대 후반', 
-                    '40대 초반', '40대 중반', '40대 후반', '50대 초반', '50대 중반', '50대 후반', 
-                    '60대 초반', '60대 중반', '60대 후반', "70대 초반"]
-
-        price_df['연령대'] = pd.Categorical(price_df['연령대'], categories=age_order, ordered=True)
-
-        # 연령대 기준으로 정렬
-        price_df=price_df.sort_values(by='연령대')
-
-        fig, ax = plt.subplots(figsize=(12, 7))
-        sb.barplot(data=price_df,x="연령대",y="최근 거래 금액",hue="고객 구분", ax=ax)
-        ax.set_title("고객 구분별 평균 거래 금액", fontsize=16)
-        ax.set_xlabel("연령대", fontsize=12)
-        ax.set_ylabel("평균 거래 금액", fontsize=12)
-        plt.xticks(rotation=30)
-        plt.legend(title="고객 구분")
-        st.pyplot(fig)
-        
-    with col2:
-        # ---- 분기별 차량 판매 요일 ----
-        st.subheader("분기별 차량 판매 요일")
-        st.write("각 분기별 차량 판매 요일을 분석하여 그래프로 표현했습니다.")  
-
-        result = df.groupby(['최근 구매 시점', '최근 구매 요일'])['최근 거래 금액'].count().reset_index()
-        result.rename(columns={'최근 거래 금액' : '판매량', '최근 구매 시점' : '구매 시점', '최근 구매 요일' : '구매 요일'}, inplace=True)
-
-        # 분기별 구매 요일에 따른 판매량
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sb.lineplot(data=result, x='구매 시점', y='판매량', hue='구매 요일', marker='o', palette='Set2', ax=ax)
-        ax.set_title('분기별 구매 요일별 판매량', fontsize=16)
-        ax.set_xlabel('구매 시점', fontsize=12)
-        ax.set_ylabel('판매량', fontsize=12)
-        plt.xticks(rotation=30)
-        plt.grid(axis='y', linestyle='--')
-        plt.legend(title='구매 요일', loc='upper left')
-        st.pyplot(fig)
-
-    col1, col2 = st.columns([1, 1])  # 좌우 여백 추가
-    with col1:
-        st.write("""
-        **분석 결과**  
-        - **20대 초반**: 개인·법인 모두 평균 거래 금액이 가장 낮음. 초기 구매 수요가 적고, 저가형 차량 선호.
-        - **20대 중반**: 개인 고객의 거래 금액이 증가하나, 법인은 여전히 낮은 수준. 첫차 구매 수요 반영.
-        - **20대 후반**: 개인 고객의 구매 금액이 유지되는 반면, 법인 거래 금액이 증가. 업무용 차량 구매 시작.
-        - **30대 초반~중반**: 법인 고객의 거래 금액 급등, 개인 대비 높은 지출. 법인 차량 구매가 집중되는 시기.
-        - **30대 후반~40대 초반**: 법인 거래 금액이 감소하며, 개인과 유사한 수준. 가족 중심 차량 구매 증가.
-        - **40대 중반~50대 후반**: 개인·법인 모두 평균 거래 금액이 안정적. 프리미엄 차량 및 유지보수 고려한 구매 경향.
-        - **60대 이상**: 개인 고객은 꾸준한 거래 유지, 법인 고객의 거래 금액은 감소. 브랜드 가치 및 내구성 고려한 고급 차량 선호.
-        - **마케팅 전략**: 30대 법인 고객 대상 맞춤형 금융 혜택 및 법인 전용 프로모션 강화 필요.
-        """)
-    with col2:
-        st.markdown("""
-        **📊 분석 결과**  
-        - **2023년 1분기**: 초기 분기에는 소비자들의 구매 활동이 적고, 상대적으로 판매량이 낮기 때문에 평일 판매량이 주말보다 소폭 높지만 여전히 낮음
-        - **2023년 2분기~4분기**: 봄과 여름이 시작되는 시점부터 소비자들의 경제적 활동이 증가하고, 구매 의향이 활발히 이루어져 평일 판매량이 급격히 상승
-        - **2024년 1분기~2분기**: 2024년 초에는 경제적 요인이나 계절적 영향으로 소비가 잠시 둔화되며, 평일 판매량이 크게 감소
-        - **2024년 하반기~2025년** 하반기에는 경제 활동이 회복되고 소비자들의 구매 의향이 증가하며, 다시 평일 판매량이 상승
-        - **종합 분석**: 평일에는 주중에 구매를 미리 계획한 소비자들이 많아 상대적으로 구매 활동이 활발히 이루어지며, 주말보다 평일 소비가 높게 나타남
-        - **마케팅 전략 제안**: 평일에 구매가 활발하므로, 주중에 맞춘 할인 이벤트나 혜택을 제공하고, 직장인 대상으로 “퇴근 후 구매 혜택” 캠페인 등을 진행하여 더 많은 구매를 유도
-        """)    
