@@ -80,7 +80,7 @@ def create_popup_html(place):
 
 tab1, tab2 = st.tabs(['지점 찾기', '정비소 찾기'])
 with tab1:
-    st.title("🔍 지점/대리점 찾기")
+    st.title("🔍 지점 찾기")
 
     # 모란 지역 (디폴트 지도 중심)
     DEFAULT_LOCATION = [37.41114, 127.12952]
