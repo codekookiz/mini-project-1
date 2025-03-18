@@ -7,6 +7,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sb
 
+if "search_query" not in st.session_state:
+    st.session_state["search_query"] = ""
+
 def get_api_key():
     key = os.environ.get('KAKAO_API_KEY')
     if key is None:
@@ -93,7 +96,7 @@ with tab1:
     col_map, col_list = st.columns([2, 1])
 
     with col_map:
-        search_query = st.text_input("검색어를 입력하세요 :", key="dealership_input")
+        search_query = st.text_input("검색어를 입력하세요 :", key="dealership_input", value=st.session_state['search_query'])
 
         if not search_query:
             m = folium.Map(location=DEFAULT_LOCATION, zoom_start=13)
@@ -149,7 +152,7 @@ with tab2:
     col_map, col_list = st.columns([2, 1])
 
     with col_map:
-        search_query = st.text_input("검색어를 입력하세요 :", key="repairshop_input")
+        search_query = st.text_input("검색어를 입력하세요 :", key="repairshop_input", value=st.session_state['search_query'])
 
         if not search_query:
             m = folium.Map(location=DEFAULT_LOCATION, zoom_start=13)
