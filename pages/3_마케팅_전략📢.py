@@ -56,7 +56,7 @@ st.write(normal_client)
 
 # 메일 및 문자 예시 이미지 넣을 것
 
-col1, col2 = st.columns([3, 2])
+col1, col2 = st.columns([2, 1])
 with col1:
     # 메일 예시
     st.image("images/email_sample.png")
@@ -65,46 +65,6 @@ with col2:
     st.image("images/sms_sample.png")
 
 st.markdown("---")
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
-
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sb
 
 # 2. 신용카드 이용 구매 유도 위해 카드사 제휴 확대
 st.subheader("🚗 신용카드 이용 구매 유도 위해 카드사 제휴 확대")
