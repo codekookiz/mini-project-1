@@ -67,48 +67,139 @@ with col2:
 
 st.markdown("---")
 
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sb
+
 # 2. 신용카드 이용 구매 유도 위해 카드사 제휴 확대
-st.subheader("신용카드 이용 구매 유도 위해 카드사 제휴 확대")
+st.subheader("🚗 신용카드 이용 구매 유도 위해 카드사 제휴 확대")
 
 # 카드사 제휴의 이점
-st.write("**카드사 제휴 확대 이점**")
-st.write("""
-- 1. 카드사 제휴를 통한 할부 혜택 제공
-- 2. 카드사 포인트 적립 및 사용 가능
-- 3. 카드사 할인 혜택 제공
+st.write("## 카드사 제휴 확대 이점")
+st.markdown("""
+✅ **할부 혜택 제공** : 장기 무이자 할부 가능  
+✅ **포인트 적립 및 사용** : 차량 구매 시 포인트 적립 및 활용 가능  
+✅ **자동차 유지비 관련 혜택** : 보험, 정비, 주유비 할인 가능  
+✅ **전기차 충전 혜택 제공** : EV 충전소 이용 할인 적용  
+✅ **특정 차량 구매 시 추가 혜택** : 특정 차종 구매 시 맞춤형 혜택 제공  
 """)
 
 # 카드사 제휴 확대 예시
-st.write("**카드사 제휴 확대 예시**")
-st.write("""
-- 1. 현대카드, 삼성카드, 신한카드 등 주요 카드사와 제휴 협약
-- 2. 카드사별 할부 혜택 및 포인트 적립 혜택 제공
-- 3. 카드사별 할인 혜택 제공
+st.write("## 카드사 제휴 확대 예시")
+st.markdown("""
+🔹 현대카드, 롯데카드, 우리카드, 하나카드 등 주요 카드사와 제휴 협약  
+🔹 카드사별 맞춤형 할부 혜택 및 포인트 적립 혜택 제공  
+🔹 카드사별 할인 혜택 강화 및 연계 프로모션 진행  
+🔹 자동차 구매 시 전용 카드 혜택 지원  
 """)
 
 # 카드사 제휴 현황
-st.write("**카드사 제휴 현황**")
-st.write("""
-- 1. 현대카드 : 10% 할인 혜택 제공
-- 2. 삼성카드 : 5% 할인 혜택 제공
-- 3. 신한카드 : 3% 할인 혜택 제공
-""")
+st.write("## 카드사 제휴 현황")
 
-# 카드사 제휴 현황 시각화
 card_df = pd.DataFrame({
-    "카드사": ["현대카드", "삼성카드", "신한카드"],
-    "할인 혜택": [10, 5, 3]
+    "카드사": ["현대카드", "롯데카드", "우리카드", "하나카드"],
+    "할인 혜택 (%)": [10, 5, 3, 4]
 })
 
-fig, ax = plt.subplots(figsize=(10, 6))
-sb.barplot(data=card_df, x="카드사", y="할인 혜택", palette="Set2", ax=ax)
+# 표 크기 조절 및 가운데 정렬 적용
+def format_table(df):
+    return df.style.set_table_styles([
+        {'selector': 'th', 'props': [('text-align', 'center'), ('font-size', '14px')]},
+        {'selector': 'td', 'props': [('text-align', 'center'), ('font-size', '13px')]},
+        {'selector': 'table', 'props': [('width', '60%'), ('margin', 'auto')]}])
 
-ax.set_title("카드사별 할인 혜택 현황")
-ax.set_xlabel("카드사")
-ax.set_ylabel("할인 혜택 (%)")
+st.write(format_table(card_df))
 
-st.pyplot(fig)
+# 카드사별 주요 혜택
+st.write("## 카드사별 주요 혜택")
 
+st.markdown("""
+### 🔹 현대카드 (Hyundai Card)  
+✅ **자동차 구매 & 할부 혜택 특화** : 장기 무이자 할부 제공  
+✅ **포인트 적립 + 추가 할인** : 특정 차종 구매 시 추가 혜택  
+✅ **전기차 충전 혜택** : EV 충전소 할인 적용  
+✅ **VIP 정비 쿠폰 제공** : 현대카드 고객 전용  
+
+### 🔹 롯데카드 (Lotte Card)  
+✅ **자동차 유지비 절감** : 보험료, 주유비, 정비비 할인  
+✅ **렌터카 할인 이벤트** : 롯데렌터카와 연계 가능  
+✅ **할부 혜택 연장 (최대 36개월)** : 일부 대리점과 연계 가능  
+✅ **구매 시 5% 캐시백 제공**  
+
+### 🔹 우리카드 (Woori Card)  
+✅ **자동차 전용 카드 출시 가능성** : 기아, 현대차 일부 모델 할부 지원  
+✅ **전기차 충전소 혜택** : 전기차 충전 포인트 적립 가능  
+✅ **주유비 할인** : SK/GS칼텍스 연계  
+✅ **추가 할인 (3~5%) + 포인트 적립 강화**  
+
+### 🔹 하나카드 (Hana Card)  
+✅ **최대 60개월 장기 할부 지원**  
+✅ **자동차 보험 할인** : 삼성화재, DB손해보험 연계 가능  
+✅ **주유비 & 자동차 유지비 할인 연계 가능**  
+✅ **프리미엄 차량 구매 시 추가 혜택** : 제네시스, 수입차  
+""")
+
+# 카드사별 혜택 비교 시각화
+st.write("## 카드사별 혜택 비교 시각화")
+
+# 카드사별 주요 혜택 데이터
+benefit_data = {
+    "카드사": ["현대카드", "롯데카드", "우리카드", "하나카드"],
+    "할부 혜택 (최대 개월 수)": [60, 36, 48, 60],
+    "포인트 적립 (%)": [5, 3, 4, 2],
+    "주유비 할인 (%)": [7, 5, 6, 5],
+    "전기차 충전 혜택 (%)": [10, 4, 8, 6]
+}
+
+benefit_df = pd.DataFrame(benefit_data)
+
+fig2, ax2 = plt.subplots(figsize=(12, 6))
+sb.barplot(data=benefit_df.melt(id_vars=["카드사"], var_name="혜택 유형", value_name="비율"), 
+           x="카드사", y="비율", hue="혜택 유형", palette="coolwarm", ax=ax2)
+ax2.set_title("카드사별 주요 혜택 비교", fontsize=14, fontweight='bold')
+ax2.set_xlabel("카드사", fontsize=12, labelpad=10)
+ax2.set_ylabel("혜택 비율 (%)", fontsize=12)
+ax2.legend(title="혜택 유형", fontsize=10, title_fontsize=12, loc='upper right', ncol=1, frameon=True)
+ax2.grid(axis='y', linestyle='--', alpha=0.7)
+ax2.tick_params(axis='x', labelrotation=0)
+
+st.pyplot(fig2)
 st.markdown("---")
 
 # 3. 지역/연령대별 마케팅 전략 수립
