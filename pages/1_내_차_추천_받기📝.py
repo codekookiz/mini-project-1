@@ -140,7 +140,6 @@ if st.button("추천 받기"):
     recom_list.append(rfc.predict(user_data)[0])
     recom_list.append(gbc.predict(user_data)[0])
     recom_list.append(lgb.predict(user_data)[0])
-    recom_list.append(cb.predict(user_data)[0][0])
 
 
     # 중복 제거 및 정렬
@@ -249,7 +248,6 @@ if st.button("추천 받기"):
     cred_list.append(rfc.predict(cred_data)[0])
     cred_list.append(gbc.predict(cred_data)[0])
     cred_list.append(lgb.predict(cred_data)[0])
-    cred_list.append(cb.predict(cred_data)[0][0])
 
 
     # 중복 제거 및 정렬
