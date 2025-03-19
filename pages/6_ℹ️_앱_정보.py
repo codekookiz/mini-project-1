@@ -36,21 +36,23 @@ st.markdown("---")
 st.markdown("## 3. 보안 설정 및 자동 배포")
 st.write("""
 ### 보안 강화 및 GitHub 자동 배포
-- 환경 변수 및 API 키를 보호하기 위해 `.env` 파일을 사용하려 했으나, Streamlit과 호환되지 않아 `secrets.toml` 파일을 활용하는 방식으로 변경함.
-- GitHub Actions를 활용하여 코드 변경 시 자동으로 애플리케이션을 배포하도록 설정함.
-- Streamlit Cloud 또는 AWS EC2 환경에서 자동화된 CI/CD 파이프라인을 구축함.
+- API 키를 보호하기 위해 `.env` 파일을 사용하려 했으나, Streamlit과의 호환성 문제로 인해 `secrets.toml` 파일을 활용하는 방식으로 변경
+    - API 키 : KAKAO_API_KEY = "API_KEY" 형태로 저장
+- Streamlit Cloud 환경에서 자동화된 CI/CD 파이프라인 구축
+    - Deploy 키 활용하여 Streamlit Cloud와 GitHub Repository 연동
 """)
 
 st.markdown("### GitHub 자동 배포 흐름")
 st.markdown("""
 1. 로컬 개발 환경에서 코드 변경
-    - dev 환경에서 코드 변경 및 테스트
-    - 'secrets.toml' 파일을 활용하여 환경 변수 관리
+    - 로컬 환경에서 코드 변경 및 테스트
+    - `secrets.toml` 파일을 활용하여 API 키 관리
 2. GitHub Repository에 코드 푸시
     - 코드 변경 사항을 GitHub에 푸시
-    - '.gitignore'에 'secrets.toml' 파일 추가하여 보안 강화
+    - `.gitignore`에 `secrets.toml` 파일 추가하여 보안 강화
 3. 자동 배포 (Streamlit Cloud)
-    - 
+    - GitHub에 푸시된 코드를 자동으로 배포
+    - Streamlit Cloud를 통해 웹 애플리케이션 호스팅
 """)
 
 st.markdown("---")
