@@ -182,8 +182,3 @@ kakao_buttons = f"""
 # 사이드바에 카카오톡 버튼 적용
 with st.sidebar:
     st.components.v1.html(kakao_buttons, height=100)
-
-    
-# 터미널 명령어 실행
-output = os.popen("pip show scikit-learn").read()
-st.text(output)
