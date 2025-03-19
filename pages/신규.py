@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-from datetime import datetime
+import time
 
 # 고객 데이터 불러오기
 df = pd.read_csv("data/고객db_전처리.csv")
@@ -52,9 +52,23 @@ with col2:
     sms_sent = st.button("📩 문자 발송")
 
 if email_sent:
-    st.success("✅ 이메일 발송 완료!")
+    st.info("각 고객에게 혜택 안내 이메일을 전송 중입니다. 잠시만 기다려주세요.")
+    
+    progress_bar = st.progress(0)
+    for percent in range(1, 101):
+        time.sleep(0.01)  # 실제 전송 과정에서는 API 호출 등이 이루어질 수 있음
+        progress_bar.progress(percent)
+    
+    st.success("✅ 모든 고객에게 할인 혜택 안내 이메일을 성공적으로 전송하였습니다.")
 if sms_sent:
-    st.success("✅ 문자 발송 완료!")
+    st.info("각 고객에게 혜택 안내 문자를 전송 중입니다. 잠시만 기다려주세요.")
+    
+    progress_bar = st.progress(0)
+    for percent in range(1, 101):
+        time.sleep(0.01)  # 실제 전송 과정에서는 API 호출 등이 이루어질 수 있음
+        progress_bar.progress(percent)
+    
+    st.success("✅ 모든 고객에게 할인 혜택 안내 문자를 성공적으로 전송하였습니다.")
 
 # 📊 맞춤형 커뮤니케이션 발송 건수 시각화
 dates = pd.date_range(start="2025-03-01", end="2025-03-31")
