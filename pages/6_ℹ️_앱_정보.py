@@ -44,9 +44,13 @@ st.write("""
 st.markdown("### GitHub 자동 배포 흐름")
 st.markdown("""
 1. 로컬 개발 환경에서 코드 변경
+    - dev 환경에서 코드 변경 및 테스트
+    - 'secrets.toml' 파일을 활용하여 환경 변수 관리
 2. GitHub Repository에 코드 푸시
-3. GitHub Actions 실행 (CI/CD 파이프라인)
-4. 자동 배포 (Streamlit Cloud 또는 AWS)
+    - 코드 변경 사항을 GitHub에 푸시
+    - '.gitignore'에 'secrets.toml' 파일 추가하여 보안 강화
+3. 자동 배포 (Streamlit Cloud)
+    - 
 """)
 
 st.markdown("---")
