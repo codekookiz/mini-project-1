@@ -5,6 +5,7 @@ from fpdf import FPDF
 import requests
 import base64
 
+# 페이지 설정
 st.set_page_config(page_title="현대자동차 관리자 페이지", layout="wide")
 
 # ✅ 파일 경로 확인 및 데이터 불러오기
@@ -29,44 +30,50 @@ rebuy_discounts = {
     "Palisade (LX2)": 1500000, "스타리아": 1500000
 }
 
-# ✅ 법인 혜택
+# ✅ 법인 혜택 (미사용: 필요시 추가)
 corporate_benefits = """
 ✅ 부가세 환급 및 감가상각 적용 가능  
 ✅ 법인 차량 단체 보험료 할인 제공  
 ✅ 운용 리스를 통한 유지비 절감 및 관리 편의성 제공  
 """
+
+# ─────────────────────────────────────────────────────────────
+# CustomPDF 클래스 정의 (헤더/푸터 포함)
 class CustomPDF(FPDF):
     def __init__(self, logo_path="image/hyunlogo.png"):
         super().__init__()
         self.logo_path = logo_path
+        self.set_auto_page_break(auto=True, margin=15)
+        # FPDF의 unifontsubset 속성을 명시적으로 추가
+        self.unifontsubset = False
     
     def header(self):
         # 로고가 있는 경우 로고 표시
         if self.logo_path and os.path.exists(self.logo_path):
             self.image(self.logo_path, x=10, y=8, w=25)
-            self.set_x(40)  # 로고 옆으로 제목을 배치하기 위해 X 좌표 조정
+            self.set_x(40)  # 로고 옆에 제목 배치
         else:
             self.set_x(10)
         
-        # 상단 바(배경색) - 원하는 색상으로 조정 가능 (RGB)
-        self.set_fill_color(230, 230, 230)  # 밝은 회색
-        self.cell(0, 15, "", 0, 1, "C", fill=True)  # 높이 15, 채우기
+        # 상단 바 (배경색 적용)
+        self.set_fill_color(230, 230, 230)
+        self.cell(0, 15, "", 0, 1, "C", fill=True)
         
         # 제목
-        self.set_y(10)  # Y좌표 재조정 (상단 바 위에 텍스트 겹치지 않도록)
+        self.set_y(10)
+        # 아래 set_font 호출 전에 반드시 "NanumGothic"의 "B" 스타일이 등록되어 있어야 합니다.
         self.set_font("NanumGothic", "B", 16)
         self.cell(0, 10, "자동차 견적 상담서 (프로모션 & 금융 정보 포함)", 0, 1, "C")
-        
-        # 줄 간격
         self.ln(5)
     
     def footer(self):
-        # Footer는 페이지 하단에 페이지 번호, 간단 안내문 등 표시 가능
         self.set_y(-15)
         self.set_font("NanumGothic", "", 9)
         self.set_text_color(100, 100, 100)
         self.cell(0, 10, f"Page {self.page_no()}", 0, 0, "C")
 
+# ─────────────────────────────────────────────────────────────
+# PDF 생성 함수 (커스텀 클래스 사용)
 def generate_pdf(
     selected_model, 
     final_price, 
@@ -76,53 +83,60 @@ def generate_pdf(
     installment_info,
     logo_path=None
 ):
-    # 커스텀 PDF 객체 생성
     pdf = CustomPDF(logo_path=logo_path)
-    pdf.add_page()
     
-    # ---- 유니코드 폰트 설정 ----
-    font_path = "fonts/NanumGothic.ttf"
-    if not os.path.exists(font_path):
-        st.error("NanumGothic.ttf 폰트 파일이 존재하지 않습니다. 'fonts' 폴더 내에 폰트 파일을 확인하세요.")
+    # ---------- 유니코드 폰트 설정 ----------
+    # 1) NanumGothic-Regular.ttf
+    # 2) NanumGothic-Bold.ttf
+    # 두 파일이 모두 fonts 폴더에 있어야 합니다.
+    regular_font_path = "fonts/NanumGothic.ttf"
+    bold_font_path = "fonts/NanumGothicBold.ttf"
+    
+    # 폰트 파일 존재 여부 확인
+    if not os.path.exists(regular_font_path) or not os.path.exists(bold_font_path):
+        st.error("NanumGothic-Regular.ttf 또는 NanumGothicBold.ttf 폰트 파일이 존재하지 않습니다.")
         return None
-    pdf.add_font("NanumGothic", "", font_path, uni=True)
-    pdf.add_font("NanumGothic", "B", font_path, uni=True)
+    
+    # 일반체 등록 (style="" 생략)
+    pdf.add_font("NanumGothic", "", regular_font_path, uni=True)
+    # 볼드체 등록 (style="B")
+    pdf.add_font("NanumGothic", "B", bold_font_path, uni=True)
+    
+    # 첫 페이지 추가 (폰트 등록이 끝난 후)
+    pdf.add_page()
     
     # ---- 상단 상담 정보 ----
     pdf.set_font("NanumGothic", "", 12)
-    pdf.cell(0, 8, f"상담일: 2025년 3월 19일", ln=True)
-    pdf.cell(0, 8, f"대리점명: 현대자동차 모란지점", ln=True)
-    pdf.cell(0, 8, f"담당자: 송결  |  연락처: 010-1234-5678", ln=True)
+    pdf.cell(0, 8, "상담일: 2025년 3월 19일", ln=True)
+    pdf.cell(0, 8, "대리점명: 현대자동차 모란지점", ln=True)
+    pdf.cell(0, 8, "담당자: 송결  |  연락처: 010-1234-5678", ln=True)
     pdf.ln(5)
     
     # ---- [1] 프로모션 조회 (개인 고객) ----
     pdf.set_font("NanumGothic", "B", 14)
-    pdf.set_fill_color(240, 240, 240)  # 테이블 섹션 제목 배경색
+    pdf.set_fill_color(240, 240, 240)
     pdf.cell(0, 10, "1. 프로모션 조회 (개인 고객)", ln=True, fill=True)
     pdf.ln(3)
     
     # --- 차량 정보 테이블 ---
     pdf.set_font("NanumGothic", "B", 12)
-    pdf.set_fill_color(220, 220, 220)  # 테이블 헤더 배경
+    pdf.set_fill_color(220, 220, 220)
     pdf.cell(80, 10, "항목", border=1, align="C", fill=True)
     pdf.cell(0, 10, "내용", border=1, ln=True, align="C", fill=True)
     
-    # 내용 행
     pdf.set_font("NanumGothic", "", 12)
-    # 차량명
     pdf.cell(80, 10, "선택 차량", border=1, align="C")
     pdf.cell(0, 10, f"{selected_model}", border=1, ln=True, align="L")
     
-    # 최종 가격
     pdf.cell(80, 10, "최종 적용 가격", border=1, align="C")
     pdf.cell(0, 10, f"{final_price:,.0f} 원", border=1, ln=True, align="R")
     pdf.ln(5)
     
     # --- 적용 혜택 테이블 ---
     pdf.set_font("NanumGothic", "B", 12)
-    pdf.set_fill_color(220, 220, 220)  # 테이블 헤더 배경
+    pdf.set_fill_color(220, 220, 220)
     pdf.cell(80, 10, "혜택 항목", border=1, align="C", fill=True)
-    pdf.cell(0, 10, "내용", border=1, ln=True, align="C", fill=True)
+    pdf.cell(0, 10, "적용여부(대상이 아닌경우 금액할인 없음)", border=1, ln=True, align="C", fill=True)
     
     pdf.set_font("NanumGothic", "", 12)
     if benefits:
@@ -146,7 +160,7 @@ def generate_pdf(
     
     # --- 할부 정보 테이블 ---
     pdf.set_font("NanumGothic", "B", 12)
-    pdf.set_fill_color(220, 220, 220)  # 테이블 헤더 배경
+    pdf.set_fill_color(220, 220, 220)
     pdf.cell(80, 10, "항목", border=1, align="C", fill=True)
     pdf.cell(0, 10, "내용", border=1, ln=True, align="C", fill=True)
     
@@ -161,7 +175,7 @@ def generate_pdf(
             pdf.cell(0, 10, "", border=1, ln=True, align="C")
     pdf.ln(5)
     
-    # --- 차량 이미지 삽입 (이미지 URL에서 다운로드 후 사용) ---
+    # --- 차량 이미지 삽입 ---
     try:
         response = requests.get(car_image_url)
         if response.status_code == 200:
@@ -170,12 +184,12 @@ def generate_pdf(
                 f.write(response.content)
             pdf.image(temp_image_path, x=10, w=80)
             os.remove(temp_image_path)
-    except Exception as e:
+    except Exception:
         pass
     
     pdf.ln(10)
     
-    # --- PDF 하단 안내 문구 (면책 조항 등) ---
+    # --- 하단 면책 조항 ---
     pdf.set_font("NanumGothic", "", 10)
     pdf.set_text_color(80, 80, 80)
     disclaimer_text = (
@@ -186,12 +200,12 @@ def generate_pdf(
     )
     pdf.multi_cell(0, 5, disclaimer_text)
     
-    # PDF 저장 후 경로 리턴
     pdf_file_path = "car_promo_report.pdf"
     pdf.output(pdf_file_path, "F")
     return pdf_file_path
 
 
+# ─────────────────────────────────────────────────────────────
 # UI 구성
 st.title("현대자동차 관리자 페이지")
 st.markdown("---")
@@ -216,7 +230,7 @@ with tab1:
             customer_name = st.text_input("고객 이름")
             
             # 차량 선택 리스트 필터링
-            filtered_cars = df["최근 구매 제품"].unique()  # 기본값: 모든 차량
+            filtered_cars = df["최근 구매 제품"].unique()
             if has_children:
                 filtered_cars = [car for car in multi_child_cars if car in filtered_cars]
             if is_rebuy:
@@ -224,7 +238,6 @@ with tab1:
             if ev_promo:
                 filtered_cars = df[df["연료 구분"].isin(["전기", "플러그인 하이브리드", "수소"])]["최근 구매 제품"].unique()
             
-            # 차량 선택 (Tab1)
             selected_model = st.selectbox("차량 모델 선택", filtered_cars, key="selected_model_tab1")
             region = st.selectbox("거주 지역 선택", list(ev_subsidies.keys()))
         
@@ -233,15 +246,13 @@ with tab1:
             selected_car_info = df[df["최근 구매 제품"] == selected_model].iloc[0]
             car_price = selected_car_info["최근 거래 금액"]
             fuel_type = selected_car_info["연료 구분"]
-            car_image_url = selected_car_info["모델 사진"]  # 차량 이미지 URL
-            final_price = car_price  # 초기 가격
+            car_image_url = selected_car_info["모델 사진"]
+            final_price = car_price
             
-            # 다자녀 혜택 적용
             if has_children and selected_model in multi_child_cars:
                 st.write("- **다자녀 가구 혜택 적용:** 무이자 할부 제공, 뒷좌석 모니터 30% 할인")
                 final_price -= 1000000
             
-            # 전기차 혜택 적용
             ev_subsidy = 0
             if fuel_type in ["전기", "플러그인 하이브리드", "수소"]:
                 ev_subsidy = ev_subsidies.get(region, 0)
@@ -250,7 +261,6 @@ with tab1:
                 st.write("- **충전기 무료 설치 또는 충전 크레딧 50만 원 지급**")
                 st.write("- **전기차 보험료 할인 (최대 10%) 적용 가능**")
             
-            # 재구매 할인 적용
             discount = rebuy_discounts.get(selected_model, 0)
             if is_rebuy and discount > 0:
                 st.write(f"- **재구매 할인:** {discount:,.0f} 원 적용")
@@ -286,10 +296,9 @@ with tab1:
             car_price = selected_car_info["최근 거래 금액"]
             fuel_type = selected_car_info["연료 구분"]
             car_image_url = selected_car_info["모델 사진"]
-            final_price_corp = car_price  # 법인 고객의 최종 가격 (개별 계산 가능)
+            final_price_corp = car_price
             
             st.markdown(f"**선택한 차량:** {selected_corporate_car}")
-            st.image(car_image_url, caption=f"{selected_corporate_car} 이미지", use_container_width=True)
             st.markdown("✅ **선택한 법인 유형:**")
             st.markdown(f"- {corporate_type}")
             st.markdown("✅ **운용 방식:**")
@@ -321,9 +330,7 @@ with tab2:
         st.write("#### 할부 계산기")
         col1, col2 = st.columns([1, 1.5])
         with col1:
-            # 전체 차량 목록
             all_cars = df["최근 구매 제품"].unique().tolist()
-            # Tab1에서 선택한 차량을 세션에서 가져와 기본 인덱스로 사용
             if "selected_model_tab1" in st.session_state and st.session_state["selected_model_tab1"] in all_cars:
                 default_index = all_cars.index(st.session_state["selected_model_tab1"])
             else:
@@ -401,59 +408,15 @@ with tab2:
                 st.markdown("- **충전기 무료 설치 지원** 또는 충전 크레딧 제공 ✅")
                 st.markdown("- **전기차 보험료 10% 추가 할인** 가능 ✅")
 
-# ✅ 추가 프로모션 및 최종 할인/가격 정리 (공통 정보)
-st.markdown("---")
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.subheader("👨‍👩‍👧‍👦 다자녀 혜택")
-    if has_children and selected_model in multi_child_cars:
-        st.markdown("✅ **다자녀 혜택 적용 가능**")
-        st.markdown("- 무이자 할부 제공")
-        st.markdown("- 뒷좌석 모니터 30% 할인")
-        st.subheader("📌 추가 혜택 선택 (최대 2개)")
-        options = [
-            "프리미엄 카시트 1개 무료 증정",
-            "차량용 공기청정기 제공",
-            "뒷좌석 모니터 50% 할인",
-            "가족 차량 정기 점검 1년 무료"
-        ]
-        selected_benefits = st.multiselect("추가 혜택 선택", options, max_selections=2)
-        if selected_benefits:
-            st.markdown("**선택한 추가 혜택:**")
-            for benefit in selected_benefits:
-                st.markdown(f"- {benefit}")
-    else:
-        st.markdown("❌ 다자녀 혜택 적용 대상이 아닙니다.")
-with col2:
-    st.subheader("⚡ 전기차 혜택")
-    ev_subsidy = 0
-    if fuel_type in ["전기", "플러그인 하이브리드", "수소"]:
-        ev_subsidy = ev_subsidies.get(region, 0)
-        st.markdown("✅ **전기차 보조금 적용 가능**")
-        st.markdown(f"- 거주 지역 ({region}) 기준 최대 **{ev_subsidy:,.0f} 원** 지원")
-        st.markdown("- 충전기 설치 지원 가능")
-    else:
-        st.markdown("❌ 전기차 혜택 대상이 아닙니다.")
-with col3:
-    st.subheader("🏢 법인 차량 혜택")
-    st.markdown("✅ **법인 고객을 위한 특별 혜택**")
-    st.markdown("- 부가세 환급 및 감가상각 적용 가능")
-    st.markdown("- 법인 차량 단체 보험료 할인 제공")
-    st.markdown("- 운용 리스를 통한 유지비 절감 및 관리 편의성 제공")
-
-
 # ✅ 탭 3: PDF 다운로드
 with tab3:
     st.subheader("📄 구매 보고서 PDF 다운로드")
-    # PDF 생성 버튼 클릭 시, Tab1과 Tab2에서 선택한 정보를 정리하여 PDF에 반영
     if st.button("PDF 생성"):
-        # Tab1(프로모션) 관련 정보 정리
         promotion_info = (
             f"재구매 여부: {'예' if is_rebuy else '아니오'}\n"
             f"다자녀 혜택: {'적용' if has_children and selected_model in multi_child_cars else '미적용'}\n"
             f"전기차 보조금: {ev_subsidy:,.0f} 원"
         )
-        # Tab2(할부 계산) 관련 정보 정리
         installment_info = (
             f"할부 기간: {loan_term}개월\n"
             f"연이자율: {interest_rate:.1f}%\n"
