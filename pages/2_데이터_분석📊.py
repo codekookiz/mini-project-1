@@ -10,24 +10,21 @@ from matplotlib import font_manager, rc
 # Streamlit 페이지 설정
 st.set_page_config(page_title="고객 분석 대시보드", layout="wide")
 
-# ✅ 폰트 저장 폴더 지정
-font_dir = "./fonts"
-font_path = os.path.join(font_dir, "NanumGothic.ttf")
-
-# ✅ GitHub에서 폰트 다운로드
-github_url = "https://github.com/codekookiz/mini-project-1/raw/main/fonts/NanumGothic.ttf"
-
-if not os.path.exists(font_path):
-    os.makedirs(font_dir, exist_ok=True)
-    urllib.request.urlretrieve(github_url, font_path)
-    print("✅ GitHub에서 폰트 다운로드 완료!")
-
-# ✅ Matplotlib에서 한글 폰트 적용
+# 한글 폰트 설정
 plt.rcParams["axes.unicode_minus"] = False
-font_name = font_manager.FontProperties(fname=font_path).get_name()
-rc("font", family=font_name)
 
-print(f"✅ 적용된 한글 폰트: {font_name}")
+if platform.system() == "Darwin":  # macOS
+    rc("font", family="AppleGothic")
+elif platform.system() == "Windows":  # Windows
+    font_path = "C:/Windows/Fonts/malgun.ttf"  # 맑은 고딕
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    rc("font", family=font_name)
+elif platform.system() == "Linux":  # Linux (Ubuntu, Docker 등)
+    font_path = "fonts/NanumGothic.ttf"
+    if not os.path.exists(font_path):
+        st.error("NanumGothic.ttf 폰트 파일이 존재하지 않습니다. 'fonts' 폴더 내에 폰트 파일을 확인하세요.")
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    rc("font", family=font_name)
 
 # 데이터 로드
 df = pd.read_csv("data/고객db_전처리.csv").fillna(0)
