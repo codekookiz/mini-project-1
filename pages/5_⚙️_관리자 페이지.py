@@ -40,7 +40,7 @@ corporate_benefits = """
 # ─────────────────────────────────────────────────────────────
 # CustomPDF 클래스 정의 (헤더/푸터 포함)
 class CustomPDF(FPDF):
-    def __init__(self, logo_path="image/hyunlogo.png"):
+    def __init__(self, logo_path="images/hyunlogo.png"):
         super().__init__()
         self.logo_path = logo_path
         self.set_auto_page_break(auto=True, margin=15)
