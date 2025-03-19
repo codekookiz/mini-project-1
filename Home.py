@@ -2,6 +2,11 @@
 # 서버에서 돌아가는 것 확인해보고 싶다면 : https://mini-project-1-23bmqdpdnx9ctd2y38o9nx.streamlit.app/
 
 import streamlit as st
+import os
+
+# 터미널 명령어 실행
+output = os.popen("pip show scikit-learn").read()
+st.text(output)
 
 st.set_page_config(
     page_title="현대자동차 고객 분석 시스템",  # 웹사이트 제목
