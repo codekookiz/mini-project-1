@@ -4,10 +4,6 @@
 import streamlit as st
 import os
 
-# 터미널 명령어 실행
-output = os.popen("pip show scikit-learn").read()
-st.text(output)
-
 st.set_page_config(
     page_title="현대자동차 고객 분석 시스템",  # 웹사이트 제목
     page_icon="./images/favicon.ico",  # 파비콘 적용
@@ -188,3 +184,6 @@ with st.sidebar:
     st.components.v1.html(kakao_buttons, height=100)
 
     
+# 터미널 명령어 실행
+output = os.popen("pip show scikit-learn").read()
+st.text(output)
