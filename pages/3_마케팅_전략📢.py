@@ -9,6 +9,7 @@ from datetime import datetime
 import calendar
 from matplotlib import font_manager, rc
 import platform
+import os
 
 
 # 한글 폰트 설정
@@ -21,7 +22,9 @@ elif platform.system() == "Windows":  # Windows
     font_name = font_manager.FontProperties(fname=font_path).get_name()
     rc("font", family=font_name)
 elif platform.system() == "Linux":  # Linux (Ubuntu, Docker 등)
-    font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"  # 나눔고딕
+    font_path = "fonts/NanumGothic.ttf"
+    if not os.path.exists(font_path):
+        st.error("NanumGothic.ttf 폰트 파일이 존재하지 않습니다. 'fonts' 폴더 내에 폰트 파일을 확인하세요.")
     font_name = font_manager.FontProperties(fname=font_path).get_name()
     rc("font", family=font_name)
 
