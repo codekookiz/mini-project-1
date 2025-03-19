@@ -27,6 +27,10 @@ def custom_message(message, msg_type="success"):
         image_url = "https://img.icons8.com/color/48/000000/prize.png"
         background = "#fff4e5"
         color = "#8a6d3b"
+    elif msg_type == "question":
+        image_url = "https://img.icons8.com/color/48/000000/help.png"
+        background = "#e2e3e5"
+        color = "#383d41"
     else:
         image_url = ""
         background = "#ffffff"
@@ -188,58 +192,67 @@ if st.button("추천 받기"):
         "G90 (RS4)": "1억 7,520만원"
     }
 
+    for i in recom_list:
+        min_price = int(min_price_list[i].rstrip("만원").replace(",", ""))
+        if min_price > budget:
+            recom_list.remove(i)
+
     tab1, tab2 = st.tabs(["추천 차량 리스트", "전기차 추천"])
 
     with tab1:
-        st.subheader("추천 차량 리스트")
-        columns_per_row = 3  
-        if fuel_type not in ["수소", "플러그인 하이브리드", "하이브리드"]:
-            num_cars = len(recom_list)
+        if len(recom_list) != 0:
+            st.subheader("추천 차량 리스트")
+            columns_per_row = 3  
+            if fuel_type not in ["수소", "플러그인 하이브리드", "하이브리드"]:
+                num_cars = len(recom_list)
+            else:
+                num_cars = 1 if fuel_type in ["수소", "하이브리드"] else 2
+
+            header_titles = [f"추천 차량 {i+1}" for i in range(min(columns_per_row, num_cars))]
+            table_header = "| " + " | ".join(header_titles) + " |\n"
+            table_header += "| " + " | ".join(["---"] * min(columns_per_row, num_cars)) + " |\n"
+
+            img_rows = []
+            text_rows = []
+
+            if fuel_type not in ["수소", "플러그인 하이브리드", "하이브리드"]:
+                for idx, car_name in enumerate(recom_list):
+                    image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
+                    img_tag = f'<img src="{image_url}" width="320">' if image_url else "이미지 없음"
+                    fuel = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
+                    price = f"{min_price_list.get(car_name, '가격 정보 없음')}~"
+                    mileage = df.loc[df['최근 구매 제품'] == car_name, '차량 연비'].to_numpy()[0]
+                    engine = df.loc[df['최근 구매 제품'] == car_name, '배기량'].to_numpy()[0]
+                    power = df.loc[df['최근 구매 제품'] == car_name, '최대 출력'].to_numpy()[0]
+                    summary = f"**{car_name}**<br>연료 구분: {fuel}<br>가격: {price}<br>연비: {mileage}<br>배기량: {engine}<br>최대 출력: {power}"
+                    img_rows.append(img_tag)
+                    text_rows.append(summary)
+                    if (idx + 1) % columns_per_row == 0 or idx == num_cars - 1:
+                        img_row = "| " + " | ".join(img_rows) + " |\n"
+                        text_row = "| " + " | ".join(text_rows) + " |\n"
+                        table_header += img_row + text_row
+                        img_rows, text_rows = [], []
+            else:
+                for idx, car_name in enumerate(recom_list):
+                    image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
+                    img_tag = f'<img src="{image_url}" width="320">' if image_url else "이미지 없음"
+                    fuel = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
+                    price = f"{min_price_list.get(car_name, '가격 정보 없음')}~"
+                    mileage = df.loc[df['최근 구매 제품'] == car_name, '차량 연비'].to_numpy()[0]
+                    engine = df.loc[df['최근 구매 제품'] == car_name, '배기량'].to_numpy()[0]
+                    power = df.loc[df['최근 구매 제품'] == car_name, '최대 출력'].to_numpy()[0]
+                    summary = f"**{car_name}**<br>연료 구분: {fuel}<br>가격: {price}<br>연비: {mileage}<br>배기량: {engine}<br>최대 출력: {power}"
+                    img_rows.append(img_tag)
+                    text_rows.append(summary)
+                    if (idx + 1) % columns_per_row == 0 or idx == num_cars - 1:
+                        img_row = "| " + " | ".join(img_rows) + " |\n"
+                        text_row = "| " + " | ".join(text_rows) + " |\n"
+                        table_header += img_row + text_row
+                        img_rows, text_rows = [], []
+            st.markdown(table_header, unsafe_allow_html=True)
         else:
-            num_cars = 1 if fuel_type in ["수소", "하이브리드"] else 2
-
-        header_titles = [f"추천 차량 {i+1}" for i in range(min(columns_per_row, num_cars))]
-        table_header = "| " + " | ".join(header_titles) + " |\n"
-        table_header += "| " + " | ".join(["---"] * min(columns_per_row, num_cars)) + " |\n"
-
-        img_rows = []
-        text_rows = []
-
-        if fuel_type not in ["수소", "플러그인 하이브리드", "하이브리드"]:
-            for idx, car_name in enumerate(recom_list):
-                image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
-                img_tag = f'<img src="{image_url}" width="320">' if image_url else "이미지 없음"
-                fuel = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
-                price = f"{min_price_list.get(car_name, '가격 정보 없음')}~"
-                mileage = df.loc[df['최근 구매 제품'] == car_name, '차량 연비'].to_numpy()[0]
-                engine = df.loc[df['최근 구매 제품'] == car_name, '배기량'].to_numpy()[0]
-                power = df.loc[df['최근 구매 제품'] == car_name, '최대 출력'].to_numpy()[0]
-                summary = f"**{car_name}**<br>연료 구분: {fuel}<br>가격: {price}<br>연비: {mileage}<br>배기량: {engine}<br>최대 출력: {power}"
-                img_rows.append(img_tag)
-                text_rows.append(summary)
-                if (idx + 1) % columns_per_row == 0 or idx == num_cars - 1:
-                    img_row = "| " + " | ".join(img_rows) + " |\n"
-                    text_row = "| " + " | ".join(text_rows) + " |\n"
-                    table_header += img_row + text_row
-                    img_rows, text_rows = [], []
-        else:
-            for idx, car_name in enumerate(recom_list):
-                image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
-                img_tag = f'<img src="{image_url}" width="320">' if image_url else "이미지 없음"
-                fuel = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
-                price = f"{min_price_list.get(car_name, '가격 정보 없음')}~"
-                mileage = df.loc[df['최근 구매 제품'] == car_name, '차량 연비'].to_numpy()[0]
-                engine = df.loc[df['최근 구매 제품'] == car_name, '배기량'].to_numpy()[0]
-                power = df.loc[df['최근 구매 제품'] == car_name, '최대 출력'].to_numpy()[0]
-                summary = f"**{car_name}**<br>연료 구분: {fuel}<br>가격: {price}<br>연비: {mileage}<br>배기량: {engine}<br>최대 출력: {power}"
-                img_rows.append(img_tag)
-                text_rows.append(summary)
-                if (idx + 1) % columns_per_row == 0 or idx == num_cars - 1:
-                    img_row = "| " + " | ".join(img_rows) + " |\n"
-                    text_row = "| " + " | ".join(text_rows) + " |\n"
-                    table_header += img_row + text_row
-                    img_rows, text_rows = [], []
-        st.markdown(table_header, unsafe_allow_html=True)
+            custom_message("😢 죄송합니다. 예산 내에 맞는 차량이 없습니다. 조건을 확인해주세요!", "error")
+            custom_message("🔍 전기차는 어떠신가요? '전기차 추천' 탭을 클릭해 확인해보세요!", "question")
     
     with tab2:
         if fuel_type in ["전기", "플러그인 하이브리드", "하이브리드"]:
@@ -307,7 +320,7 @@ if st.button("추천 받기"):
                 custom_message(
                     f"""
                     ✨ 최적의 전기차 추천 리스트가 준비되었습니다! 
-                    <span style="font-size: 16px; color: #555;">(💡 {region} 지역의 전기차 보조금: {comma(elec_car_compen[region])}원)</span>
+                    <span style="font-size: 16px; color: #555;">\n\n(💡 {region} 지역의 전기차 보조금: **{comma(elec_car_compen[region])}원**)</span>
                     """,
                     "info"
                 )
