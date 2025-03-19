@@ -6,8 +6,7 @@ st.set_page_config(page_title="현대자동차 관리자 페이지", layout="wid
 
 # ✅ 파일 경로 확인 및 데이터 불러오기
 file_path = "data/차량정보.csv"
-df = pd.read_csv(file_path, encoding="utf-8")  # or encoding="cp949"
-
+df = pd.read_csv(file_path)
 
 # ✅ 전기차 보조금 데이터
 ev_subsidies = {
@@ -48,11 +47,25 @@ with tab1:
         col1, col2 = st.columns([1, 1.5])
 
         with col1:
+            is_rebuy = st.checkbox(f"재구매 고객 여부 (해당 차량: {', '.join(rebuy_discounts.keys())})")
+            has_children = st.checkbox(f"다자녀 혜택 적용 (해당 차량: {', '.join(multi_child_cars)})")
+            ev_promo = st.checkbox(f"전기차 프로모션 적용 (해당 차량: {', '.join(df[df['연료 구분'].isin(['전기', '플러그인 하이브리드', '수소'])]['최근 구매 제품'].unique())})")
+
             customer_name = st.text_input("고객 이름")
-            selected_model = st.selectbox("차량 모델 선택", df["최근 구매 제품"].unique())
+
+            # ✅ 차량 선택 리스트 필터링
+            filtered_cars = df["최근 구매 제품"].unique()  # 기본값: 모든 차량
+            if has_children:
+                filtered_cars = [car for car in multi_child_cars if car in filtered_cars]  # 다자녀 혜택 가능 차량
+            if is_rebuy:
+                filtered_cars = [car for car in rebuy_discounts.keys() if car in filtered_cars]  # 재구매 혜택 가능 차량
+            if ev_promo:
+                filtered_cars = df[df["연료 구분"].isin(["전기", "플러그인 하이브리드", "수소"])]["최근 구매 제품"].unique()
+
+            # ✅ 차량 선택 (필터링된 리스트 기반)
+            selected_model = st.selectbox("차량 모델 선택", filtered_cars)
+
             region = st.selectbox("거주 지역 선택", list(ev_subsidies.keys()))
-            is_rebuy = st.checkbox("재구매 고객 여부")
-            has_children = st.checkbox("다자녀 혜택 적용 (미성년자 3명 이상)")
 
         with col2:
             st.subheader("개인 고객 혜택 상세")
@@ -61,6 +74,7 @@ with tab1:
             selected_car_info = df[df["최근 구매 제품"] == selected_model].iloc[0]
             car_price = selected_car_info["최근 거래 금액"]
             fuel_type = selected_car_info["연료 구분"]
+            car_image_url = selected_car_info["모델 사진"]  # 차량 이미지 URL 가져오기
             final_price = car_price  # 최종 가격 초기화
 
             # ✅ 다자녀 혜택 적용
@@ -75,11 +89,19 @@ with tab1:
                 st.write(f"- **전기차 보조금:** 최대 {ev_subsidy:,.0f} 원 적용")
                 final_price -= ev_subsidy  # 보조금 적용
 
+                # ✅ 전기차 추가 프로모션 (충전 크레딧 및 옵션 할인)
+                st.write("- **충전기 무료 설치 또는 충전 크레딧 50만 원 지급**")
+                st.write("- **전기차 보험료 할인 (최대 10%) 적용 가능**")
+                st.write("- **현대차 금융 이용 시 추가 이자 할인 (최대 1.5%) 제공**")
+
             # ✅ 재구매 할인 적용
             discount = rebuy_discounts.get(selected_model, 0)
             if is_rebuy and discount > 0:
                 st.write(f"- **재구매 할인:** {discount:,.0f} 원 적용")
                 final_price -= discount
+
+            # ✅ 차량 이미지 표시
+            st.image(car_image_url, caption=f"{selected_model} 이미지", use_container_width=True)
 
             st.write(f"**최종 적용 가격:** {final_price:,.0f} 원")
 
@@ -92,8 +114,11 @@ with tab1:
         with col4:
             st.subheader("법인 고객 혜택")
             st.write(corporate_benefits)
-    st.markdown("---")
-    col1, col2, col3 = st.columns(3)
+
+
+
+st.markdown("---")
+col1, col2, col3 = st.columns(3)
 
 # ✅ 1️⃣ 다자녀 프로모션
 with col1:
