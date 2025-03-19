@@ -54,10 +54,15 @@ st.markdown("## 4. 인공지능 학습 및 모델 최적화")
 st.write("""
 ### 머신러닝 모델링 과정
 - 사용자의 입력 데이터를 기반으로, 추천 차량의 제품명을 도출하는 Classificaion 문제
-    - 입력 데이터 : 거주 지역, 구매 예산, 차량 선호 사이즈, 차량 선호 유형, 차량 선호 연료 유형
+    - 입력 데이터 : 거주 지역, 구매 예산, 차량 선호 사이즈, 차량 선호 유형, 선호 연료 유형
     - 출력 데이터 : 추천 차량 제품명
-- 전처리 완료한 데이터를 기반으로, 총 9가지의 인공지능 모델을 활용하여 학습 진행
-    - LogisticRegression, SVC, Decision Tree Classifier, Random Forest Classifier, Gradient Boosting Classifier, Gaussian Naive Bayes, K-Neighbors Classifier, Light GBM Classifier, Cat Boost Classifier
+- 인코딩 실시
+    - 범주형 데이터로 구성된 입력 데이터를 수치형 데이터로 변환
+        - 변환 컬럼 : "거주 지역", "차량 사이즈", "차량 유형", "연료 구분"
+        - 변환 방법 : get_dummies() -> One-Hot Encoding
+- 인코딩 완료한 데이터를 기반으로, 특정 연료 구분(예 : 디젤)에 해당하는 데이터 추출하여 학습 진행
+    - 각 연료 구분에 대하여 9가지의 인공지능 모델을 활용
+        - LogisticRegression, SVC, Decision Tree Classifier, Random Forest Classifier, Gradient Boosting Classifier, Gaussian Naive Bayes, K-Neighbors Classifier, Light GBM Classifier, Cat Boost Classifier
     - 
 """)
 
