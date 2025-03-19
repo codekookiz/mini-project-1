@@ -67,6 +67,19 @@ st.write("""
     - 각 모델의 성능을 평가하여 가장 높은 성능을 보인 모델을 최종 선정
 """)
 
+st.write("""
+### 모델 제작 특이점
+- **연료 구분별 모델링** : 연료 구분에 따라 모델링을 실시하여, 연료별 차량 추천 모델을 개별적으로 구축함
+    - 하나의 모델로 추천 시스템을 구축할 경우 선호하는 연료 유형과 다른 연료 유형의 차량이 추천될 수 있음
+- **모델 부분 구축** : 수소, 플러그인 하이브리드, 하이브리드 유형에 대해서는 모델 개발을 진행하지 않음
+    - **수소** : 데이터셋 내에 수소 차량은 NEXO(FE) 모델만 존재
+        - 모델 개발 필요성이 없음
+    - **플러그인 하이브리드** : 데이터셋 내에 플러그인 하이브리드 차량은 Santa-Fe (MX5 PHEV), Tucson (NX4 PHEV) 모델 2종 존재
+        - 총 데이터 개수가 3개로, Train/Test 데이터셋 분리 이후 모델 학습이 불가능하여 모델 개발을 진행하지 않음
+    - **하이브리드** : 데이터셋 내에 하이브리드 차량은 Grandeur (GN7 HEV) 모델만 존재
+        - 모델 개발 필요성이 없음
+""")
+
 st.markdown("### 테스트한 머신러닝 모델 정확도")
 data = {
     "디젤 모델": ["91.7%", "91.7%", "100%", "100%", "100%", "91.7%", "91.7%", "91.7%", "100%"],
@@ -78,13 +91,28 @@ df = pd.DataFrame(data, index=["Logistic Regression", "SVC", "Decision Tree Clas
                                "Gradient Boosting Classifier", "Gaussian Naive Bayes", "K-Neighbors Classifier", "Light GBM Classifier",
                                "Cat Boost Classifier"])
 
-col1, col2 = st.columns([3, 2])
+def highlight_rows(row):
+    highlight_color = "background-color: lightyellow"
+
+    highlight_rows_list = ["Decision Tree Classifier", "Random Forest Classifier",
+                           "Gradient Boosting Classifier", "Light GBM Classifier"]
+
+    if row.name in highlight_rows_list:
+        return [highlight_color] * len(row)
+    else:
+        return [""] * len(row)
+
+styled_df = df.style.apply(highlight_rows, axis=1)
+
+col1, col2 = st.columns(2)
 with col1:
-    st.table(df)
+    st.dataframe(styled_df)
 
 st.markdown("### 최종 모델 선정")
 st.write("""
-- **LightGBM**이 가장 높은 성능(92.0%)을 기록하였으며, 학습 속도가 빠르고 실시간 예측이 가능하여 최종 선택됨.
+- 전반적으로 높은 정확도를 기록하였으나, 모든 모델을 사용하기에 처리 부하가 커질 우려가 있었음
+    - 따라서, **Decision Tree**, **Random Forest**, **Gradient Boosting**, **Light GBM** 모델을 사용하기로 결정함
+    - 총 모델의 개수는 **4종류(모델 유형)** X **3종류(연료 유형)** = 12개
 - 최적화된 LightGBM 모델을 `.pkl` 파일로 저장하여 Streamlit 애플리케이션에서 활용하도록 설계함.
 """)
 
