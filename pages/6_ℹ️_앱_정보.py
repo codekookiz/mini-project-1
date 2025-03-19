@@ -40,7 +40,7 @@ st.write("""
     - "최근 거래 금액" : 데이터타입 변환 (str -> int)
     - "현재 나이" : 기존 "생년월일" 컬럼 이용해 연산 후 데이터타입 변환 (datetime -> int)
 - 기존 원본 데이터에는 불완전한 정보가 포함되어 있으며, 이상치 존재
-    - 데이터 삭제를 통한 이상치 처리
+    - 직접 데이터 조작을 통한 이상치 처리
         - "제품 구매 날짜" : 미래의 날짜로 기록된 데이터 존재
             - "2025-12-01" -> 해당 데이터 삭제
     - 데이터 매핑을 통해 이상치 수정
@@ -56,16 +56,25 @@ st.write("""
     - 데이터 수집을 통한 신규 컬럼 추가
         - "연료 구분" : **[현대자동차 홈페이지](https://www.hyundai.com/kr/ko/e/all-vehicles)**
         - "모델 사진" : 구글 이미지 검색
-- 전처리된 데이터를 CSV 파일로 저장하여 학습 및 예측 모델에서 활용 (파일명 : **고객db_전처리.csv**)
 """)
 
+st.write("""
+#### 전처리된 데이터를 CSV 파일로 저장하여 학습 및 예측 모델에서 활용 (파일명 : **고객db_전처리.csv**)
+""")
+
+st.write("######")
+
 st.markdown("### 주요 전처리 작업")
-st.table([
-    ["결측치 처리", "평균 대체 (Mean Imputation), KNN Imputer 적용"],
-    ["이상치 제거", "IQR(사분위 범위) 기반 이상치 필터링"],
-    ["데이터 정규화", "Min-Max Scaling 및 Standard Scaling 적용"],
-    ["특성 엔지니어링", "PCA(주성분 분석) 활용 차원 축소"]
-])
+prep_data = {
+    "전처리 작업" : ["컬럼명 수정", "이상치 제거", "신규 컬럼 추가"],
+    "세부 내용" : ["영문 컬럼명 제거, 의미가 모호한 컬럼명 수정", "직접 데이터 조작, 데이터 매핑", "기존 컬럼 조작, 실제 데이터 수집"]
+}
+
+prep_df = pd.DataFrame(prep_data, index=["1", "2", "3"])
+
+col1, col2 = st.columns(2)
+with col1:
+    st.dataframe(prep_df)
 
 st.markdown("---")
 
@@ -102,10 +111,12 @@ st.write("""
 - 인코딩 실시
     - 범주형 데이터로 구성된 입력 데이터를 수치형 데이터로 변환
         - 변환 컬럼 : "거주 지역", "차량 사이즈", "차량 유형", "연료 구분"
-        - 변환 방법 : get_dummies() -> One-Hot Encoding
+        - 변환 방법 : `get_dummies()` -> One-Hot Encoding
 - 인코딩 완료한 데이터를 기반으로, 특정 연료 구분(예 : 디젤)에 해당하는 데이터 추출하여 학습 진행
     - 각 연료 구분에 대하여 9가지의 인공지능 모델을 활용
-        - LogisticRegression, SVC, Decision Tree Classifier, Random Forest Classifier, Gradient Boosting Classifier, Gaussian Naive Bayes, K-Neighbors Classifier, Light GBM Classifier, Cat Boost Classifier
+        - `LogisticRegression`, `SVC`, `Decision Tree Classifier`,
+        - `Random Forest Classifier`, `Gradient Boosting Classifier`, `Gaussian Naive Bayes`,
+        - `K-Neighbors Classifier`, `Light GBM Classifier`, `Cat Boost Classifier`
     - 각 모델의 성능을 평가하여 가장 높은 성능을 보인 모델을 최종 선정
 """)
 
@@ -123,13 +134,13 @@ st.write("""
 """)
 
 st.markdown("### 테스트한 머신러닝 모델 정확도")
-data = {
+model_data = {
     "디젤 모델": ["91.7%", "91.7%", "100%", "100%", "100%", "91.7%", "91.7%", "91.7%", "100%"],
     "전기 모델": ["100%", "100%", "100%", "100%", "100%", "100%", "100%", "100%", "100%"],
     "휘발유 모델": ["27.3%", "100%", "100%", "100%", "100%", "100%", "100%", "100%", "100%"]
 }
 
-df = pd.DataFrame(data, index=["Logistic Regression", "SVC", "Decision Tree Classifier", "Random Forest Classifier",
+df = pd.DataFrame(model_data, index=["Logistic Regression", "SVC", "Decision Tree Classifier", "Random Forest Classifier",
                                "Gradient Boosting Classifier", "Gaussian Naive Bayes", "K-Neighbors Classifier", "Light GBM Classifier",
                                "Cat Boost Classifier"])
 
@@ -144,18 +155,18 @@ def highlight_rows(row):
     else:
         return [""] * len(row)
 
-styled_df = df.style.apply(highlight_rows, axis=1)
+model_styled_df = df.style.apply(highlight_rows, axis=1)
 
 col1, col2 = st.columns(2)
 with col1:
-    st.dataframe(styled_df)
+    st.dataframe(model_styled_df)
 
 st.markdown("### 최종 모델 선정")
 st.write("""
 - 전반적으로 높은 정확도를 기록하였으나, 모든 모델을 사용하기에 처리 부하가 커질 우려가 있었음
     - 따라서, **Decision Tree**, **Random Forest**, **Gradient Boosting**, **Light GBM** 모델을 사용하기로 결정함
     - 총 모델의 개수는 **4종류(모델 유형)** X **3종류(연료 유형)** = 12개
-- 12개 모델을 '.pkl' 파일로 저장하여 프로젝트에서 활용이 가능하도록 함
+- 12개 모델을 `.pkl` 파일로 저장하여 프로젝트에서 활용이 가능하도록 함
 """)
 
 st.markdown("---")
