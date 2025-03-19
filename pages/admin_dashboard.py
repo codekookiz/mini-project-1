@@ -5,7 +5,10 @@ from fpdf import FPDF
 import requests
 import base64
 
-st.set_page_config(page_title="현대자동차 관리자 페이지", layout="wide")
+st.set_page_config(
+    page_title="현대자동차 고객 분석 시스템",  # 웹사이트 제목
+    page_icon="./images/favicon.ico",  # 파비콘 적용
+
 
 # ✅ 파일 경로 확인 및 데이터 불러오기
 file_path = "data/차량정보.csv"
