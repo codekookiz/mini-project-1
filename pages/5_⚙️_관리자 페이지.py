@@ -35,103 +35,162 @@ corporate_benefits = """
 ✅ 법인 차량 단체 보험료 할인 제공  
 ✅ 운용 리스를 통한 유지비 절감 및 관리 편의성 제공  
 """
+class CustomPDF(FPDF):
+    def __init__(self, logo_path="image/hyunlogo.png"):
+        super().__init__()
+        self.logo_path = logo_path
+    
+    def header(self):
+        # 로고가 있는 경우 로고 표시
+        if self.logo_path and os.path.exists(self.logo_path):
+            self.image(self.logo_path, x=10, y=8, w=25)
+            self.set_x(40)  # 로고 옆으로 제목을 배치하기 위해 X 좌표 조정
+        else:
+            self.set_x(10)
+        
+        # 상단 바(배경색) - 원하는 색상으로 조정 가능 (RGB)
+        self.set_fill_color(230, 230, 230)  # 밝은 회색
+        self.cell(0, 15, "", 0, 1, "C", fill=True)  # 높이 15, 채우기
+        
+        # 제목
+        self.set_y(10)  # Y좌표 재조정 (상단 바 위에 텍스트 겹치지 않도록)
+        self.set_font("NanumGothic", "B", 16)
+        self.cell(0, 10, "자동차 견적 상담서 (프로모션 & 금융 정보 포함)", 0, 1, "C")
+        
+        # 줄 간격
+        self.ln(5)
+    
+    def footer(self):
+        # Footer는 페이지 하단에 페이지 번호, 간단 안내문 등 표시 가능
+        self.set_y(-15)
+        self.set_font("NanumGothic", "", 9)
+        self.set_text_color(100, 100, 100)
+        self.cell(0, 10, f"Page {self.page_no()}", 0, 0, "C")
 
-# ✅ PDF 생성 함수 (표 형식의 양식 적용 – FPDF 사용)
-def generate_pdf(selected_model, final_price, benefits, car_image_url, promotion_info, installment_info):
-    pdf = FPDF()
+def generate_pdf(
+    selected_model, 
+    final_price, 
+    benefits, 
+    car_image_url, 
+    promotion_info, 
+    installment_info,
+    logo_path=None
+):
+    # 커스텀 PDF 객체 생성
+    pdf = CustomPDF(logo_path=logo_path)
     pdf.add_page()
     
-    # ---------- 유니코드 폰트 설정 ----------
-    # fonts 디렉토리 안에 NanumGothic.ttf가 있다고 가정
+    # ---- 유니코드 폰트 설정 ----
     font_path = "fonts/NanumGothic.ttf"
     if not os.path.exists(font_path):
         st.error("NanumGothic.ttf 폰트 파일이 존재하지 않습니다. 'fonts' 폴더 내에 폰트 파일을 확인하세요.")
         return None
-    # 일반체와 볼드체 모두 등록
     pdf.add_font("NanumGothic", "", font_path, uni=True)
     pdf.add_font("NanumGothic", "B", font_path, uni=True)
-    pdf.set_font("NanumGothic", "B", 16)
-    # ----------------------------------------
     
-    # 제목 (중앙 정렬)
-    pdf.cell(0, 10, "차량 구매 혜택 보고서", ln=True, align="C")
+    # ---- 상단 상담 정보 ----
+    pdf.set_font("NanumGothic", "", 12)
+    pdf.cell(0, 8, f"상담일: 2025년 3월 19일", ln=True)
+    pdf.cell(0, 8, f"대리점명: 현대자동차 모란지점", ln=True)
+    pdf.cell(0, 8, f"담당자: 송결  |  연락처: 010-1234-5678", ln=True)
     pdf.ln(5)
     
-    # [1] 프로모션 조회 (개인 고객) 섹션
+    # ---- [1] 프로모션 조회 (개인 고객) ----
     pdf.set_font("NanumGothic", "B", 14)
-    pdf.cell(0, 10, "1. 프로모션 조회 (개인 고객)", ln=True)
+    pdf.set_fill_color(240, 240, 240)  # 테이블 섹션 제목 배경색
+    pdf.cell(0, 10, "1. 프로모션 조회 (개인 고객)", ln=True, fill=True)
     pdf.ln(3)
     
     # --- 차량 정보 테이블 ---
     pdf.set_font("NanumGothic", "B", 12)
-    pdf.cell(80, 10, "항목", border=1, align="C")
-    pdf.cell(0, 10, "내용", border=1, ln=True, align="C")
+    pdf.set_fill_color(220, 220, 220)  # 테이블 헤더 배경
+    pdf.cell(80, 10, "항목", border=1, align="C", fill=True)
+    pdf.cell(0, 10, "내용", border=1, ln=True, align="C", fill=True)
     
+    # 내용 행
     pdf.set_font("NanumGothic", "", 12)
+    # 차량명
     pdf.cell(80, 10, "선택 차량", border=1, align="C")
-    pdf.cell(0, 10, "   " + selected_model, border=1, ln=True)
+    pdf.cell(0, 10, f"{selected_model}", border=1, ln=True, align="L")
     
-    pdf.cell(80, 10, "최종 적용 가격", border=1,align="C")
-    pdf.cell(0, 10,  "   " + f"{final_price:,.0f} 원", border=1, ln=True)
+    # 최종 가격
+    pdf.cell(80, 10, "최종 적용 가격", border=1, align="C")
+    pdf.cell(0, 10, f"{final_price:,.0f} 원", border=1, ln=True, align="R")
     pdf.ln(5)
     
     # --- 적용 혜택 테이블 ---
     pdf.set_font("NanumGothic", "B", 12)
-    pdf.cell(80, 10, "혜택 항목", border=1, align="C")
-    pdf.cell(0, 10, "내용", border=1, ln=True, align="C")
+    pdf.set_fill_color(220, 220, 220)  # 테이블 헤더 배경
+    pdf.cell(80, 10, "혜택 항목", border=1, align="C", fill=True)
+    pdf.cell(0, 10, "내용", border=1, ln=True, align="C", fill=True)
     
     pdf.set_font("NanumGothic", "", 12)
     if benefits:
         for benefit in benefits:
-            pdf.cell(80, 10, benefit, border=1, align="C" )
-            pdf.cell(0, 10,  "   " + "적용됨", border=1, ln=True)
+            pdf.cell(80, 10, benefit, border=1, align="C")
+            pdf.cell(0, 10, "적용됨", border=1, ln=True, align="C")
     else:
-        pdf.cell(80, 10, "없음", border=1)
-        pdf.cell(0, 10,  "   " + "-", border=1, ln=True)
+        pdf.cell(80, 10, "없음", border=1, align="C")
+        pdf.cell(0, 10, "-", border=1, ln=True, align="C")
     pdf.ln(5)
     
     # --- 추가 프로모션 정보 ---
-    pdf.set_font("NanumGothic", "", 12)
-    pdf.multi_cell(0, 10, "추가 정보: " + promotion_info, border=1)
+    pdf.multi_cell(0, 8, f"추가 정보:\n{promotion_info}", border=1)
     pdf.ln(10)
     
-    # [2] 할부/리스 계산 및 혜택 비교 섹션
+    # ---- [2] 할부/리스 계산 및 혜택 비교 ----
     pdf.set_font("NanumGothic", "B", 14)
-    pdf.cell(0, 10, "2. 할부/리스 계산 및 혜택 비교", ln=True)
+    pdf.set_fill_color(240, 240, 240)
+    pdf.cell(0, 10, "2. 할부/리스 계산 및 혜택 비교", ln=True, fill=True)
     pdf.ln(3)
     
     # --- 할부 정보 테이블 ---
     pdf.set_font("NanumGothic", "B", 12)
-    pdf.cell(80, 10, "항목", border=1, align="C")
-    pdf.cell(0, 10, "내용", border=1, ln=True, align="C")
+    pdf.set_fill_color(220, 220, 220)  # 테이블 헤더 배경
+    pdf.cell(80, 10, "항목", border=1, align="C", fill=True)
+    pdf.cell(0, 10, "내용", border=1, ln=True, align="C", fill=True)
     
     pdf.set_font("NanumGothic", "", 12)
     for line in installment_info.split("\n"):
         if ":" in line:
             key, value = line.split(":", 1)
-            pdf.cell(80, 10, key.strip(), border=1, align="C" )
-            pdf.cell(0, 10, value.strip(), border=1, ln=True, align="C" )
+            pdf.cell(80, 10, key.strip(), border=1, align="C")
+            pdf.cell(0, 10, value.strip(), border=1, ln=True, align="C")
         else:
-            pdf.cell(80, 10, line.strip(), border=1, align="C" )
-            pdf.cell(0, 10, "", border=1, ln=True, align="C" )
+            pdf.cell(80, 10, line.strip(), border=1, align="C")
+            pdf.cell(0, 10, "", border=1, ln=True, align="C")
     pdf.ln(5)
     
-    # --- 차량 이미지 삽입 (이미지 URL에서 다운로드 후 사용)
+    # --- 차량 이미지 삽입 (이미지 URL에서 다운로드 후 사용) ---
     try:
         response = requests.get(car_image_url)
         if response.status_code == 200:
             temp_image_path = "temp_car_image.jpg"
             with open(temp_image_path, "wb") as f:
                 f.write(response.content)
-            pdf.image(temp_image_path, x=10, w=100)
+            pdf.image(temp_image_path, x=10, w=80)
             os.remove(temp_image_path)
     except Exception as e:
         pass
+    
+    pdf.ln(10)
+    
+    # --- PDF 하단 안내 문구 (면책 조항 등) ---
+    pdf.set_font("NanumGothic", "", 10)
+    pdf.set_text_color(80, 80, 80)
+    disclaimer_text = (
+        "※ 본 견적서는 상담일 기준으로 작성된 참고용 자료이며, 실제 가격, 사양, 금융 조건 등은 변동될 수 있습니다.\n"
+        "※ 최종 계약 내용은 대리점과의 별도 계약서에 명시된 사항을 우선으로 합니다.\n"
+        "※ 할부 및 리스 상품은 금융사의 심사 결과에 따라 승인 여부 및 이자율이 달라질 수 있습니다.\n"
+        "※ 자세한 사항은 담당자에게 문의해주시기 바랍니다.\n"
+    )
+    pdf.multi_cell(0, 5, disclaimer_text)
     
     # PDF 저장 후 경로 리턴
     pdf_file_path = "car_promo_report.pdf"
     pdf.output(pdf_file_path, "F")
     return pdf_file_path
+
 
 # UI 구성
 st.title("현대자동차 관리자 페이지")
