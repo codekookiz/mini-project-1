@@ -137,7 +137,7 @@ def generate_pdf(selected_model, final_price, benefits, car_image_url, promotion
 st.title("현대자동차 관리자 페이지")
 st.markdown("---")
 
-tab1, tab2, tab3, tab4 = st.tabs(["프로모션 조회", "할부 계산 및 혜택 비교", "PDF 다운로드", "고객 화면 전송"])
+tab1, tab2, tab3 = st.tabs(["프로모션 조회", "할부 계산 및 혜택 비교", "PDF 다운로드"])
 
 # ✅ 탭 1: 프로모션 조회
 with tab1:
@@ -405,8 +405,3 @@ with tab3:
         if pdf_file:
             with open(pdf_file, "rb") as pdf:
                 st.download_button(label="PDF 다운로드", data=pdf, file_name="car_report.pdf", mime="application/pdf")
-
-# ✅ 탭 4: 고객 화면 전송 (예시)
-with tab4:
-    st.subheader("고객 화면 전송")
-    st.write("고객에게 보여줄 화면 구성 요소들을 여기에 배치합니다.")
