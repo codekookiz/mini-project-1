@@ -70,7 +70,7 @@ car_type = st.selectbox("선호하시는 차량 유형은 무엇인가요?", ["�
 fuel_type = st.selectbox("어떤 연료 구분의 차량을 찾고 계신가요?", ["디젤", "수소", "전기", "플러그인 하이브리드", "하이브리드", "휘발유"])
 
 custom_message("💳 [신용카드 혜택] 구매 시 최대 10% 포인트 적립 혜택을 누리세요!", "promotion1")
-custom_message("🎁 [현대카드 이용자 혜택] 현대카드 슈퍼콘서트 2025 VIP 티켓을 드립니다!", "promotion2")
+custom_message("""🎁 [현대카드 이용자 혜택] 추첨을 통해 현대카드 슈퍼콘서트 2025 VIP 티켓을 드립니다!""", "promotion2")
 
 st.write("")
 
@@ -312,23 +312,6 @@ if st.button("추천 받기"):
                     "info"
                 )
 
-            # st.markdown(
-            #     f"""
-            #     <div style="
-            #         padding: 15px;
-            #         background-color: #f8f9fa;
-            #         border-radius: 10px;
-            #         border-left: 5px solid #17a2b8;
-            #         font-size: 18px;
-            #         font-weight: bold;
-            #         color: #0c5460;
-            #         margin: 15px 0;
-            #     ">
-            #     💡 {region} 지역의 전기차 보조금: <span style="color: #007bff;">{comma(elec_car_compen[region])}원</span>
-            #     </div>
-            #     """,
-            #     unsafe_allow_html=True
-            # )
             columns_per_row = 3  
             num_cars = len(recom_elec)
             if num_cars > 0:
