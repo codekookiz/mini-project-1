@@ -309,5 +309,6 @@ if fuel_type in ["전기", "플러그인 하이브리드", "수소"]:
     st.markdown(f"**전기차 보조금:** {ev_subsidy:,.0f} 원 적용")
 if is_rebuy and discount > 0:
     st.markdown(f"**재구매 할인:** {discount:,.0f} 원 적용")
+    
 
 st.markdown(f"### 🚘 최종 적용 가격: {final_price:,.0f} 원")
