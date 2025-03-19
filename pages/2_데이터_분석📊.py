@@ -8,14 +8,19 @@ from matplotlib import font_manager, rc
 # Streamlit 페이지 설정
 st.set_page_config(page_title="고객 분석 대시보드", layout="wide")
 
-# 한글 폰트 설정 (OS별 적용)
-plt.rcParams['axes.unicode_minus'] = False
-if platform.system() == 'Darwin':
-    rc('font', family='AppleGothic')
-elif platform.system() == 'Windows':
-    path = "c:/Windows/Fonts/malgun.ttf"
-    font_name = font_manager.FontProperties(fname=path).get_name()
-    rc('font', family=font_name)
+# 한글 폰트 설정
+plt.rcParams["axes.unicode_minus"] = False
+
+if platform.system() == "Darwin":  # macOS
+    rc("font", family="AppleGothic")
+elif platform.system() == "Windows":  # Windows
+    font_path = "C:/Windows/Fonts/malgun.ttf"  # 맑은 고딕
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    rc("font", family=font_name)
+elif platform.system() == "Linux":  # Linux (Ubuntu, Docker 등)
+    font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"  # 나눔고딕
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    rc("font", family=font_name)
 
 # 데이터 로드
 df = pd.read_csv("data/고객db_전처리.csv").fillna(0)
