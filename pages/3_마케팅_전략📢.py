@@ -2,8 +2,12 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import plotly.express as px
 import seaborn as sb
 import time
+from datetime import datetime
+import calendar
+
 
 # 차트 한글화 코드
 import platform
@@ -529,3 +533,623 @@ elif marketing_class == "고객 등급별":
 
             st.write("")
             st.write("🚀 **잠재적 마케팅 전략**:", strategy[grade])
+    
+    st.markdown("---")
+
+    if grade == "신규":
+        # 🚗 신규 고객 맞춤형 서비스
+        st.markdown("## 🚗 신규 고객 웰컴 패키지 & 서비스 혜택")
+        st.write("처음 차량을 구매한 고객에게 특별한 웰컴 혜택을 제공합니다! 🎁")
+        
+        # 💰 신규 고객의 누적 소비 금액 입력
+        purchase_amount = st.number_input("🔢 누적 소비 금액 입력 (단위: 만 원)", min_value=0, step=100, value=3000)
+
+        st.markdown("---")
+
+        # 🎁 웰컴 패키지 혜택 적용 (소비 금액에 따른 차등 제공)
+        if purchase_amount >= 8000:
+            coupon_count = 5
+            gift = "프리미엄 차량용 방향제 + 가죽 키케이스 + 차량 정비 키트"
+        elif purchase_amount >= 5000:
+            coupon_count = 3
+            gift = "고급 차량용 방향제 + 로고 키체인"
+        elif purchase_amount >= 3000:
+            coupon_count = 2
+            gift = "브랜드 차량용 방향제"
+        else:
+            coupon_count = 1
+            gift = "기본 차량용 방향제"
+
+        # ✅ 웰컴 패키지 상세
+        st.subheader("🎁 웰컴 패키지 혜택")
+        st.markdown(f"""
+        - **첫 서비스 혜택:** 🚗
+            - 첫 정기점검, 세차 또는 소모품 교체 서비스에 대해 **무료/할인 쿠폰 {coupon_count}개 제공**
+        - **브랜드 기념품:** 🎀
+            - {gift} 제공
+        - **맞춤형 커뮤니케이션:** 💌
+            - 이메일 & 문자 메시지로 혜택 안내 및 맞춤형 서비스 추천
+        """)
+
+        st.markdown("---")
+
+        # 📧 맞춤형 커뮤니케이션 발송
+        st.subheader("📩 이메일 & 문자 발송")
+        st.write("")
+        col1, col2, _ = st.columns([1, 1, 8])
+        with col1:
+            email_sent = st.button("📧 이메일 발송")
+        with col2:
+            sms_sent = st.button("📩 문자 발송")
+
+        if email_sent:
+            st.info("각 고객에게 혜택 안내 이메일을 전송 중입니다. 잠시만 기다려주세요.")
+            
+            progress_bar = st.progress(0)
+            for percent in range(1, 101):
+                time.sleep(0.01)  # 실제 전송 과정에서는 API 호출 등이 이루어질 수 있음
+                progress_bar.progress(percent)
+            
+            st.success("✅ 모든 고객에게 할인 혜택 안내 이메일을 성공적으로 전송하였습니다.")
+        if sms_sent:
+            st.info("각 고객에게 혜택 안내 문자를 전송 중입니다. 잠시만 기다려주세요.")
+            
+            progress_bar = st.progress(0)
+            for percent in range(1, 101):
+                time.sleep(0.01)  # 실제 전송 과정에서는 API 호출 등이 이루어질 수 있음
+                progress_bar.progress(percent)
+            
+            st.success("✅ 모든 고객에게 할인 혜택 안내 문자를 성공적으로 전송하였습니다.")
+
+        # 📊 맞춤형 커뮤니케이션 발송 건수 시각화
+        dates = pd.date_range(start="2025-03-01", end="2025-03-31")
+        np.random.seed(42)
+        email_counts = np.random.randint(140, 180, size=len(dates))
+        sms_counts = np.random.randint(70, 90, size=len(dates))
+
+        df_comm = pd.DataFrame({"날짜": dates, "이메일 발송 건수": email_counts, "문자 발송 건수": sms_counts})
+        df_melted = df_comm.melt(id_vars="날짜", var_name="발송 유형", value_name="발송 건수")
+
+        fig_comm = px.line(df_melted, x="날짜", y="발송 건수", color="발송 유형", markers=True,
+                        title="📧 2025년 3월 맞춤형 커뮤니케이션 발송 건수")
+        fig_comm.update_layout(xaxis_title="날짜", yaxis_title="발송 건수", hovermode="x unified")
+        st.plotly_chart(fig_comm, use_container_width=True)
+
+        st.markdown("---")
+
+        # 🚗 신규 회원 세미나 프로모션 안내
+        st.subheader("🎓 신규 고객 전용 세미나 프로모션")
+        st.write("""
+        🚀 **신규 고객을 위한 특별한 기회!**  
+        처음 차량을 구매한 고객님들을 위해 차량 관리, 정비, 금융 상담 등 다양한 주제의 **프리미엄 세미나**를 무료로 제공합니다.  
+        """)
+
+        st.write("")
+
+        st.markdown("""
+        #### 📢 신규 회원 전용 세미나 혜택 🎉
+        ✅ **전문가와 함께하는 실전 강의**  
+        ✅ **차량 유지보수 및 관리 노하우 전수**  
+        ✅ **최신 차량 기술 및 친환경 운전법 안내**  
+        ✅ **프리미엄 차량 시승 체험 가능!**  
+        ✅ **신청자 전원 특별 웰컴 기프트 제공 🎁**
+        """)
+
+        st.markdown("---")
+
+        seminar_data = {
+            "세미나 제목": [
+                "차량 관리 워크숍", "정비 팁 세미나", "안전 운전 강의", "차량 관리 워크숍", "정비 팁 세미나",
+                "고객 Q&A 세션", "신제품 소개", "고급 차량 유지보수 가이드", "신제품 소개", "고급 차량 유지보수 가이드", 
+                "연비 절약 및 친환경 운전법", "고객 맞춤형 금융 상담", "자동차 보험의 모든 것", "프리미엄 차량 시승 체험"
+            ],
+            "시작일": [
+                "2025-03-20 09:30", "2025-03-20 11:00", "2025-03-20 14:00", "2025-03-21 12:30", "2025-03-21 09:30", "2025-03-20 14:00",
+                "2025-03-21 10:00", "2025-03-21 13:00", "2025-03-22 16:00", "2025-03-22 09:00", "2025-03-21 13:00", "2025-03-22 09:00",
+                "2025-03-22 12:00", "2025-03-22 15:00"
+            ],
+            "종료일": [
+                "2025-03-20 12:00", "2025-03-20 15:30", "2025-03-20 16:30", "2025-03-21 16:00", "2025-03-21 15:30", "2025-03-20 17:00",
+                "2025-03-21 12:30", "2025-03-21 15:30", "2025-03-22 18:00", "2025-03-22 15:30", "2025-03-21 16:00", "2025-03-22 15:30",
+                "2025-03-22 14:00", "2025-03-22 18:30"
+            ],
+            "진행 방식": [
+                "온라인", "오프라인", "온라인", "온라인", "오프라인",
+                "오프라인", "온라인", "오프라인", "온라인", "오프라인",
+                "온라인", "온라인", "오프라인", "오프라인"
+            ],
+            "장소": [
+                "Zoom 미팅", "서울 강남 컨퍼런스룸", "Webex", "부산 해운대 센터", "대구 동성로 서비스센터",
+                "서울 강북 서비스센터", "Zoom 미팅", "부산 VIP 라운지", "Webex", "인천 서구 컨퍼런스룸",
+                "Teams", "Teams", "성남 모란 컨퍼런스룸", "서울 강남 프리미엄 쇼룸"
+            ],
+            "잔여석": [10, 5, 3, 8, 7, 0, 6, 9, 2, 5, 7, 3, 1, 0],
+            "세미나 설명": [
+                "🚗 차량 관리 기본 지식 및 유지보수 팁 제공 (오일 교체, 타이어 관리 등 필수 정보 포함)",
+                "🛠️ 정비 전문가와 함께하는 실전 팁 공개 (고객이 직접 체험할 수 있는 워크샵 진행)",
+                "🚦 안전 운전을 위한 핵심 가이드 및 사고 예방 교육 (야간 운전, 비상 시 대처 방법 포함)",
+                "🚗 차량 관리 기본 지식 및 유지보수 팁 제공 (오일 교체, 타이어 관리 등 필수 정보 포함)",
+                "🛠️ 정비 전문가와 함께하는 실전 팁 공개 (고객이 직접 체험할 수 있는 워크샵 진행)",
+                "❓ 실시간 Q&A를 통해 궁금증 해결 (자동차 구매, 정비, 금융 관련 질문 가능)",
+                "🆕 신제품의 주요 기능 및 활용법 소개 (최신 차량 모델 및 혁신 기술 설명)",
+                "🔧 고급 차량 유지보수 가이드 (고급 브랜드 차량 유지 및 관리법 심층 강의)",
+                "🆕 신제품의 주요 기능 및 활용법 소개 (최신 차량 모델 및 혁신 기술 설명)",
+                "🔧 고급 차량 유지보수 가이드 (고급 브랜드 차량 유지 및 관리법 심층 강의)",
+                "⛽ 연비 절약 및 친환경 운전법 (연료 절약 기술 및 친환경 운전 습관 제안)",
+                "💰 고객 맞춤형 금융 상담 (리스, 할부, 무이자 금융 상품 비교 및 추천)",
+                "🛡️ 자동차 보험의 모든 것 (보험 보장 범위, 추천 보험 상품, 클레임 처리 방법 설명)",
+                "🚘 프리미엄 차량 시승 체험 (고급 차량을 직접 시승하고 특성을 비교 분석하는 시간)"
+            ]
+        }
+        df_seminar = pd.DataFrame(seminar_data)
+        df_seminar["시작일"] = pd.to_datetime(df_seminar["시작일"])
+        df_seminar["종료일"] = pd.to_datetime(df_seminar["종료일"])
+
+        # 신청 마감 메시지 생성
+        df_seminar["마감_메시지"] = df_seminar["잔여석"].apply(lambda x: "<br>🚫 신청 마감됨" if x == 0 else "")
+
+        # Plotly Timeline 생성
+        fig_seminar = px.timeline(df_seminar, 
+                                x_start="시작일", x_end="종료일", y="세미나 제목", color="진행 방식",
+                                title="📅 세미나 일정 타임라인", labels={"진행 방식": "진행 방식"}, 
+                                hover_data=["장소", "잔여석", "마감_메시지"])
+
+        # Hover 템플릿 업데이트
+        fig_seminar.update_traces(hovertemplate="<b>%{y}</b><br>📍 장소: %{customdata[0]}<br>🪑 잔여석: %{customdata[1]}%{customdata[2]}")
+
+        # Y축 정렬 및 가이드선 추가
+        fig_seminar.update_yaxes(autorange="reversed", showgrid=True, gridcolor="lightgray")
+        fig_seminar.update_xaxes(showgrid=True, gridcolor="lightgray", griddash="dot")
+
+        # 레이아웃 업데이트
+        fig_seminar.update_layout(xaxis_title="시간", yaxis_title="세미나 제목", hovermode="closest")
+
+        # Streamlit에서 차트 출력
+        st.plotly_chart(fig_seminar, use_container_width=True)
+
+        st.markdown("---")
+
+        # 🎟️ 세미나 선택 및 신청 기능
+        st.subheader("🎟️ 세미나 신청")
+        st.write("")
+
+        # 📌 세미나 제목 선택
+        selected_seminar = st.selectbox("참여하고 싶은 세미나를 선택하세요", df_seminar["세미나 제목"].unique().tolist())
+
+        # 해당 세미나의 가능한 일정을 필터링
+        seminar_options = df_seminar[df_seminar["세미나 제목"] == selected_seminar]
+        date_options = seminar_options["시작일"].dt.strftime('%Y-%m-%d %H:%M').tolist()
+
+        # 📅 세미나 일시 선택
+        selected_date = st.selectbox("참여하고 싶은 세미나 일시를 선택하세요", date_options)
+
+        # 선택한 일시에 해당하는 세미나 정보 가져오기
+        selected_row = seminar_options[seminar_options["시작일"].dt.strftime('%Y-%m-%d %H:%M') == selected_date].iloc[0]
+
+        st.write("")
+
+        # 📌 세미나 상세 정보 출력
+        st.markdown("#### 📌 **세미나 상세 정보**")
+        st.write(f"**ℹ️ 세미나 설명:** {selected_row['세미나 설명']}")
+        st.write(f"**📅 일정:** {selected_row['시작일'].strftime('%Y-%m-%d %H:%M')} ~ {selected_row['종료일'].strftime('%H:%M')}")
+        st.write(f"**📍 장소:** {selected_row['장소']}")
+        st.write(f"**🪑 잔여석:** {selected_row['잔여석']}")
+
+        # 신청하기 버튼 및 처리
+        if selected_row["잔여석"] > 0:
+            if st.button("✅ 신청하기"):
+                st.success("✅ 신청 완료되었습니다!")
+        else:
+            st.warning("❌ 신청이 마감되었습니다. 다음 기회를 이용해주세요.")
+
+        st.markdown("---")
+        st.markdown("##### 🚀 신규 고객을 위한 다양한 서비스와 혜택을 계속해서 제공해드릴 예정입니다!")
+    elif grade == "일반":
+        # 🚗 일반 고객 대상 재구매 할인 혜택
+        st.markdown("## 🚗 일반 고객 대상 재구매 할인 혜택 제공")
+        st.write("재구매를 고려하는 고객을 위한 특별 할인 혜택을 제공합니다! 🎁")
+
+        # 💰 일반 고객의 누적 구매 금액 입력
+        purchase_amount = st.number_input("🔢 누적 구매 금액 입력 (단위: 만 원)", min_value=0, step=100, value=3000)
+        st.markdown("---")
+
+        # 🎯 할인 혜택 상세 안내 (누적 구매 금액에 따라 차등 제공)
+        if purchase_amount >= 10000:
+            discount = "500만원 할인 + 5% 캐시백"
+            perks = "💎 프리미엄 시승 체험 (최대 7일) + VIP 초청 행사 + 한정판 굿즈 제공"
+        elif purchase_amount >= 7000:
+            discount = "400만원 할인 + 3% 캐시백"
+            perks = "🏆 럭셔리 차량 시승 체험 (최대 5일) + 정비 패키지 업그레이드"
+        elif purchase_amount >= 5000:
+            discount = "300만원 할인 + 2% 캐시백"
+            perks = "🚘 고급 차량 시승 체험 (최대 3일) + 엔진오일 교환 1년 무상 제공"
+        elif purchase_amount >= 3000:
+            discount = "200만원 할인 + 포인트 적립 (구매 금액의 5%)"
+            perks = "🔧 무상 차량 점검 쿠폰 + 차량 보호 패키지 제공"
+        else:
+            discount = "100만원 할인"
+            perks = "🚗 기본 차량 점검 및 세차 쿠폰 제공"
+
+        st.subheader("🎯 재구매 할인 혜택 안내")
+        st.markdown(f"""
+        - **할인 혜택:** {discount}
+        - **할인 기간:** 2025년 4월 1일 ~ 2025년 12월 31일
+        - **추가 혜택:** {perks}
+        """)
+
+        st.markdown("---")
+
+
+        # 📋 일반 고객 리스트
+        st.subheader("📋 일반 고객 리스트")
+        normal_client = df.loc[df["고객 등급"] == "일반", ["이름", "휴대폰 번호", "이메일"]]
+        normal_client.reset_index(drop=True, inplace=True)
+        st.dataframe(normal_client)
+
+        st.markdown("---")
+
+        # ✅ 일반 고객을 위한 추가 프로모션 상세 설명
+        st.subheader("🎟️ 일반 고객을 위한 추가 프로모션")
+
+        st.markdown("""
+        1️⃣ **🚘 프리미엄 차량 시승 프로그램**
+        - 고객이 관심 있는 **고급 차량을 최대 7일간 무료로 시승**할 수 있는 기회 제공
+        - **페라리, 벤틀리, BMW M 시리즈 등 프리미엄 차량 포함**
+        - 시승 후 **구매 결정 시 추가 할인 제공 (최대 5% 추가 할인)**
+        - **트랙 주행 체험권 & 드라이빙 클래스 초청** 포함
+
+        2️⃣ **🎤 일반 고객 전용 VIP 초청 행사**
+        - **VIP 네트워킹 런치 초청**: 미슐랭 레스토랑에서 브랜드 대표 및 자동차 전문가와의 만남
+        - **신차 발표 & 럭셔리 시승 이벤트 초대**: 새로운 모델을 누구보다 빠르게 체험할 기회
+        - **자동차 전문가 & 유명 레이서와 함께하는 토크쇼**: 자동차 트렌드와 기술에 대한 심층 강의
+
+        3️⃣ **🔧 서비스 패키지 업그레이드**
+        - 일반 고객에게 **기본 차량 정비 패키지를 프리미엄 정비 패키지로 무료 업그레이드**
+        - **🚗 무료 차량 픽업 & 정비 후 딜리버리 서비스 제공**
+        - **1년간 엔진 오일 무상 교체 & 브레이크 패드 할인 제공**
+
+        4️⃣ **🎁 한정판 굿즈 & 컬렉터블 아이템 제공**
+        - 재구매 고객에게 **한정판 브랜드 키체인, 머그컵, 미니카 제공**
+        - 한정판 브랜드 의류(재킷, 모자 등) 선물
+        - **럭셔리 차량 브랜드와의 콜라보 굿즈 증정 (예: 포르쉐 x 테크아트 키링)**
+        """)
+
+        st.markdown("---")
+
+        # 📩 할인 혜택 안내 메시지 발송
+        st.subheader("📩 할인 혜택 안내 메시지")
+        st.write("일반 고객에게 이메일과 문자 메시지로 할인 혜택을 안내합니다.")
+        col1, col2, _ = st.columns([1, 1, 8])
+        with col1:
+            email_sent = st.button("📧 이메일 발송")
+        with col2:
+            sms_sent = st.button("📩 문자 발송")
+
+        if email_sent:
+            st.info("각 고객에게 할인 혜택 안내 이메일을 전송 중입니다. 잠시만 기다려주세요.")
+            
+            progress_bar = st.progress(0)
+            for percent in range(1, 101):
+                time.sleep(0.01)  # 실제 전송 과정에서는 API 호출 등이 이루어질 수 있음
+                progress_bar.progress(percent)
+            
+            st.success("✅ 모든 고객에게 할인 혜택 안내 이메일을 성공적으로 전송하였습니다.")
+        if sms_sent:
+            st.info("각 고객에게 할인 혜택 안내 문자를 전송 중입니다. 잠시만 기다려주세요.")
+            
+            progress_bar = st.progress(0)
+            for percent in range(1, 101):
+                time.sleep(0.01)  # 실제 전송 과정에서는 API 호출 등이 이루어질 수 있음
+                progress_bar.progress(percent)
+            
+            st.success("✅ 모든 고객에게 할인 혜택 안내 문자를 성공적으로 전송하였습니다.")
+
+        st.markdown("---")
+
+        # 📌 할인 혜택 안내 예시 (이메일 및 문자)
+        st.subheader("📌 할인 혜택 안내 예시")
+        col1, col2, _ = st.columns([3, 6, 1])
+        with col1:
+            st.image("images/email_sample.png", caption="📧 할인 안내 이메일 예시")
+        with col2:
+            st.image("images/sms_sample.png", caption="📩 할인 안내 문자 예시")
+
+        st.markdown("---")
+        st.markdown("##### 🚀 일반 고객을 위한 특별한 혜택을 제공해드립니다!")
+    elif grade == "VIP":
+        # VIP 고객 맞춤 프로모션 타이틀
+        st.markdown("## VIP 고객 맞춤 프로모션 & 프라이빗 스케줄")
+        st.write("VIP 고객을 대상으로 맞춤형 할인 혜택과 프라이빗 이벤트를 제공합니다.")
+
+        #  VIP 고객의 누적 구매 금액 입력
+        purchase_amount = st.number_input("🔢 누적 구매 금액 입력 (단위: 만 원)", min_value=0, step=100, value=5000)
+
+        #  VIP 등급 결정 및 맞춤 혜택 제공
+        if purchase_amount >= 30000:
+            grade = "💎 Prestige VIP"
+            discount = 12
+            extra_benefits = "✨ 최고급 리무진 서비스 + 프라이빗 럭셔리 요트 디너 + 최고급 골프장 초청"
+        elif purchase_amount >= 20000:
+            grade = "🏆 Royal VIP"
+            discount = 10
+            extra_benefits = "💎 VIP 전용 라운지 + 프리미엄 가죽 시트 업그레이드 + 개인 맞춤 컨시어지 서비스"
+        elif purchase_amount >= 10000:
+            grade = "🌟 Exclusive VIP"
+            discount = 7
+            extra_benefits = "🎖️ VIP 전용 이벤트 초대 + 맞춤형 차량 시승 + 우선 예약 혜택"
+        elif purchase_amount >= 5000:
+            grade = "🔹 Premium Member"
+            discount = 5
+            extra_benefits = " VIP 전용 차량 보관 서비스 + 무료 정기 차량 점검"
+        else:
+            grade = "💼 일반 고객"
+            discount = 0
+            extra_benefits = "❌ 추가 혜택 없음"
+
+        if purchase_amount >= 10000:
+            format_purchase = format(purchase_amount, ",")
+            purchase_1 = format_purchase[:-5] + "억 "
+            purchase_2 = format_purchase[-5:] + "만 "
+            if purchase_2.startswith("0"):
+                if purchase_2 == "0,000만 ":
+                    format_purchase = purchase_1
+                else:
+                    format_purchase = purchase_1 + purchase_2.lstrip("0,").lstrip("0")
+            else:
+                format_purchase = purchase_1 + purchase_2
+        else:
+            format_purchase = format(purchase_amount, ",") + "만 "
+
+        # 프로모션 적용 결과 출력
+        st.markdown("---")
+        st.subheader(" VIP 고객 맞춤 프로모션 적용 결과")
+        st.write(f"**누적 구매 금액:** {format_purchase}원")
+        st.write(f"**고객 등급:** {grade}")
+        st.write(f"**적용 할인율:** {discount}%")
+        st.write(f"**추가 제공 혜택:** {extra_benefits}")
+
+        #  할인 적용 후 예상 결제 금액 계산
+        if discount > 0:
+            final_price = round(purchase_amount * (1 - discount / 100))
+            format_final = ""
+            if final_price >= 10000:
+                format_final = format(final_price, ",")
+                final_1 = format_final[:-5] + "억 "
+                final_2 = format_final[-5:] + "만 "
+                if final_2.startswith("0"):
+                    if final_2 == "0,000만 ":
+                        format_final = final_1
+                    else:
+                        format_final = final_1 + final_2.lstrip("0,").lstrip("0")
+                else:
+                    format_final = final_1 + final_2
+            else:
+                format_final = format(final_price, ",") + "만 "
+                
+            st.write(f"**💰 할인 적용 후 예상 결제 금액:** {format_final}원")
+        else:
+            st.write("❌ 할인이 적용되지 않습니다.")
+
+        st.markdown("---")
+        st.markdown("### 🎉 **VIP 이상 고객만을 위한 맞춤형 컨시어지 서비스!** 😊")
+
+        # VIP 프로모션 옵션 선택
+        promotion = st.radio(" 원하는 VIP 프로모션을 선택하세요.", 
+                            [" 프라이빗 차량 체험 패키지 ", 
+                            " 차고지 예약 & 맞춤형 차량 보관 서비스 ",
+                            " 익스클루시브 이벤트 & 개인 맞춤형 혜택 ",
+                            " 커넥티드 라이프스타일 멤버십 "])
+
+        #  1️⃣ VIP 전용 ‘프라이빗 차량 체험 패키지’
+        if promotion == " 프라이빗 차량 체험 패키지 ":
+            st.subheader(" 프라이빗 차량 체험 패키지 ")
+            st.write("""
+            **VIP 고객 전용 ‘프라이빗 테스트 드라이브’ 제공**
+            - 특정 하이엔드 모델(제네시스, BMW, 벤츠, 포르쉐 등) 대상으로 진행  
+            - VIP 고객이 관심 있는 차량을 **7일간 무료 체험 후 구매 결정 가능**  
+            - 체험 후 구매할 경우 **최대 5% 추가 할인 혜택 제공**  
+            """)
+
+        #  2️⃣ VIP 전용 ‘차고지 예약 & 맞춤형 차량 보관 서비스’
+        elif promotion == " 차고지 예약 & 맞춤형 차량 보관 서비스 ":
+            st.subheader(" 차고지 예약 & 맞춤형 차량 보관 서비스 ")
+            st.write("""
+            **VIP 고객 전용 차량 보관 & 즉시 출고 서비스**
+            - VIP 고객이 **자주 사용하는 차량을 사전 예약 후 차고지에 보관**  
+            - 필요할 때 **즉시 차량을 출고할 수 있도록 대기 상태 유지**  
+            **장기 보관 후 구매 시 추가 혜택**
+            - VIP 고객이 장기 보관 후 차량을 구매할 경우 **보관료 20 ~ 40% 차감 혜택 제공**  
+            - 차량 보관료 : 고급차 (Luxury/스포츠카) 80만 ~ 150만원, 슈퍼카 (Supercar) 150만 ~ 300만원  
+            """)
+
+        #  3️⃣ ‘VIP 익스클루시브 이벤트 & 개인 맞춤형 혜택’
+        elif promotion == " 익스클루시브 이벤트 & 개인 맞춤형 혜택 ":
+            st.subheader(" 익스클루시브 이벤트 & 개인 맞춤형 혜택 ")
+            st.write("""
+            **VIP 고객 초청 ‘프라이빗 브랜드 이벤트’**
+            - 고급 레스토랑에서 진행하는 **VIP 초청 시승회 & 네트워킹 디너**  
+            - 유명 레이서와 함께하는 **서킷 체험 이벤트** 진행  
+            """)
+
+        #  4️⃣ VIP ‘커넥티드 라이프스타일 멤버십’
+        elif promotion == " 커넥티드 라이프스타일 멤버십 ":
+            st.subheader(" 커넥티드 라이프스타일 멤버십 ")
+            st.write("""
+            **VIP 전용 컨시어지 서비스 운영**
+            - 차량 정비, 세차, 보험, 유지보수를 전담하는 **프리미엄 컨시어지 서비스** 제공  
+            **VIP 고객 전용 글로벌 렌터카 & 모빌리티 서비스 연계**
+            - 해외 출장 시, VIP 고객에게 **프리미엄 렌터카 서비스 무료 제공**  
+            """)
+
+        st.markdown("---")
+        st.markdown("### 🎉 **VVIP 이상 고객만을 위한 맞춤형 컨시어지 서비스!** 😊")
+
+        #  고정된 6개월 VIP 이벤트 일정 생성
+        vip_event_data = pd.DataFrame({
+            "이벤트 제목": [
+                " 프라이빗 럭셔리 드라이브 체험", " VIP 초청 골프 라운딩", " Prestige VIP 요트 디너", 
+                " Royal VIP 런치", " Exclusive VIP 시승 & 맞춤 상담", "Prestige VIP 리무진 픽업 서비스",
+                " 하이엔드 스포츠카 드라이브", "프리미엄 골프 멤버십 체험", " VIP 요트 선상 파티",
+                " 미슐랭 셰프의 다이닝 경험", "VIP 하이브리드 모델 시승", " 글로벌 공항 VIP 리무진 서비스",
+                " 클래식카 드라이빙 투어", " 해외 골프 투어 패키지", " 초호화 크루즈 나이트"
+            ],
+            "일정": [
+                "2025-04-05", "2025-04-18", "2025-05-10",
+                "2025-05-25", "2025-06-08", "2025-06-22",
+                "2025-07-06", "2025-07-20", "2025-08-05",
+                "2025-08-22", "2025-09-10", "2025-09-28",
+                "2025-10-12", "2025-10-27", "2025-11-15"
+            ],
+            "장소": [
+                "한강 프라이빗 드라이브 코스", "제주 최고급 골프장", "부산 요트 클럽",
+                "서울 프라이빗 레스토랑", "전국 주요 대리점", "VIP 고객 지정 장소",
+                "서울 드라이빙 클럽", "제주 프리미엄 골프장", "부산 마리나 요트 선착장",
+                "미슐랭 3스타 레스토랑", "전국 주요 대리점", "해외 공항 VIP 터미널",
+                "서울 클래식카 박물관", "하와이 골프 투어", "지중해 크루즈 선착장"
+            ],
+            "참여 가능 등급": [
+                "Exclusive VIP", "Royal VIP", "Prestige VIP",
+                "Royal VIP, Prestige VIP", "Exclusive VIP", "Prestige VIP",
+                "Exclusive VIP", "Royal VIP", "Prestige VIP",
+                "Royal VIP, Prestige VIP", "Exclusive VIP", "Prestige VIP",
+                "Exclusive VIP", "Royal VIP", "Prestige VIP"
+            ],
+            "예약 가능 여부": [
+                "가능", "예약 마감", "가능", "가능", "가능", "예약 마감",
+                "가능", "가능", "예약 마감", "가능", "가능", "예약 마감",
+                "가능", "가능", "가능"
+            ],
+            "잔여석": [5, 0, 3, 8, 10, 0, 7, 5, 0, 9, 6, 0, 4, 8, 10]
+        })
+
+        # 월별 분류
+        vip_event_data["월"] = vip_event_data["일정"].apply(lambda x: datetime.strptime(x, "%Y-%m-%d").month)
+        monthly_events = vip_event_data.groupby("월")
+
+        #  월별 이벤트 캘린더 표시
+        st.markdown("####  VIP 월별 프라이빗 이벤트 스케줄")
+
+        #  월 선택 드롭다운
+        selected_month = st.selectbox(" 월을 선택하세요.", sorted(vip_event_data["월"].unique()))
+
+        # 선택한 월의 이벤트만 필터링
+        filtered_events = vip_event_data[vip_event_data["월"] == selected_month]
+
+        #  캘린더 형식으로 이벤트 정렬
+        st.markdown(f"###  {calendar.month_name[selected_month]} VIP 이벤트 일정")
+
+        #  보기 편한 이벤트 테이블 정리
+        styled_df = filtered_events[["이벤트 제목", "일정", "장소", "참여 가능 등급", "예약 가능 여부", "잔여석"]].copy()
+
+
+        styled_df = styled_df.style.set_table_styles([
+            {'selector': 'thead th', 'props': [('background-color', '#4F81BD'), ('color', 'white'), ('font-weight', 'bold')]},
+            {'selector': 'tbody td', 'props': [('text-align', 'center')]},
+            {'selector': 'th', 'props': [('text-align', 'center')]},
+        ]).format({'잔여석': "{:,.0f}석"})  # 잔여석 숫자 서식 적용
+
+        # 📋 보기 편한 테이블 출력
+        st.table(styled_df)
+        #  선택한 이벤트 상세 정보 표시
+        st.markdown("---")
+        st.subheader(" 현재 진행 중인 이벤트 상세 정보")
+
+        #  이벤트 선택
+        event_selection = st.radio(
+            " 자세히 보고 싶은 이벤트를 선택하세요.", 
+            filtered_events["이벤트 제목"].tolist(), 
+            key="event_selection"
+        )
+
+        # 선택한 이벤트 데이터 가져오기
+        selected_event = filtered_events[filtered_events["이벤트 제목"] == event_selection].iloc[0]
+
+        #  상세 설명 추가
+        st.markdown("---")
+        st.subheader(f"🎟️ {selected_event['이벤트 제목']} 상세 정보")
+
+        # 일정 및 기본 정보
+        st.write(f" **일정:** {selected_event['일정']}")
+        st.write(f" **장소:** {selected_event['장소']}")
+        st.write(f" **참여 가능 등급:** {selected_event['참여 가능 등급']}")
+        st.write(f" **예약 가능 여부:** {selected_event['예약 가능 여부']}")
+        st.write(f" **잔여석:** {selected_event['잔여석']}석")
+
+        #  프라이빗 럭셔리 드라이브 체험
+        if event_selection == " 프라이빗 럭셔리 드라이브 체험":
+            st.write("""
+            ✨ **프라이빗 럭셔리 드라이브 체험**
+            
+            -  **페라리, 람보르기니, 벤틀리 등 최고급 스포츠카 시승**
+            -  **서울 한강 및 한적한 교외 드라이브 코스 포함**
+            -  **전문 포토그래퍼가 촬영하는 럭셔리 드라이빙 기념사진 제공**
+            -  **시승 후 프라이빗 레스토랑에서 고급 다이닝**
+            -  **VIP 한정 기념품 제공 (럭셔리 키체인 & 프리미엄 시승권)**
+            """)
+
+        #  VIP 초청 골프 라운딩
+        elif event_selection == " VIP 초청 골프 라운딩":
+            st.write("""
+            **VIP 초청 골프 라운딩**
+            
+            -  **제주도 최고급 골프 리조트에서 진행**
+            -  **프라이빗 라운지에서 샴페인 리셉션**
+            -  **세계적인 프로 골퍼와 함께하는 원포인트 레슨**
+            -  **VIP 골프 굿즈 제공 (맞춤형 골프볼 & 고급 캐디백)**
+            -  **라운딩 후 고급 프렌치 다이닝에서 VIP 디너**
+            """)
+
+        #  Prestige VIP 요트 디너
+        elif event_selection == " Prestige VIP 요트 디너":
+            st.write("""
+            **Prestige VIP 요트 디너**
+            
+            -  **부산 요트 클럽에서 3시간 프라이빗 요트 투어**
+            -  **미슐랭 셰프가 준비하는 최고급 디너 제공**
+            -  **재즈 라이브 공연 & 샴페인 파티**
+            -  **프라이빗 바에서 프리미엄 칵테일 서비스**
+            -  **전문 포토그래퍼의 스냅 촬영 & 인스타그램 기념사진**
+            """)
+
+        #  Royal VIP 런치
+        elif event_selection == " Royal VIP 런치":
+            st.write("""
+            **Royal VIP 런치**
+            
+            -  **서울 최고의 미슐랭 3스타 레스토랑에서 진행**
+            -  **최고급 와인 & 맞춤형 코스 요리 제공**
+            -  **클래식 연주와 함께하는 럭셔리 점심**
+            -  **참석 고객에게 프리미엄 기프트 박스 제공**
+            """)
+
+        #  Exclusive VIP 시승 & 맞춤 상담
+        elif event_selection == " Exclusive VIP 시승 & 맞춤 상담":
+            st.write("""
+            **Exclusive VIP 시승 & 맞춤 상담**
+            
+            -  **벤츠, 포르쉐, 테슬라 최신 모델 시승 기회 제공**
+            -  **전국 주요 대리점에서 맞춤형 차량 상담**
+            -  **VIP 고객만을 위한 특별 금융 혜택 안내**
+            -  **시승 고객 한정, 프리미엄 차량 케어 패키지 증정**
+            """)
+
+        #  Prestige VIP 리무진 픽업 서비스
+        elif event_selection == " Prestige VIP 리무진 픽업 서비스":
+            st.write("""
+            **Prestige VIP 리무진 픽업 서비스**
+            
+            -  **롤스로이스, 벤츠 마이바흐 전용 리무진 서비스 제공**
+            -  **VIP 고객이 원하는 장소에서 맞춤형 픽업**
+            -  **차량 내 프리미엄 음료 & 고급 간식 제공**
+            -  **예약 고객에게 고급 브랜드 기념품 제공**
+            """)
+
+        # 예약 버튼 (예약 가능 시 활성화)
+        if selected_event["예약 가능 여부"] == "가능" and selected_event["잔여석"] > 0:
+            if st.button("✅ 예약하기", key="reservation_button"):
+                st.success(f"✅ {selected_event['이벤트 제목']} 예약이 완료되었습니다! 🎉")
+        else:
+            st.warning("❌ 해당 이벤트는 예약이 마감되었습니다.")
+
+        st.markdown("---")
+        st.write(" **VIP 고객만을 위한 차별화된 프리미엄 혜택을 제공합니다!** 🎖️")
