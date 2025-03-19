@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd
 
 st.set_page_config(page_title="프로젝트 정보", layout="wide")
 
@@ -63,16 +64,23 @@ st.write("""
 - 인코딩 완료한 데이터를 기반으로, 특정 연료 구분(예 : 디젤)에 해당하는 데이터 추출하여 학습 진행
     - 각 연료 구분에 대하여 9가지의 인공지능 모델을 활용
         - LogisticRegression, SVC, Decision Tree Classifier, Random Forest Classifier, Gradient Boosting Classifier, Gaussian Naive Bayes, K-Neighbors Classifier, Light GBM Classifier, Cat Boost Classifier
-    - 
+    - 각 모델의 성능을 평가하여 가장 높은 성능을 보인 모델을 최종 선정
 """)
 
-st.markdown("### 테스트된 머신러닝 모델 목록")
-st.table([
-    ["Decision Tree", "82.1%", "단순한 트리 기반 학습"],
-    ["Random Forest", "89.3%", "다중 트리를 활용한 앙상블 학습"],
-    ["LightGBM", "92.0%", "빠른 연산 속도, 대용량 데이터 적합"],
-    ["Gradient Boosting", "91.5%", "단계적 학습으로 성능 향상"]
-])
+st.markdown("### 테스트한 머신러닝 모델 정확도")
+data = {
+    "디젤 모델": ["91.7%", "91.7%", "100%", "100%", "100%", "91.7%", "91.7%", "91.7%", "100%"],
+    "전기 모델": ["100%", "100%", "100%", "100%", "100%", "100%", "100%", "100%", "100%"],
+    "휘발유 모델": ["27.3%", "100%", "100%", "100%", "100%", "100%", "100%", "100%", "100%"]
+}
+
+df = pd.DataFrame(data, index=["Logistic Regression", "SVC", "Decision Tree Classifier", "Random Forest Classifier",
+                               "Gradient Boosting Classifier", "Gaussian Naive Bayes", "K-Neighbors Classifier", "Light GBM Classifier",
+                               "Cat Boost Classifier"])
+
+col1, col2 = st.columns([3, 2])
+with col1:
+    st.table(df)
 
 st.markdown("### 최종 모델 선정")
 st.write("""
