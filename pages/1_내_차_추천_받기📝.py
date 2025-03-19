@@ -5,10 +5,41 @@ import numpy as np
 import os
 import time
 
+# 커스텀 메시지 함수: 이미지와 배경, 글자색을 지정하여 눈에 띄게 만듭니다.
+def custom_message(message, msg_type="success"):
+    if msg_type == "success":
+        image_url = "https://img.icons8.com/color/48/000000/checked--v1.png"
+        background = "#d4edda"
+        color = "#155724"
+    elif msg_type == "info":
+        image_url = "https://img.icons8.com/color/48/000000/info--v1.png"
+        background = "#d1ecf1"
+        color = "#0c5460"
+    elif msg_type == "error":
+        image_url = "https://img.icons8.com/color/48/000000/high-importance.png"
+        background = "#f8d7da"
+        color = "#721c24"
+    elif msg_type == "promotion1":
+        image_url = "https://img.icons8.com/color/48/000000/gift--v1.png"
+        background = "#fff4e5"
+        color = "#8a6d3b"
+    elif msg_type == "promotion2":
+        image_url = "https://img.icons8.com/color/48/000000/prize.png"
+        background = "#fff4e5"
+        color = "#8a6d3b"
+    else:
+        image_url = ""
+        background = "#ffffff"
+        color = "#000000"
+    html_string = f'''
+    <div style="display: flex; align-items: center; padding: 15px; border-radius: 8px; background-color: {background}; margin: 10px 0;">
+        <img src="{image_url}" style="width: 48px; height: 48px; margin-right: 15px;">
+        <span style="font-size: 22px; font-weight: bold; color: {color};">{message}</span>
+    </div>
+    '''
+    st.markdown(html_string, unsafe_allow_html=True)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-
-# 모델 로드
 model_dir = os.path.join(base_dir, "..", "model", "models")
 
 def load_model(path):
@@ -16,9 +47,7 @@ def load_model(path):
         raise FileNotFoundError(f"모델 파일을 찾을 수 없습니다: {path}")
     return joblib.load(path)
 
-# 데이터셋 로드
 data_dir = os.path.join(base_dir, "..", "data")
-
 data_path = os.path.join(data_dir, "고객db_전처리.csv")
 
 def load_data(path):
@@ -28,26 +57,29 @@ def load_data(path):
 
 df = load_data(data_path)
 
-
 st.title("고객 정보 입력 & 차량 추천")
 
-
-# 사용자 입력
 budget = st.number_input("구매 예산을 입력하세요. (단위: 만원)", min_value=3300, max_value=200000, step=500, value=5000)
-region = st.selectbox("거주 지역이 어떻게 되시나요?", ['서울특별시', '부산광역시', '인천광역시', '대구광역시', '광주광역시', '대전광역시',
-        '울산광역시', '경기도 수원시', '경기도 성남시', '충청남도 천안시', '충청북도 청주시', '전라북도 전주시', '전라남도 목포시', '경상북도 포항시',
-        '경상남도 창원시'])
+region = st.selectbox("거주 지역이 어떻게 되시나요?", [
+    '서울특별시', '부산광역시', '인천광역시', '대구광역시', '광주광역시', '대전광역시',
+    '울산광역시', '경기도 수원시', '경기도 성남시', '충청남도 천안시', '충청북도 청주시',
+    '전라북도 전주시', '전라남도 목포시', '경상북도 포항시', '경상남도 창원시'
+])
 car_size = st.selectbox("선호하시는 차량 사이즈가 무엇인가요?", ["준중형", "중형", "준대형", "대형", "프리미엄"])
 car_type = st.selectbox("선호하시는 차량 유형은 무엇인가요?", ["세단", "SUV", "해치백"])
 fuel_type = st.selectbox("어떤 연료 구분의 차량을 찾고 계신가요?", ["디젤", "수소", "전기", "플러그인 하이브리드", "하이브리드", "휘발유"])
 
+custom_message("💳 [신용카드 혜택] 구매 시 최대 10% 포인트 적립 혜택을 누리세요!", "promotion1")
+custom_message("🎁 [현대카드 이용자 혜택] 현대카드 슈퍼콘서트 2025 VIP 티켓을 드립니다!", "promotion2")
 
-# 추천 버튼
+st.write("")
+
 if st.button("추천 받기"):
-
     with st.spinner("추천 결과를 생성 중입니다..."):
         time.sleep(3)
-        st.success("추천 결과가 생성되었습니다.")
+        custom_message("🎉 고객님을 위한 추천 결과가 생성되었습니다! 🚀", "success")
+    
+    st.balloons()
 
     region_list = {
         "경기도 성남시": [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -90,10 +122,7 @@ if st.button("추천 받기"):
         "휘발유": [0,0,0,0,0,1]
     }
 
-
-    # 사용자 입력 데이터를 모델이 예측할 수 있는 형태로 변환
     user_data = np.hstack([budget * 10000, region_list[region], car_size_list[car_size], car_type_list[car_type]]).reshape(1, -1)[0]
-    
     user_data = np.array(user_data).reshape(1, 24)
 
     if fuel_type not in ["수소", "플러그인 하이브리드", "하이브리드"]:
@@ -107,39 +136,39 @@ if st.button("추천 받기"):
         gbc = load_model(gbc_path)
         lgb = load_model(lgb_path)
 
-        # 각 모델을 통해 추천 결과 생성
         recom_list = []
         recom_list.append(dtc.predict(user_data)[0])
         recom_list.append(rfc.predict(user_data)[0])
         recom_list.append(gbc.predict(user_data)[0])
         recom_list.append(lgb.predict(user_data)[0])
-
-
-        # 중복 제거 및 정렬
         recom_list = list(set(recom_list))
+    else:
+        if fuel_type == "수소":
+            recom_list = ["NEXO (FE)"]
+        elif fuel_type == "플러그인 하이브리드":
+            recom_list = ["Santa-Fe (MX5 PHEV)", "Tucson (NX4 PHEV)"]
+        else:
+            recom_list = ["Grandeur (GN7 HEV)"]
 
-
-    # 차량 정보 리스트
     car_list = {
-            "Avante (CN7 N)": "아반떼 CN7 N\n - 가격: 2,485만원\n - 연비: 15.1km/L\n - 배기량: 1,598cc\n - 최대출력: 123마력\n - 최대토크: 15.0kg.m",
-            "Avante (CN7 HEV)": "아반떼 CN7 HEV\n - 가격: 2,785만원\n - 연비: 19.2km/L\n - 배기량: 1,598cc\n - 최대출력: 105마력\n - 최대토크: 17.0kg.m\n",
-            "Grandeur (GN7 HEV)": "그랜저 GN7 HEV\n - 가격: 3,785만원\n - 연비: 14.6km/L\n - 배기량: 1,999cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
-            "G80 (RG3)": "G80 RG3\n - 가격: 6,750만원\n - 연비: 10.5km/L\n - 배기량: 3,778cc\n - 최대출력: 315마력\n - 최대토크: 40.0kg.m\n",
-            "Santa-Fe ™": "Santa-Fe ™\n - 가격: 3,870만원\n - 연비: 14.6km/L\n - 배기량: 1,598cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
-            "Santa-Fe (MX5 PHEV)": "Santa-Fe MX5 PHEV\n - 가격: 4,785만원\n - 연비: 15.1km/L\n - 배기량: 1,598cc\n - 최대출력: 123마력\n - 최대토크: 15.0kg.m\n",
-            "Tucson (NX4 PHEV)": "Tucson NX4 PHEV\n - 가격: 3,785만원\n - 연비: 19.2km/L\n - 배기량: 1,598cc\n - 최대출력: 105마력\n - 최대토크: 17.0kg.m\n",
-            "Palisade (LX2)": "Palisade LX2\n - 가격: 3,785만원\n - 연비: 14.6km/L\n - 배기량: 1,999cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
-            "IONIQ (AE EV)": "IONIQ AE EV\n - 가격: 6,750만원\n - 연비: 10.5km/L\n - 배기량: 3,778cc\n - 최대출력: 315마력\n - 최대토크: 40.0kg.m\n",
-            "IONIQ 6 (CE)": "IONIQ 6 CE\n - 가격: 3,870만원\n - 연비: 14.6km/L\n - 배기량: 1,598cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
-            "NEXO (FE)": "NEXO FE\n - 가격: 4,785만원\n - 연비: 15.1km/L\n - 배기량: 1,598cc\n - 최대출력: 123마력\n - 최대토크: 15.0kg.m\n",
-            "G90 (HI)": "G90 HI\n - 가격: 3,785만원\n - 연비: 19.2km/L\n - 배기량: 1,598cc\n - 최대출력: 105마력\n - 최대토크: 17.0kg.m\n",
-            "G70 (IK)": "G70 IK\n - 가격: 3,785만원\n - 연비: 14.6km/L\n - 배기량: 1,999cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
-            "i30 (PD)": "i30 PD\n - 가격: 6,750만원\n - 연비: 10.5km/L\n - 배기량: 3,778cc\n - 최대출력: 315마력\n - 최대토크: 40.0kg.m\n",
-            "GV80 (RS4)": "GV80 RS4\n - 가격: 3,870만원\n - 연비: 14.6km/L\n - 배기량: 1,598cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
-            "G90 (RS4)": "G90 RS4\n - 가격: 4,785만원\n - 연비: 15.1km/L\n - 배기량: 1,598cc\n - 최대출력: 123마력\n - 최대토크: 15.0kg.m\n"
+        "Avante (CN7 N)": "아반떼 CN7 N\n - 가격: 2,485만원\n - 연비: 15.1km/L\n - 배기량: 1,598cc\n - 최대출력: 123마력\n - 최대토크: 15.0kg.m",
+        "Avante (CN7 HEV)": "아반떼 CN7 HEV\n - 가격: 2,785만원\n - 연비: 19.2km/L\n - 배기량: 1,598cc\n - 최대출력: 105마력\n - 최대토크: 17.0kg.m\n",
+        "Grandeur (GN7 HEV)": "그랜저 GN7 HEV\n - 가격: 3,785만원\n - 연비: 14.6km/L\n - 배기량: 1,999cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
+        "G80 (RG3)": "G80 RG3\n - 가격: 6,750만원\n - 연비: 10.5km/L\n - 배기량: 3,778cc\n - 최대출력: 315마력\n - 최대토크: 40.0kg.m\n",
+        "Santa-Fe ™": "Santa-Fe ™\n - 가격: 3,870만원\n - 연비: 14.6km/L\n - 배기량: 1,598cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
+        "Santa-Fe (MX5 PHEV)": "Santa-Fe MX5 PHEV\n - 가격: 4,785만원\n - 연비: 15.1km/L\n - 배기량: 1,598cc\n - 최대출력: 123마력\n - 최대토크: 15.0kg.m\n",
+        "Tucson (NX4 PHEV)": "Tucson NX4 PHEV\n - 가격: 3,785만원\n - 연비: 19.2km/L\n - 배기량: 1,598cc\n - 최대출력: 105마력\n - 최대토크: 17.0kg.m\n",
+        "Palisade (LX2)": "Palisade LX2\n - 가격: 3,785만원\n - 연비: 14.6km/L\n - 배기량: 1,999cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
+        "IONIQ (AE EV)": "IONIQ AE EV\n - 가격: 6,750만원\n - 연비: 10.5km/L\n - 배기량: 3,778cc\n - 최대출력: 315마력\n - 최대토크: 40.0kg.m\n",
+        "IONIQ 6 (CE)": "IONIQ 6 CE\n - 가격: 3,870만원\n - 연비: 14.6km/L\n - 배기량: 1,598cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
+        "NEXO (FE)": "NEXO FE\n - 가격: 4,785만원\n - 연비: 15.1km/L\n - 배기량: 1,598cc\n - 최대출력: 123마력\n - 최대토크: 15.0kg.m\n",
+        "G90 (HI)": "G90 HI\n - 가격: 3,785만원\n - 연비: 19.2km/L\n - 배기량: 1,598cc\n - 최대출력: 105마력\n - 최대토크: 17.0kg.m\n",
+        "G70 (IK)": "G70 IK\n - 가격: 3,785만원\n - 연비: 14.6km/L\n - 배기량: 1,999cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
+        "i30 (PD)": "i30 PD\n - 가격: 6,750만원\n - 연비: 10.5km/L\n - 배기량: 3,778cc\n - 최대출력: 315마력\n - 최대토크: 40.0kg.m\n",
+        "GV80 (RS4)": "GV80 RS4\n - 가격: 3,870만원\n - 연비: 14.6km/L\n - 배기량: 1,598cc\n - 최대출력: 159마력\n - 최대토크: 19.3kg.m\n",
+        "G90 (RS4)": "G90 RS4\n - 가격: 4,785만원\n - 연비: 15.1km/L\n - 배기량: 1,598cc\n - 최대출력: 123마력\n - 최대토크: 15.0kg.m\n"
     }
     
-    # 최소 가격 리스트
     min_price_list = {
         "Avante (CN7 N)": "3,309만원",
         "Avante (CN7 HEV)": "2,485만원",
@@ -159,173 +188,62 @@ if st.button("추천 받기"):
         "G90 (RS4)": "1억 7,520만원"
     }
 
-    tab1, tab2, tab3 = st.tabs(["추천 차량 리스트", "추가 혜택 제공", "전기차 추천"])
+    tab1, tab2 = st.tabs(["추천 차량 리스트", "전기차 추천"])
 
     with tab1:
-        # 결과 출력
         st.subheader("추천 차량 리스트")
-
-        # 차량 개수에 따라 컬럼을 동적으로 생성 (예: 3개씩 한 줄)
         columns_per_row = 3  
         if fuel_type not in ["수소", "플러그인 하이브리드", "하이브리드"]:
             num_cars = len(recom_list)
         else:
-            if fuel_type in ["수소", "하이브리드"]:
-                num_cars = 1
-            else:
-                num_cars = 2
+            num_cars = 1 if fuel_type in ["수소", "하이브리드"] else 2
 
-        # Markdown 테이블 헤더 생성 (열 개수에 맞게)
         header_titles = [f"추천 차량 {i+1}" for i in range(min(columns_per_row, num_cars))]
         table_header = "| " + " | ".join(header_titles) + " |\n"
         table_header += "| " + " | ".join(["---"] * min(columns_per_row, num_cars)) + " |\n"
 
-        # 이미지 행 및 텍스트 행 생성
         img_rows = []
         text_rows = []
 
         if fuel_type not in ["수소", "플러그인 하이브리드", "하이브리드"]:
             for idx, car_name in enumerate(recom_list):
-                # 차량 이미지 URL 가져오기
                 image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
                 img_tag = f'<img src="{image_url}" width="320">' if image_url else "이미지 없음"
-
-                # 차량 정보 정리
                 fuel = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
                 price = f"{min_price_list.get(car_name, '가격 정보 없음')}~"
                 mileage = df.loc[df['최근 구매 제품'] == car_name, '차량 연비'].to_numpy()[0]
                 engine = df.loc[df['최근 구매 제품'] == car_name, '배기량'].to_numpy()[0]
                 power = df.loc[df['최근 구매 제품'] == car_name, '최대 출력'].to_numpy()[0]
-
-                # 차량 정보 요약 생성 (HTML <br> 사용)
                 summary = f"**{car_name}**<br>연료 구분: {fuel}<br>가격: {price}<br>연비: {mileage}<br>배기량: {engine}<br>최대 출력: {power}"
-
-                # 행 데이터를 리스트에 추가
                 img_rows.append(img_tag)
                 text_rows.append(summary)
-
-                # 줄바꿈 처리 (3개씩 한 줄)
                 if (idx + 1) % columns_per_row == 0 or idx == num_cars - 1:
                     img_row = "| " + " | ".join(img_rows) + " |\n"
                     text_row = "| " + " | ".join(text_rows) + " |\n"
-                    table_header += img_row + text_row  # 테이블에 추가
-                    img_rows, text_rows = [], []  # 리스트 초기화
+                    table_header += img_row + text_row
+                    img_rows, text_rows = [], []
         else:
-            if fuel_type == "수소":
-                recom_list = ["NEXO (FE)"]
-            elif fuel_type == "플러그인 하이브리드":
-                recom_list = ["Santa-Fe (MX5 PHEV)", "Tucson (NX4 PHEV)"]
-            else:
-                recom_list = ["Grandeur (GN7 HEV)"]
             for idx, car_name in enumerate(recom_list):
-                # 차량 이미지 URL 가져오기
                 image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
                 img_tag = f'<img src="{image_url}" width="320">' if image_url else "이미지 없음"
-
-                # 차량 정보 정리
                 fuel = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
                 price = f"{min_price_list.get(car_name, '가격 정보 없음')}~"
                 mileage = df.loc[df['최근 구매 제품'] == car_name, '차량 연비'].to_numpy()[0]
                 engine = df.loc[df['최근 구매 제품'] == car_name, '배기량'].to_numpy()[0]
                 power = df.loc[df['최근 구매 제품'] == car_name, '최대 출력'].to_numpy()[0]
-
-                # 차량 정보 요약 생성 (HTML <br> 사용)
                 summary = f"**{car_name}**<br>연료 구분: {fuel}<br>가격: {price}<br>연비: {mileage}<br>배기량: {engine}<br>최대 출력: {power}"
-
-                # 행 데이터를 리스트에 추가
                 img_rows.append(img_tag)
                 text_rows.append(summary)
-
-                # 줄바꿈 처리 (3개씩 한 줄)
                 if (idx + 1) % columns_per_row == 0 or idx == num_cars - 1:
                     img_row = "| " + " | ".join(img_rows) + " |\n"
                     text_row = "| " + " | ".join(text_rows) + " |\n"
-                    table_header += img_row + text_row  # 테이블에 추가
-                    img_rows, text_rows = [], []  # 리스트 초기화
-
-        # Markdown을 사용하여 테이블 출력 (HTML 허용)
+                    table_header += img_row + text_row
+                    img_rows, text_rows = [], []
         st.markdown(table_header, unsafe_allow_html=True)
     
     with tab2:
-        # 추가 혜택 제공 (예: 신용카드 혜택 안내)
-        # 사용자가 설정한 예산의 150% 수준의 차량 추천
-        st.info("신용카드로 구매 시 10% 포인트 적립 혜택을 받을 수 있습니다!")
-
-        if fuel_type not in ["수소", "플러그인 하이브리드", "하이브리드"]:
-            cred_data = np.hstack([budget * 15000, region_list[region], car_size_list[car_size], car_type_list[car_type]]).reshape(1, -1)[0]
-            
-            cred_data = np.array(cred_data).reshape(1, 24)
-
-            cred_list = []
-            cred_list.append(dtc.predict(cred_data)[0])
-            cred_list.append(rfc.predict(cred_data)[0])
-            cred_list.append(gbc.predict(cred_data)[0])
-            cred_list.append(lgb.predict(cred_data)[0])
-
-            # 중복 제거 및 정렬
-            cred_list = list(set(cred_list))
-
-            # 가격대 조금 더 높은 제품 추천
-            # 최초 추천 리스트와 동일한 결과 나올 경우 실시 X
-            # 실시하더라도 최초 추천 리스트에는 존재하지 않는 차종만 추천
-            if set(cred_list).difference(set(recom_list)) is None:
-                st.subheader("추천 차량 리스트")
-                with st.spinner("추천 결과를 생성 중입니다..."):
-                    time.sleep(3)
-                    st.success("아래 차량은 어떠신가요?")
-
-                # 차량 개수에 따라 컬럼을 동적으로 생성 (한 줄에 3개씩 표시)
-                columns_per_row = 3
-                filtered_cred_list = [i for i in cred_list if i not in recom_list]
-                num_cars = len(filtered_cred_list)
-
-                # 추천 차량 번호를 포함한 테이블 헤더 생성
-                header_titles = [f"추천 차량 {i+1}" for i in range(min(columns_per_row, num_cars))]
-                table_header = "| " + " | ".join(header_titles) + " |\n"
-                table_header += "| " + " | ".join(["---"] * min(columns_per_row, num_cars)) + " |\n"
-
-                # 이미지 행 및 텍스트 행 생성
-                img_rows = []
-                text_rows = []
-
-                for idx, car_name in enumerate(filtered_cred_list):
-                    # 차량 이미지 URL 가져오기
-                    image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
-                    img_tag = f'<img src="{image_url}" width="320">' if image_url else "이미지 없음"
-
-                    # 차량 정보 정리
-                    fuel = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
-                    price = f"{min_price_list.get(car_name, '가격 정보 없음')}~"
-                    mileage = df.loc[df['최근 구매 제품'] == car_name, '차량 연비'].to_numpy()[0]
-                    engine = df.loc[df['최근 구매 제품'] == car_name, '배기량'].to_numpy()[0]
-                    power = df.loc[df['최근 구매 제품'] == car_name, '최대 출력'].to_numpy()[0]
-
-                    # 차량 정보 요약 생성 (HTML <br> 사용)
-                    summary = f"**{car_name}**<br>연료 구분: {fuel}<br>가격: {price}<br>연비: {mileage}<br>배기량: {engine}<br>최대 출력: {power}"
-
-                    # 행 데이터를 리스트에 추가
-                    img_rows.append(img_tag)
-                    text_rows.append(summary)
-
-                    # 줄바꿈 처리 (3개씩 한 줄)
-                    if (idx + 1) % columns_per_row == 0 or idx == num_cars - 1:
-                        img_row = "| " + " | ".join(img_rows) + " |\n"
-                        text_row = "| " + " | ".join(text_rows) + " |\n"
-                        table_header += img_row + text_row  # 테이블에 추가
-                        img_rows, text_rows = [], []  # 리스트 초기화
-
-                # Markdown을 사용하여 테이블 출력 (HTML 허용)
-                st.markdown(table_header, unsafe_allow_html=True)
-            else:
-                st.error("현재 추천해드릴 차량이 없어요. 원하시는 조건을 다시 선택해주시면, 딱 맞는 차량을 찾아드릴게요! 🚗✨")
-        else:
-            st.error("현재 추천해드릴 차량이 없어요. 원하시는 조건을 다시 선택해주시면, 딱 맞는 차량을 찾아드릴게요! 🚗✨")
-    
-    with tab3:
-        # 전기차 추천
-        # 사용자가 전기차가 아닌 차종을 선택한 경우 대안으로 전기차 추천
         if fuel_type in ["전기", "플러그인 하이브리드", "하이브리드"]:
-            st.info("이미 전기차를 선택하셨습니다. 💡 다른 전기차 옵션을 보여드릴게요!")
+            custom_message("⚡ 이미 전기차를 선택하셨네요! 다른 전기차 옵션도 한 번 확인해보세요!", "info")
             recom_elec = df.loc[(df["최근 거래 금액"] <= budget * 10000) & (df["연료 구분"].isin(["전기", "플러그인 하이브리드", "하이브리드"])), "최근 구매 제품"].unique()
             recom_elec = recom_elec.tolist()
             for car in recom_list:
@@ -334,53 +252,32 @@ if st.button("추천 받기"):
             recom_elec = list(set(recom_elec))[:3]
             with st.spinner("추천 결과를 생성 중입니다..."):
                 time.sleep(3)
-            # 한 줄에 몇 개의 차량을 표시할지 결정 (예: 3개)
             columns_per_row = 3  
             num_cars = len(recom_elec)
-
             if num_cars > 0:
                 st.subheader("전기차 추천 리스트")
-
-                # 추천 차량 번호를 포함한 테이블 헤더 생성
                 header_titles = [f"추천 차량 {i+1}" for i in range(min(columns_per_row, num_cars))]
                 table_header = "| " + " | ".join(header_titles) + " |\n"
                 table_header += "| " + " | ".join(["---"] * min(columns_per_row, num_cars)) + " |\n"
-
-                # 이미지 행 및 텍스트 행 생성
                 img_rows = []
                 text_rows = []
-
                 for idx, car_name in enumerate(recom_elec):
-                    # 차량 이미지 URL 가져오기
                     image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
                     img_tag = f'<img src="{image_url}" width="320">' if image_url else "이미지 없음"
-
-                    # 차량 정보 정리
-                    fuel_type = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
+                    fuel_type_val = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
                     price = f"{min_price_list.get(car_name, '가격 정보 없음')}~"
                     mileage = df.loc[df['최근 구매 제품'] == car_name, '차량 연비'].to_numpy()[0]
                     power = df.loc[df['최근 구매 제품'] == car_name, '최대 출력'].to_numpy()[0]
-
-                    # 차량 정보 요약 생성 (HTML <br> 사용)
-                    summary = f"**{car_name}**<br>연료 구분: {fuel_type}<br>가격: {price}<br>연비: {mileage}<br>최대 출력: {power}"
-
-                    # 행 데이터를 리스트에 추가
+                    summary = f"**{car_name}**<br>연료 구분: {fuel_type_val}<br>가격: {price}<br>연비: {mileage}<br>최대 출력: {power}"
                     img_rows.append(img_tag)
                     text_rows.append(summary)
-
-                    # 줄바꿈 처리 (3개씩 한 줄)
                     if (idx + 1) % columns_per_row == 0 or idx == num_cars - 1:
                         img_row = "| " + " | ".join(img_rows) + " |\n"
                         text_row = "| " + " | ".join(text_rows) + " |\n"
-                        table_header += img_row + text_row  # 테이블에 추가
-                        img_rows, text_rows = [], []  # 리스트 초기화
-
-                # Markdown을 사용하여 테이블 출력 (HTML 허용)
+                        table_header += img_row + text_row
+                        img_rows, text_rows = [], []
                 st.markdown(table_header, unsafe_allow_html=True)
-
         else:
-            st.info("전기차가 아닌 차종을 선택하셨습니다. 보조금도 받고, 전기차로 구매하시는 건 어떠신가요?")
-
             elec_car_compen = {
                 "서울특별시": 9000000,
                 "부산광역시": 10500000,
@@ -399,64 +296,61 @@ if st.button("추천 받기"):
                 "경상남도 창원시": 13000000
             }
 
-
-            # 숫자를 천 단위로 쉼표로 구분하는 함수
             def comma(x):
                 return format(x, ',')
             
-            st.info(f"{region}의 전기차 보조금은 {comma(elec_car_compen[region])}원입니다.")
-
             compen = elec_car_compen[region]
-            recom_elec = df.loc[(df["최근 거래 금액"] <= budget * 10000 + compen) & (df["연료 구분"].isin(["전기", "플러그인 하이브리드", "하이브리드"])), "최근 구매 제품"].unique()[:3]
-            print(recom_elec)
 
-            st.subheader("추천 차량 리스트")
+            recom_elec = df.loc[(df["최근 거래 금액"] <= budget * 10000 + compen) & (df["연료 구분"].isin(["전기", "플러그인 하이브리드", "하이브리드"])), "최근 구매 제품"].unique()[:3]
             with st.spinner("추천 결과를 생성 중입니다..."):
                 time.sleep(3)
-                st.success("아래 차량은 어떠신가요?")
+                custom_message(
+                    f"""
+                    ✨ 최적의 전기차 추천 리스트가 준비되었습니다! 
+                    <span style="font-size: 16px; color: #555;">(💡 {region} 지역의 전기차 보조금: {comma(elec_car_compen[region])}원)</span>
+                    """,
+                    "info"
+                )
 
-            # 한 줄에 몇 개의 차량을 표시할지 결정 (예: 3개)
+            # st.markdown(
+            #     f"""
+            #     <div style="
+            #         padding: 15px;
+            #         background-color: #f8f9fa;
+            #         border-radius: 10px;
+            #         border-left: 5px solid #17a2b8;
+            #         font-size: 18px;
+            #         font-weight: bold;
+            #         color: #0c5460;
+            #         margin: 15px 0;
+            #     ">
+            #     💡 {region} 지역의 전기차 보조금: <span style="color: #007bff;">{comma(elec_car_compen[region])}원</span>
+            #     </div>
+            #     """,
+            #     unsafe_allow_html=True
+            # )
             columns_per_row = 3  
             num_cars = len(recom_elec)
-
             if num_cars > 0:
                 st.subheader("전기차 추천 리스트")
-
-                # 추천 차량 번호를 포함한 테이블 헤더 생성
                 header_titles = [f"추천 차량 {i+1}" for i in range(min(columns_per_row, num_cars))]
                 table_header = "| " + " | ".join(header_titles) + " |\n"
                 table_header += "| " + " | ".join(["---"] * min(columns_per_row, num_cars)) + " |\n"
-
-                # 이미지 행 및 텍스트 행 생성
                 img_rows = []
                 text_rows = []
-
                 for idx, car_name in enumerate(recom_elec):
-                    # 차량 이미지 URL 가져오기
                     image_url = df.loc[df['최근 구매 제품'] == car_name, '모델 사진'].to_numpy()[0]
                     img_tag = f'<img src="{image_url}" width="320">' if image_url else "이미지 없음"
-
-                    # 차량 정보 정리
-                    fuel_type = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
+                    fuel_type_val = df.loc[df['최근 구매 제품'] == car_name, '연료 구분'].to_numpy()[0]
                     price = f"{min_price_list.get(car_name, '가격 정보 없음')}~"
                     mileage = df.loc[df['최근 구매 제품'] == car_name, '차량 연비'].to_numpy()[0]
                     power = df.loc[df['최근 구매 제품'] == car_name, '최대 출력'].to_numpy()[0]
-
-                    # 차량 정보 요약 생성 (HTML <br> 사용)
-                    summary = f"**{car_name}**<br>연료 구분: {fuel_type}<br>가격: {price}<br>연비: {mileage}<br>최대 출력: {power}"
-
-                    # 행 데이터를 리스트에 추가
+                    summary = f"**{car_name}**<br>연료 구분: {fuel_type_val}<br>가격: {price}<br>연비: {mileage}<br>최대 출력: {power}"
                     img_rows.append(img_tag)
                     text_rows.append(summary)
-
-                    # 줄바꿈 처리 (3개씩 한 줄)
                     if (idx + 1) % columns_per_row == 0 or idx == num_cars - 1:
                         img_row = "| " + " | ".join(img_rows) + " |\n"
                         text_row = "| " + " | ".join(text_rows) + " |\n"
-                        table_header += img_row + text_row  # 테이블에 추가
-                        img_rows, text_rows = [], []  # 리스트 초기화
-
-                # Markdown을 사용하여 테이블 출력 (HTML 허용)
+                        table_header += img_row + text_row
+                        img_rows, text_rows = [], []
                 st.markdown(table_header, unsafe_allow_html=True)
-
-        
