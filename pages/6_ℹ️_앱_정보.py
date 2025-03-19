@@ -53,9 +53,12 @@ st.markdown("---")
 st.markdown("## 4. 인공지능 학습 및 모델 최적화")
 st.write("""
 ### 머신러닝 모델링 과정
-- 여러 머신러닝 모델을 비교하여 최적 성능을 보이는 모델을 선정함.
-- Grid Search 및 Hyperparameter Tuning을 통해 모델 성능을 최적화함.
-- 최적화된 모델을 Streamlit 기반 애플리케이션에서 실시간 예측에 활용함.
+- 사용자의 입력 데이터를 기반으로, 추천 차량의 제품명을 도출하는 Classificaion 문제
+    - 입력 데이터 : 거주 지역, 구매 예산, 차량 선호 사이즈, 차량 선호 유형, 차량 선호 연료 유형
+    - 출력 데이터 : 추천 차량 제품명
+- 전처리 완료한 데이터를 기반으로, 총 9가지의 인공지능 모델을 활용하여 학습 진행
+    - LogisticRegression, SVC, Decision Tree Classifier, Random Forest Classifier, Gradient Boosting Classifier, Gaussian Naive Bayes, K-Neighbors Classifier, Light GBM Classifier, Cat Boost Classifier
+    - 
 """)
 
 st.markdown("### 테스트된 머신러닝 모델 목록")
