@@ -7,22 +7,23 @@ import seaborn as sb
 import time
 from datetime import datetime
 import calendar
-
-
-# 차트 한글화 코드
+from matplotlib import font_manager, rc
 import platform
 
-from matplotlib import font_manager, rc
-plt.rcParams['axes.unicode_minus'] = False
 
-if platform.system() == 'Darwin':
-    rc('font', family='AppleGothic')
-elif platform.system() == 'Windows':
-    path = "c:/Windows/Fonts/malgun.ttf"
-    font_name = font_manager.FontProperties(fname=path).get_name()
-    rc('font', family=font_name)
-else:
-    print('Unknown system... sorry~~~~')
+# 한글 폰트 설정
+plt.rcParams["axes.unicode_minus"] = False
+
+if platform.system() == "Darwin":  # macOS
+    rc("font", family="AppleGothic")
+elif platform.system() == "Windows":  # Windows
+    font_path = "C:/Windows/Fonts/malgun.ttf"  # 맑은 고딕
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    rc("font", family=font_name)
+elif platform.system() == "Linux":  # Linux (Ubuntu, Docker 등)
+    font_path = "/usr/share/fonts/truetype/nanum/NanumGothic.ttf"  # 나눔고딕
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    rc("font", family=font_name)
 
 
 st.title("📈 마케팅 전략")
