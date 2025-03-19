@@ -14,11 +14,11 @@ plt.rcParams["axes.unicode_minus"] = False
 if platform.system() == "Darwin":  # macOS
     rc("font", family="AppleGothic")
 elif platform.system() == "Windows":  # Windows
-    font_path = "/Users/mi-yeonlim/Documents/Github/mini-project-1/fonts/NanumGothic.ttf"  # 맑은 고딕
+    font_path = "fonts/NanumGothic.ttf"  # 맑은 고딕
     font_name = font_manager.FontProperties(fname=font_path).get_name()
     rc("font", family=font_name)
 elif platform.system() == "Linux":  # Linux (Ubuntu, Docker 등)
-    font_path = "/Users/mi-yeonlim/Documents/Github/mini-project-1/fonts/NanumGothic.ttf"  # 나눔고딕
+    font_path = "/fonts/NanumGothic.ttf"  # 나눔고딕
     font_name = font_manager.FontProperties(fname=font_path).get_name()
     rc("font", family=font_name)
 
