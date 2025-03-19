@@ -11,22 +11,22 @@ from matplotlib import font_manager, rc
 import platform
 import os
 
-# 🔹 한글 폰트 설정 (운영체제에 따라 자동 적용)
-plt.rcParams["axes.unicode_minus"] = False  # 음수 기호 깨짐 방지
 
-try:
-    # 🔹 시스템에서 사용 가능한 한글 폰트 목록 확인
-    font_list = [f.name for f in font_manager.fontManager.ttflist if "Gothic" in f.name or "Malgun" in f.name or "Apple" in f.name]
-    
-    # 🔹 사용 가능한 폰트 중 첫 번째 폰트 선택 (팀원마다 다를 경우 자동 조정됨)
-    if font_list:
-        rc("font", family=font_list[0])
-    else:
-        raise Exception("사용 가능한 한글 폰트가 없습니다. 나눔고딕을 기본으로 설정합니다.")
-    
-    print(f"✅ 적용된 한글 폰트: {plt.rcParams['font.family']}")
-except Exception as e:
-    print(f"⚠️ 폰트 설정 오류: {e}")
+# 한글 폰트 설정
+plt.rcParams["axes.unicode_minus"] = False
+
+if platform.system() == "Darwin":  # macOS
+    rc("font", family="AppleGothic")
+elif platform.system() == "Windows":  # Windows
+    font_path = "C:/Windows/Fonts/malgun.ttf"  # 맑은 고딕
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    rc("font", family=font_name)
+elif platform.system() == "Linux":  # Linux (Ubuntu, Docker 등)
+    font_path = "fonts/NanumGothic.ttf"
+    if not os.path.exists(font_path):
+        st.error("NanumGothic.ttf 폰트 파일이 존재하지 않습니다. 'fonts' 폴더 내에 폰트 파일을 확인하세요.")
+    font_name = font_manager.FontProperties(fname=font_path).get_name()
+    rc("font", family=font_name)
 
 
 st.title("📈 마케팅 전략")
