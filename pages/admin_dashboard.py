@@ -68,11 +68,11 @@ def generate_pdf(selected_model, final_price, benefits, car_image_url, promotion
     pdf.cell(0, 10, "내용", border=1, ln=True, align="C")
     
     pdf.set_font("NanumGothic", "", 12)
-    pdf.cell(80, 10, "선택 차량", border=1)
-    pdf.cell(0, 10, selected_model, border=1, ln=True)
+    pdf.cell(80, 10, "선택 차량", border=1, align="C")
+    pdf.cell(0, 10, "   " + selected_model, border=1, ln=True)
     
-    pdf.cell(80, 10, "최종 적용 가격", border=1)
-    pdf.cell(0, 10, f"{final_price:,.0f} 원", border=1, ln=True)
+    pdf.cell(80, 10, "최종 적용 가격", border=1,align="C")
+    pdf.cell(0, 10,  "   " + f"{final_price:,.0f} 원", border=1, ln=True)
     pdf.ln(5)
     
     # --- 적용 혜택 테이블 ---
@@ -83,11 +83,11 @@ def generate_pdf(selected_model, final_price, benefits, car_image_url, promotion
     pdf.set_font("NanumGothic", "", 12)
     if benefits:
         for benefit in benefits:
-            pdf.cell(80, 10, benefit, border=1)
-            pdf.cell(0, 10, "적용됨", border=1, ln=True)
+            pdf.cell(80, 10, benefit, border=1, align="C" )
+            pdf.cell(0, 10,  "   " + "적용됨", border=1, ln=True)
     else:
         pdf.cell(80, 10, "없음", border=1)
-        pdf.cell(0, 10, "-", border=1, ln=True)
+        pdf.cell(0, 10,  "   " + "-", border=1, ln=True)
     pdf.ln(5)
     
     # --- 추가 프로모션 정보 ---
@@ -109,11 +109,11 @@ def generate_pdf(selected_model, final_price, benefits, car_image_url, promotion
     for line in installment_info.split("\n"):
         if ":" in line:
             key, value = line.split(":", 1)
-            pdf.cell(80, 10, key.strip(), border=1)
-            pdf.cell(0, 10, value.strip(), border=1, ln=True)
+            pdf.cell(80, 10, key.strip(), border=1, align="C" )
+            pdf.cell(0, 10, value.strip(), border=1, ln=True, align="C" )
         else:
-            pdf.cell(80, 10, line.strip(), border=1)
-            pdf.cell(0, 10, "", border=1, ln=True)
+            pdf.cell(80, 10, line.strip(), border=1, align="C" )
+            pdf.cell(0, 10, "", border=1, ln=True, align="C" )
     pdf.ln(5)
     
     # --- 차량 이미지 삽입 (이미지 URL에서 다운로드 후 사용)
