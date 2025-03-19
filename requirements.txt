@@ -11,5 +11,3 @@ joblib
 folium
 streamlit-folium
 python-dotenv
-requests
-base64
