@@ -63,7 +63,7 @@ df = load_data(data_path)
 
 st.title("고객 정보 입력 & 차량 추천")
 
-budget = st.number_input("구매 예산을 입력하세요. (단위: 만원)", min_value=3300, max_value=200000, step=500, value=5000)
+budget = st.number_input("구매 예산을 입력하세요. (단위: 만원)", step=500, value=5000)
 region = st.selectbox("거주 지역이 어떻게 되시나요?", [
     '서울특별시', '부산광역시', '인천광역시', '대구광역시', '광주광역시', '대전광역시',
     '울산광역시', '경기도 수원시', '경기도 성남시', '충청남도 천안시', '충청북도 청주시',
@@ -192,10 +192,7 @@ if st.button("추천 받기"):
         "G90 (RS4)": "1억 7,520만원"
     }
 
-    for i in recom_list:
-        min_price = int(min_price_list[i].rstrip("만원").replace(",", ""))
-        if min_price > budget:
-            recom_list.remove(i)
+    recom_list = [i for i in recom_list if int(min_price_list[i].rstrip("만원").replace(",", "")) <= budget]
 
     tab1, tab2 = st.tabs(["추천 차량 리스트", "전기차 추천"])
 
@@ -350,3 +347,5 @@ if st.button("추천 받기"):
                         table_header += img_row + text_row
                         img_rows, text_rows = [], []
                 st.markdown(table_header, unsafe_allow_html=True)
+            else:
+                custom_message("😢 죄송합니다. 예산 내에 맞는 차량이 없습니다. 조건을 확인해주세요!", "error")
