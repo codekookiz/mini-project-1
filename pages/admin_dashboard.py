@@ -36,7 +36,7 @@ corporate_benefits = """
 ✅ 운용 리스를 통한 유지비 절감 및 관리 편의성 제공  
 """
 
-# ✅ PDF 생성 함수 (Tab1, Tab2 정보를 섹션별로 출력)
+# ✅ PDF 생성 함수 (표 형식의 양식 적용 – FPDF 사용)
 def generate_pdf(selected_model, final_price, benefits, car_image_url, promotion_info, installment_info):
     pdf = FPDF()
     pdf.add_page()
@@ -50,40 +50,85 @@ def generate_pdf(selected_model, final_price, benefits, car_image_url, promotion
     # 일반체와 볼드체 모두 등록
     pdf.add_font("NanumGothic", "", font_path, uni=True)
     pdf.add_font("NanumGothic", "B", font_path, uni=True)
-    pdf.set_font("NanumGothic", "", 16)
+    pdf.set_font("NanumGothic", "B", 16)
     # ----------------------------------------
     
-    # 제목
+    # 제목 (중앙 정렬)
     pdf.cell(0, 10, "차량 구매 혜택 보고서", ln=True, align="C")
-    pdf.ln(10)
+    pdf.ln(5)
     
-    # [1] 프로모션 조회 (Tab1) 섹션
+    # [1] 프로모션 조회 (개인 고객) 섹션
     pdf.set_font("NanumGothic", "B", 14)
     pdf.cell(0, 10, "1. 프로모션 조회 (개인 고객)", ln=True)
+    pdf.ln(3)
+    
+    # --- 차량 정보 테이블 ---
+    pdf.set_font("NanumGothic", "B", 12)
+    pdf.cell(80, 10, "항목", border=1, align="C")
+    pdf.cell(0, 10, "내용", border=1, ln=True, align="C")
+    
     pdf.set_font("NanumGothic", "", 12)
-    pdf.cell(0, 10, f"선택 차량: {selected_model}", ln=True)
-    pdf.cell(0, 10, f"최종 적용 가격: {final_price:,.0f} 원", ln=True)
+    pdf.cell(80, 10, "선택 차량", border=1)
+    pdf.cell(0, 10, selected_model, border=1, ln=True)
+    
+    pdf.cell(80, 10, "최종 적용 가격", border=1)
+    pdf.cell(0, 10, f"{final_price:,.0f} 원", border=1, ln=True)
     pdf.ln(5)
-    pdf.cell(0, 10, "적용 혜택:", ln=True)
-    for benefit in benefits:
-        pdf.cell(0, 10, f"- {benefit}", ln=True)
+    
+    # --- 적용 혜택 테이블 ---
+    pdf.set_font("NanumGothic", "B", 12)
+    pdf.cell(80, 10, "혜택 항목", border=1, align="C")
+    pdf.cell(0, 10, "내용", border=1, ln=True, align="C")
+    
+    pdf.set_font("NanumGothic", "", 12)
+    if benefits:
+        for benefit in benefits:
+            pdf.cell(80, 10, benefit, border=1)
+            pdf.cell(0, 10, "적용됨", border=1, ln=True)
+    else:
+        pdf.cell(80, 10, "없음", border=1)
+        pdf.cell(0, 10, "-", border=1, ln=True)
+    pdf.ln(5)
+    
+    # --- 추가 프로모션 정보 ---
+    pdf.set_font("NanumGothic", "", 12)
+    pdf.multi_cell(0, 10, "추가 정보: " + promotion_info, border=1)
     pdf.ln(10)
     
-    # 추가 프로모션 정보 (예: 재구매, 다자녀, 전기차 보조금 등)
-    pdf.multi_cell(0, 10, f"추가 정보:\n{promotion_info}")
-    pdf.ln(10)
-    
-    # [2] 할부/리스 계산 (Tab2) 섹션
+    # [2] 할부/리스 계산 및 혜택 비교 섹션
     pdf.set_font("NanumGothic", "B", 14)
     pdf.cell(0, 10, "2. 할부/리스 계산 및 혜택 비교", ln=True)
+    pdf.ln(3)
+    
+    # --- 할부 정보 테이블 ---
+    pdf.set_font("NanumGothic", "B", 12)
+    pdf.cell(80, 10, "항목", border=1, align="C")
+    pdf.cell(0, 10, "내용", border=1, ln=True, align="C")
+    
     pdf.set_font("NanumGothic", "", 12)
-    pdf.multi_cell(0, 10, installment_info)
-    pdf.ln(10)
+    for line in installment_info.split("\n"):
+        if ":" in line:
+            key, value = line.split(":", 1)
+            pdf.cell(80, 10, key.strip(), border=1)
+            pdf.cell(0, 10, value.strip(), border=1, ln=True)
+        else:
+            pdf.cell(80, 10, line.strip(), border=1)
+            pdf.cell(0, 10, "", border=1, ln=True)
+    pdf.ln(5)
     
-    # (필요 시 차량 이미지 삽입 – 이미지가 로컬에 저장되어 있어야 합니다.)
-    # 예: pdf.image("car_image.jpg", x=10, y=pdf.get_y(), w=100)
+    # --- 차량 이미지 삽입 (이미지 URL에서 다운로드 후 사용)
+    try:
+        response = requests.get(car_image_url)
+        if response.status_code == 200:
+            temp_image_path = "temp_car_image.jpg"
+            with open(temp_image_path, "wb") as f:
+                f.write(response.content)
+            pdf.image(temp_image_path, x=10, w=100)
+            os.remove(temp_image_path)
+    except Exception as e:
+        pass
     
-    # PDF 저장
+    # PDF 저장 후 경로 리턴
     pdf_file_path = "car_promo_report.pdf"
     pdf.output(pdf_file_path, "F")
     return pdf_file_path
@@ -145,7 +190,6 @@ with tab1:
                 final_price -= ev_subsidy
                 st.write("- **충전기 무료 설치 또는 충전 크레딧 50만 원 지급**")
                 st.write("- **전기차 보험료 할인 (최대 10%) 적용 가능**")
-                st.write("- **현대차 금융 이용 시 추가 이자 할인 (최대 1.5%) 제공**")
             
             # 재구매 할인 적용
             discount = rebuy_discounts.get(selected_model, 0)
@@ -337,15 +381,7 @@ with col3:
     st.markdown("- 부가세 환급 및 감가상각 적용 가능")
     st.markdown("- 법인 차량 단체 보험료 할인 제공")
     st.markdown("- 운용 리스를 통한 유지비 절감 및 관리 편의성 제공")
-st.markdown("---")
-st.subheader("📌 최종 할인 및 가격 정리")
-if has_children and selected_model in multi_child_cars:
-    st.markdown("**다자녀 혜택 적용:** ✅")
-if fuel_type in ["전기", "플러그인 하이브리드", "수소"]:
-    st.markdown(f"**전기차 보조금:** {ev_subsidy:,.0f} 원 적용")
-if is_rebuy and discount > 0:
-    st.markdown(f"**재구매 할인:** {discount:,.0f} 원 적용")
-st.markdown(f"### 🚘 최종 적용 가격: {final_price:,.0f} 원")
+
 
 # ✅ 탭 3: PDF 다운로드
 with tab3:
