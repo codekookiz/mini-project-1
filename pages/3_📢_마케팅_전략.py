@@ -274,7 +274,7 @@ if marketing_class == "지역별":
         st.session_state['search_query'] = region
 
         # '4_매장_찾기.py'로 이동하는 링크 제공
-        st.page_link("pages/4_매장_찾기🗺️.py", label="지점 및 정비소 찾기", icon="🛞")
+        st.page_link("pages/4_🗺️_매장_찾기.py", label="지점 및 정비소 찾기", icon="🛞")
 
         st.markdown("---")
 
