@@ -5,10 +5,11 @@ import streamlit as st
 import os
 
 st.set_page_config(
-    page_title="현대자동차 고객 분석 시스템",  # 웹사이트 제목
-    page_icon="./images/favicon.ico",  # 파비콘 적용
+    page_title="현대자동차 고객 분석 시스템",
+    page_icon="./images/favicon.ico",
 )
-# 메인 화면 구성
+
+# 현대자동차 로고 & 제목
 st.markdown("""
 <h1 style="display:flex; align-items:center;">
     <img src="https://www.hyundai.com/etc/designs/hyundai/ww/en/images/common/logo.png" 
@@ -17,20 +18,40 @@ st.markdown("""
     고객 분석 시스템
 </h1>
 """, unsafe_allow_html=True)
-st.write("이 앱은 머신러닝을 활용하여 고객 정보를 분석하고 마케팅 전략을 수립하는 시스템입니다.")
 
-# 차량 이미지 데이터
+st.write("이 앱은 머신러닝을 활용하여 고객 정보를 분석하고 맞춤형 마케팅 전략을 수립하는 시스템입니다.")
+
+
+st.write("")
+
+# 🚙 주요 기능 메뉴 (2열 레이아웃)
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("###  주요 기능")
+    st.markdown("""
+    -  **고객 분석** : AI 기반 구매 패턴 분석
+    -  **차량 추천** : 고객 맞춤형 차량 추천 서비스
+    -  **판매점 찾기** : 가까운 지점 및 정비소 검색
+    -  **구매 혜택** : 카드사 제휴 혜택 비교
+    """)
+
+with col2:
+    st.markdown("###  최신 고객 트렌드")
+    st.markdown("""
+    -  **인기 차종** : 최근 3개월 동안 가장 많이 판매된 차량
+    -  **구매 패턴** : 연령별 선호 모델 분석
+    -  **할부 이용율** : 카드사별 무이자 할부 비율
+    """)
+
+# 🚗 차량 이미지 캐러셀 (Swiper.js 활용)
 car_data = [
     {"name": "IONIQ 9", "url": "https://www.hyundai.com/contents/mainbanner/main_kv_ioniq9-pc.png"},
     {"name": "Palisade", "url": "https://www.hyundai.com/contents/mainbanner/Main-KV_Car_PALISADE.png"},
     {"name": "Tucson", "url": "https://www.hyundai.com/contents/mainbanner/Main-KV_Car_TUCSON.png"},
     {"name": "Sonata", "url": "https://www.hyundai.com/contents/mainbanner/main_sonata_25my_w.png"},
-    {"name": "IONIQ 5 N", "url": "https://www.hyundai.com/contents/mainbanner/Main-KV_Car_IONIQ-5-N.png"},
-    {"name": "Santa Fe", "url": "https://www.hyundai.com/contents/mainbanner/main-santafe-25my-kv-w.png"},
-    {"name": "Casper Electric", "url": "https://www.hyundai.com/contents/mainbanner/Main-KV_Car_CASPER-Electric.png"},
 ]
 
-# Swiper.js를 활용한 캐러셀 HTML 코드
 carousel_html = f"""
 <div class="swiper-container">
     <div class="swiper-wrapper">
@@ -41,14 +62,13 @@ carousel_html = f"""
     <div class="swiper-button-prev"></div>
 </div>
 
-<!-- Swiper.js 라이브러리 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
 <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 <script>
     var swiper = new Swiper('.swiper-container', {{
         loop: true,
         autoplay: {{
-            delay: 2000,  // 1.5초마다 변경
+            delay: 2000,
             disableOnInteraction: false
         }},
         navigation: {{
@@ -61,63 +81,25 @@ carousel_html = f"""
         }},
     }});
 </script>
-<!-- 캐러셀 아래 공간 확보 -->
-<div style="height: 80px;"></div>
-
-<!-- 캐러셀 아래 메뉴 -->
-<div class="menu-container">
-    <div class="menu-item">
-        <img src="https://cdn-icons-png.flaticon.com/128/747/747376.png" class="menu-icon">
-        <p>견적내기</p>
-    </div>
-    <div class="menu-item">
-        <img src="https://cdn-icons-png.flaticon.com/128/535/535239.png" class="menu-icon">
-        <p>구매상담</p>
-    </div>
-    <div class="menu-item">
-        <img src="https://cdn-icons-png.flaticon.com/128/3135/3135715.png" class="menu-icon">
-        <p>시승신청</p>
-    </div>
-    <div class="menu-item">
-        <img src="https://cdn-icons-png.flaticon.com/128/684/684809.png" class="menu-icon">
-        <p>판매처 검색</p>
-    </div>
-    <div class="menu-item">
-        <img src="https://cdn-icons-png.flaticon.com/128/929/929564.png" class="menu-icon">
-        <p>구매혜택</p>
-    </div>
-    <div class="menu-item">
-        <img src="https://cdn-icons-png.flaticon.com/128/3208/3208721.png" class="menu-icon">
-        <p>정비예약</p>
-    </div>
-</div>
-
-<style>
-.menu-container {{
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px; /* 간격 증가 */
-    margin-top: 50px; /* 위쪽 여백 증가 */
-    padding-bottom: 80px; /* 하단 공간 추가 (스크롤 필요 시 대비) */
-    position: relative; /* 메뉴가 가려지는 문제 해결 */
-}}
-
-.menu-item {{
-    text-align: center;
-    font-size: 16px;
-    flex: 1 1 160px; /* 반응형 조정 */
-}}
-
-.menu-icon {{
-    width: 55px;
-    height: 55px;
-}}
-</style>
-
 """
 
-
-# 캐러셀 표시
 st.components.v1.html(carousel_html, height=400)
 
+# 💡 푸터 (2개 컬럼으로 나누기)
+st.markdown("---")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.markdown("####  데이터 출처")
+    st.markdown("""
+     **기본 데이터셋** : 하이에듀 고객 DB  
+     **추가 데이터** : [현대자동차 공식 웹사이트](https://www.hyundai.com)
+    """)
+
+with col2:
+    st.markdown("####  현대자동차 고객 분석 시스템")
+    st.markdown("""
+     **기본 데이터셋** :   [현대자동차 공식 웹사이트](https://www.hyundai.com)  
+     서울특별시 강남구 테헤란로 231 현대자동차 본사  
+    """, unsafe_allow_html=True)
