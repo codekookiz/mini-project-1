@@ -117,10 +117,8 @@ with tab1:
                         icon=folium.Icon(color="blue", icon="info-sign")
                     ).add_to(m)
 
-        # ✅ 지도 HTML 저장
+        # 지도 HTML 저장 및 렌더링
         map_html = m._repr_html_()
-
-        # ✅ HTML을 `st.components.v1.html()`로 렌더링 (크기 조정 가능)
         components.html(
             f"""
             <div style="width:1000px; height:500px;">
@@ -137,13 +135,15 @@ with tab1:
             if results:
                 st.write(f"**검색 결과 ({len(results)}개)**")
                 for i, place in enumerate(results, start=1):
-                    st.write(f"**{i}. {place['place_name']}**")
+                    # 프레이스 네임을 클릭하면 상세 페이지로 이동하도록 마크다운 링크 생성
+                    st.markdown(f"**{i}. [{place['place_name']}]({place['place_url']})**", unsafe_allow_html=True)
                     st.caption(f"{place['road_address_name'] or place['address_name']}")
                     if place["phone"]:
                         st.caption(f"📞 {place['phone']}")
                     st.write("---")
         else:
             st.info("아직 검색어가 없습니다.")
+            
 with tab2:
     st.write("## 🔍 정비소 찾기")
 
@@ -173,10 +173,8 @@ with tab2:
                         icon=folium.Icon(color="blue", icon="info-sign")
                     ).add_to(m)
 
-        # ✅ 지도 HTML 저장
+        # 지도 HTML 저장 및 렌더링
         map_html = m._repr_html_()
-
-        # ✅ HTML을 `st.components.v1.html()`로 렌더링 (크기 조정 가능)
         components.html(
             f"""
             <div style="width:1000px; height:500px;">
@@ -193,7 +191,8 @@ with tab2:
             if results:
                 st.write(f"**검색 결과 ({len(results)}개)**")
                 for i, place in enumerate(results, start=1):
-                    st.write(f"**{i}. {place['place_name']}**")
+                    # 프레이스 네임을 클릭하면 상세 페이지로 이동하도록 마크다운 링크 생성
+                    st.markdown(f"**{i}. [{place['place_name']}]({place['place_url']})**", unsafe_allow_html=True)
                     st.caption(f"{place['road_address_name'] or place['address_name']}")
                     if place["phone"]:
                         st.caption(f"📞 {place['phone']}")
