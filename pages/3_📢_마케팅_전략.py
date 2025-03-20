@@ -418,46 +418,47 @@ if marketing_class == "지역별":
         
 elif marketing_class == "연령대별":
     st.write("## 연령대별 마케팅 전략 분석")
-    # 연료 구분 정렬 순서 지정
     fuel_order = ["전기", "하이브리드", "플러그인 하이브리드", "휘발유", "디젤", "수소"]
-    
     age_order = ["20대 초반", "20대 중반", "20대 후반", "30대 초반", "30대 중반", "30대 후반", "40대 초반", "40대 중반", "40대 후반",
-              "50대 초반", "50대 중반", "50대 후반", "60대 초반", "60대 중반", "60대 후반", "70대 초반"]
+                 "50대 초반", "50대 중반", "50대 후반", "60대 초반", "60대 중반", "60대 후반", "70대 초반"]
 
     df["연료 구분"] = pd.Categorical(df["연료 구분"], categories=fuel_order, ordered=True)
     df["연령대"] = pd.Categorical(df["연령대"], categories=age_order, ordered=True)
 
     col1, col2 = st.columns([1, 1])
     with col1:
-        # 데이터 그룹화 및 시각화를 위한 준비
-        age_df = df.groupby(["연령대", "연료 구분"])["연번"].count().unstack()
-
-        fig, ax = plt.subplots(figsize=(12, 8))
-        age_df.reindex(columns=fuel_order).plot(kind="barh", stacked=True, ax=ax)
-
-        ax.set_title("연령대별 판매 차량 유형")
-        ax.set_xlabel("판매 대수")
-        ax.set_ylabel("연령대")
-
-        st.pyplot(fig)
+        # 연령대별 판매 차량 유형 (수평 누적 막대)
+        age_df = df.groupby(["연령대", "연료 구분"])["연번"].count().unstack().reindex(columns=fuel_order)
+        age_df_reset = age_df.reset_index().melt(id_vars="연령대", var_name="연료 구분", value_name="판매 대수")
+        fig = px.bar(age_df_reset, x="판매 대수", y="연령대", color="연료 구분", orientation="h",
+                     title="연령대별 판매 차량 유형")
+        st.plotly_chart(fig, use_container_width=True)
 
     with col2:
         size_counts = df.groupby("최근 구매 연도")["고객 등급"].value_counts().unstack().fillna(0)
+        size_counts_reset = size_counts.reset_index().melt(
+            id_vars="최근 구매 연도", var_name="고객 등급", value_name="건수"
+)
+        # 연도별 차량 구매 건수 (라인 차트)
+        fig = px.line(
+            size_counts_reset,
+            x="최근 구매 연도",
+            y="건수",
+            color="고객 등급",
+            markers=True,
+            title="연도별 차량 구매 건수"
+        )
 
-        # 시각화 - 고객 등급별 최근 차량 구매 연도
-        fig, ax = plt.subplots(figsize=(10, 5))
+        # x축 라벨을 2023, 2024, 2025만 보여주기
+        fig.update_layout(
+            xaxis=dict(
+                tickmode='array',
+                tickvals=[2023, 2024, 2025],      # 실제 데이터 값
+                ticktext=['2023', '2024', '2025'] # 화면에 표시될 텍스트
+            )
+        )
 
-        size_counts.plot(kind="line", marker="o", colormap="viridis", alpha=0.85, ax=ax)
-
-        ax.set_xticks(size_counts.index)
-        ax.set_xticklabels(size_counts.index, rotation=0)
-
-        ax.set_title(f"연도별 차량 구매 건수")
-        ax.set_xlabel("연도")
-        ax.set_ylabel("선호 차량 수")
-        ax.grid(axis="y", linestyle="--", alpha=0.7)
-
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
 
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -465,199 +466,163 @@ elif marketing_class == "연령대별":
         **분석 결과**  
         - 휘발유 차량의 높은 점유율  
             - 전 연령대에서 휘발유 차량이 가장 많이 판매됨  
-            - 특히 40대 초반~50대 초반 연령대에서 가장 큰 비중을 차지  
+            - 특히 40대 초반~50대 초반 연령대에서 큰 비중  
         - 디젤 차량의 강세  
-            - 60대 후반~70대 초반의 고연령층에서 디젤 차량이 높은 비중을 차지  
-            - 젊은 연령층으로 갈수록 디젤 차량의 비중이 점차 감소하는 경향  
+            - 60대 후반~70대 초반 고연령층에서 높은 비중  
+            - 젊은 층으로 갈수록 감소하는 경향  
         - 수소 차량의 점유율 증가  
-            - 50대 이상 연령층에서 수소차 비중이 높은 편  
-            - 20~30대에서는 수소 차량이 상대적으로 적음
+            - 50대 이상에서 높은 편, 20~30대는 상대적으로 적음
         - 젊은 층의 전기차/하이브리드 구매  
-            - 젊은 층 (20~30대)에서만 일부 판매  
-            - 연령대가 올라갈수록 전기차 및 하이브리드 판매 비율이 줄어듦
+            - 20~30대에서 일부 판매, 연령 증가 시 비율 감소
         """)
     with col2:
         st.write("""
         **분석 결과**
-        - 일반 고객의 감소와 VIP 고객의 증가
-            - 일반 고객의 감소는 기존 일반 고객의 신규 차량 구매가 활발하다는 의미
-            - 차량 재구매 시 혜택을 더욱 확대할 필요가 있음
-        - 신규 고객 유입 증가
-            - 신규 고객의 지속적인 유입을 위한 마케팅 전략 필요
+        - 일반 고객 감소와 VIP 고객 증가  
+            - 일반 고객의 감소는 기존 고객의 신규 구매 활발 반영  
+            - 재구매 시 혜택 확대 필요  
+        - 신규 고객 유입 증가  
+            - 지속적 유입 위한 마케팅 전략 필요
         """)
 
     st.subheader("")
-
-    # 타겟 연령대 선택
     st.subheader("🎯 연령대별 마케팅 전략")
-
     age_group = st.selectbox("타겟 연령대 선택", ["-", "20대", "30대", "40대", "50대", "60대 이상"])
 
     if age_group != "-":
-        # 연령대에 따른 선호 차량 사이즈 및 유형
-        # 해당 연령대만 추출
         if age_group == "60대 이상":
             gen = df.loc[(df["연령대"].str.split(" ").str[0]).isin(["60대", "70대"]), :]
         else:
             gen = df.loc[df["연령대"].str.split(" ").str[0] == age_group, :]
 
-        # 고객 등급별 선호 차량 사이즈 및 유형 집계
+        # 고객 등급별 선호 차량 사이즈
         size_counts = gen.groupby("차량 사이즈")["연료 구분"].value_counts().unstack()
+        size_counts_reset = size_counts.reset_index().melt(id_vars="차량 사이즈", var_name="연료 구분", value_name="선호 차량 수")
+        # 고객 등급별 선호 차량 유형
         type_counts = gen.groupby("차량 유형")["연료 구분"].value_counts().unstack()
+        type_counts_reset = type_counts.reset_index().melt(id_vars="차량 유형", var_name="연료 구분", value_name="선호 차량 수")
 
         col1, col2 = st.columns([1, 1])
         with col1:
-            # 시각화 - 고객 등급별 선호 차량 사이즈
-            fig, ax = plt.subplots(figsize=(10, 5))
-            size_counts.plot(kind="bar", stacked=True, colormap="viridis", alpha=0.85, ax=ax)
-
-            ax.set_title(f"{age_group} 고객 등급별 선호 차량 사이즈")
-            ax.set_xlabel("차량 사이즈")
-            ax.set_ylabel("선호 차량 수")
-            ax.legend(title="연료 구분")
-            ax.set_xticklabels(size_counts.index, rotation=0)
-            ax.grid(axis="y", linestyle="--", alpha=0.7)
-
-            st.pyplot(fig)
-
+            fig = px.bar(size_counts_reset, x="차량 사이즈", y="선호 차량 수", color="연료 구분",
+                         title=f"{age_group} 고객 등급별 선호 차량 사이즈", barmode="stack")
+            st.plotly_chart(fig, use_container_width=True)
         with col2:
-            # 시각화 - 고객 등급별 선호 차량 유형
-            fig, ax = plt.subplots(figsize=(10, 5))
-            type_counts.plot(kind="bar", stacked=True, colormap="plasma", alpha=0.85, ax=ax)
+            fig = px.bar(type_counts_reset, x="차량 유형", y="선호 차량 수", color="연료 구분",
+                         title=f"{age_group} 고객 등급별 선호 차량 유형", barmode="stack")
+            st.plotly_chart(fig, use_container_width=True)
 
-            ax.set_title(f"{age_group} 고객 등급별 선호 차량 유형")
-            ax.set_xlabel("차량 유형")
-            ax.set_ylabel("선호 차량 수")
-            ax.legend(title="연료 구분")
-            ax.set_xticklabels(type_counts.index, rotation=0)
-            ax.grid(axis="y", linestyle="--", alpha=0.7)
-
-            st.pyplot(fig)
-        
-        #  연령대별 고객 분석 데이터
         analysis = {
             "20대": """
             - 1️⃣ **중형 세단 & SUV 선호**  
             - 2️⃣ **전기 및 하이브리드 차량 선호도 낮음**  
-                - 연비보다는 **주행 성능 및 충전 편의성**을 더 중요하게 생각하는 경향  
+                - 주행 성능 및 충전 편의성 중요  
             - 3️⃣ **대형 및 해치백 차량 선호도 낮음**  
-                - 가격, 실용성, 유지 비용 등을 고려하는 구매 패턴  
+                - 가격, 실용성, 유지 비용 고려
             """,
             "30대": """
             - 1️⃣ **중형 SUV 선호 & 수소 연료 관심 증가**  
             - 2️⃣ **프리미엄 & 대형 차량 수요 증가**  
-                - 경제적 여유 확보로 인해 **고급 브랜드 선호도 증가**  
+                - 경제적 여유로 고급 브랜드 선호
             """,
             "40대": """
             - 1️⃣ **중형 & 대형 차량 선호**  
-                - **가족 차량으로 SUV 및 세단 인기**  
-                - **수소 연료에 대한 관심 증가** (친환경 차량 수요 확대)  
-            - 2️⃣ **해치백 차량은 거의 선택되지 않음**  
-                - 주행 안전성과 실내 공간을 고려하는 경향  
+                - 가족 차량으로 SUV 및 세단 인기  
+                - 수소 연료 관심 증가 (친환경 수요 확대)  
+            - 2️⃣ **해치백 차량 거의 선택 안됨**  
+                - 주행 안전성과 실내 공간 중시
             """,
             "50대": """
             - 1️⃣ **친환경 연료 (수소, 하이브리드) 선호 증가**  
-                - 연료 효율성과 유지비 절감을 고려하는 경향  
+                - 연비와 유지비 절감 고려
             """,
             "60대 이상": """
             - 1️⃣ **디젤 차량 선호도 높음**  
-                - 연료 효율성 및 주행 안정성을 중요하게 고려  
-                - 기존 디젤 차량 운전 습관 유지 경향  
+                - 연료 효율성 및 주행 안정성 중시  
+                - 기존 디젤 운전 습관 유지  
             - 2️⃣ **전기 및 하이브리드 차량 선호도 낮음**  
-                - 충전 인프라 부족 및 주행 거리 문제로 인해 거부감 있음  
+                - 충전 인프라 부족 및 주행 거리 문제
             """
         }
 
-        #  연령대별 마케팅 전략 데이터
         strategy = {
             "20대": """
             - **전기 및 하이브리드 차량 마케팅 강화**  
                 - 보조금 및 충전 인프라 개선 홍보  
             - **중형 세단/SUV 라인업 확대**  
-                - 20대의 선호도가 높은 만큼 라인업 확대로 판매량 증대  
-            - **합리적인 가격 및 금융 혜택 제공**  
-            - **20대 경제적 부담 완화**를 위한 **무이자 할부 및 리스 프로그램 운영**  
+                - 합리적 가격 및 금융 혜택 제공  
+            - **무이자 할부 및 리스 프로그램 운영**
             """,
             "30대": """
             - **프리미엄 & 대형 차량 마케팅 확대**  
             - **고급 브랜드 진입 유도** (G70, G80 등)  
             - **SUV 친환경 모델 홍보**  
-            - **NEXO(수소차)** 및 **하이브리드 SUV 홍보**  
+            - **NEXO(수소차) 및 하이브리드 SUV 홍보**
             """,
             "40대": """
             - **패밀리카 & 친환경 SUV 홍보**  
-                - 브랜드 가치, 유지비 절감 강조  
+                - 브랜드 가치와 유지비 절감 강조  
             - **수소 연료 차량 캠페인 진행**  
-                - 친환경 차량 구매 혜택 홍보  
+                - 친환경 차량 구매 혜택 홍보
             """,
             "50대": """
             - **친환경 하이브리드 차량 홍보**  
                 - 연료 효율성과 유지비 절감 강조  
-            - **고급 세단 & SUV 프로모션**  
-                - 50대 이상 고객을 위한 맞춤형 VIP 서비스 제공  
+            - **고급 세단 & SUV 프로모션 제공**  
+                - VIP 서비스 연계
             """,
             "60대 이상": """
             - **디젤 차량의 경제성 강조**  
                 - 주행 안정성 및 연료 효율성 홍보  
-            - **전기차 및 하이브리드 차량 전환 유도**  
-                - 환경 부담금, 보조금 혜택 홍보  
+            - **전기차 및 하이브리드 전환 유도**  
+                - 보조금 혜택 홍보
             """
         }
 
-        #  선택한 연령대의 분석 및 전략 출력
         st.markdown("---")
-        st.subheader(f" {age_group} 고객 분석")
+        st.subheader(f"{age_group} 고객 분석")
         st.markdown(analysis[age_group])
-
         st.markdown("---")
-        st.subheader(f" {age_group} 맞춤형 마케팅 전략")
+        st.subheader(f"{age_group} 맞춤형 마케팅 전략")
         st.markdown(strategy[age_group])
-
-        #  추가 마케팅 캠페인 제안
         st.markdown("---")
-        st.subheader(f" {age_group} 맞춤형 마케팅 캠페인 제안")
+        st.subheader(f"{age_group} 맞춤형 마케팅 캠페인 제안")
 
         if age_group == "20대":
             st.write("""
             - **SNS 마케팅 & 트렌디한 광고**  
-                - 유튜브, 인스타그램을 통한 **젊은 감성의 광고 캠페인**  
-            - **인플루언서 & 유명 유튜버 협업 진행**  
+                - 유튜브, 인스타그램을 통한 젊은 감성의 캠페인  
+            - **인플루언서 및 유명 유튜버 협업 진행**
             """)
-
         elif age_group == "30대":
             st.write("""
             - **프리미엄 브랜드 캠페인**  
-                - 30대 소비자에게 G70, G80 등 **럭셔리 브랜드의 가치를 강조**  
-            - **가족 중심 SUV 광고 캠페인 진행**  
+                - G70, G80 등 럭셔리 브랜드 가치 강조  
+            - **가족 중심 SUV 광고 캠페인 진행**
             """)
-
         elif age_group == "40대":
             st.write("""
-            - **친환경 차량 & 패밀리카 중심 마케팅**  
+            - **친환경 차량 및 패밀리카 중심 마케팅**  
             - **하이브리드 & 전기차 보조금 혜택 홍보**  
-            - **패밀리카 중심 브랜드 가치 강조**  
+            - **패밀리카 브랜드 가치 강조**
             """)
-
         elif age_group == "50대":
             st.write("""
             - **하이브리드 & 대형 SUV 캠페인**  
             - **연비 절감 효과 홍보**  
-            - **VIP 서비스 & 유지보수 혜택 강조**  
+            - **VIP 서비스 및 유지보수 혜택 강조**
             """)
-
         elif age_group == "60대 이상":
             st.write("""
             - **디젤 & 하이브리드 차량 홍보**  
-            - **경제성 & 유지비 절감 효과 홍보**  
-            - **전기차 전환 유도 캠페인 진행**  
+            - **경제성 및 유지비 절감 강조**  
+            - **전기차 전환 유도 캠페인 진행**
             """)
-
         st.markdown("---")
-        st.write(" **연령대별 맞춤형 마케팅 전략을 활용하여 효과적인 시장 공략이 가능합니다!** ")
+        st.write("**연령대별 맞춤형 마케팅 전략을 통해 효과적인 시장 공략이 가능합니다!**")
 
 elif marketing_class == "고객 등급별":
     st.write("## 고객 등급별 마케팅 전략 분석")
-
     marketing_order = ["신규", "일반", "VIP"]
     fuel_order = ["전기", "하이브리드", "플러그인 하이브리드", "휘발유", "디젤", "수소"]
     size_order = ["준중형", "중형", "준대형", "대형", "프리미엄"]
@@ -666,99 +631,60 @@ elif marketing_class == "고객 등급별":
     df["연료 구분"] = pd.Categorical(df["연료 구분"], categories=fuel_order, ordered=True)
     df["차량 사이즈"] = pd.Categorical(df["차량 사이즈"], categories=size_order, ordered=True)
 
-    # 데이터 그룹화 및 시각화를 위한 준비
-    grade_df = df.groupby(["고객 등급", "연료 구분"])["연번"].count().unstack()
-    seg_df = df.groupby(["고객 등급", "차량 사이즈"])["연번"].count().unstack()
+    grade_df = df.groupby(["고객 등급", "연료 구분"])["연번"].count().unstack().reindex(columns=fuel_order)
+    grade_df_reset = grade_df.reset_index().melt(id_vars="고객 등급", var_name="연료 구분", value_name="판매 대수")
+    seg_df = df.groupby(["고객 등급", "차량 사이즈"])["연번"].count().unstack().reindex(columns=size_order)
+    seg_df_reset = seg_df.reset_index().melt(id_vars="고객 등급", var_name="차량 사이즈", value_name="판매 대수")
 
     col1, col2 = st.columns([1, 1])
     with col1:
-        fig, ax = plt.subplots(figsize=(12, 8))
-        grade_df.reindex(columns=fuel_order).plot(kind="bar", stacked=True, ax=ax)
-
-        ax.set_title("고객 등급별 판매 차량의 연료 구분")
-        ax.set_xlabel("고객 등급")
-        ax.set_ylabel("판매 대수")
-        ax.set_xticklabels(grade_df.index, rotation=0)
-
-        st.pyplot(fig)
-
+        fig = px.bar(grade_df_reset, x="고객 등급", y="판매 대수", color="연료 구분",
+                     title="고객 등급별 판매 차량의 연료 구분", barmode="stack")
+        st.plotly_chart(fig, use_container_width=True)
     with col2:
-        fig, ax = plt.subplots(figsize=(12, 8))
-        seg_df.reindex(columns=size_order).plot(kind="bar", stacked=True, ax=ax)
-
-        ax.set_title("고객 등급별 판매 차량 유형")
-        ax.set_xlabel("판매 대수")
-        ax.set_ylabel("연령대")
-        ax.set_xticklabels(seg_df.index, rotation=0)
-
-        st.pyplot(fig)
+        fig = px.bar(seg_df_reset, x="고객 등급", y="판매 대수", color="차량 사이즈",
+                     title="고객 등급별 판매 차량 유형", barmode="stack")
+        st.plotly_chart(fig, use_container_width=True)
 
     col1, col2 = st.columns([1, 1])
     with col1:
         st.write("""
         **분석 결과**  
-    - 전반적으로 낮은 하이브리드 차량 구매율  
-        - 일반 고객은 하이브리드, 플러그인 하이브리드 차량도 상대적으로 많이 구매  
-        - VIP 고객은 친환경 차량을 거의 선택하지 않음  
-            - 높은 유지 비용과 성능 등의 요인이 반영된 결과  
-    - 신규 고객은 친환경 차량을 거의 선택하지 않음  
-        - 차량 신규 구매 고객의 경우 성능과 내구성을 가장 중요하게 생각하는 경향
+        - 전반적으로 낮은 하이브리드 차량 구매율  
+            - 일반 고객은 하이브리드 및 플러그인 하이브리드 차량도 구매  
+            - VIP 고객은 친환경 차량 선택이 낮음 (높은 유지 비용 및 성능 고려)  
+        - 신규 고객은 친환경 차량 선택이 적음  
+            - 신규 구매 시 성능과 내구성을 중시
         """)
     with col2:
         st.write("""
-    **분석 결과**  
-- 모든 고객 등급에서 중형 차량이 가장 많이 판매  
-    - 준중형 및 대형 차량 수요도 높은 편  
-- 전반적으로 친환경 차량에 대한 수요가 낮음
-    - 친환경 차량의 이미지 개선과 성능 향상이 필요한 시점  
-    - 이에 대한 적극적인 마케팅과 홍보가 필요  
-    - 친환경 차량 판매에 대한 국가적 지원 역시 유치 가능할 것으로 보임
-    """)
+        **분석 결과**  
+        - 모든 고객 등급에서 중형 차량 판매 다수  
+            - 준중형 및 대형 차량 수요도 높음  
+        - 전반적으로 친환경 차량 수요 낮음  
+            - 이미지 개선, 성능 향상 및 국가 지원 필요
+        """)
 
     st.subheader("")
-
-    # 타겟 고객 등급 선택
     st.subheader("🎯 고객 등급별 마케팅 전략")
-
     grade = st.selectbox("타겟 고객 등급 선택", ["-", "신규", "일반", "VIP"])
 
     if grade != "-":
-        # 고객 등급에 따른 선호 차량 사이즈 및 유형
-        # 해당 고객 등급만 추출
         seg = df.loc[df["고객 등급"] == grade, :]
-
-        # 고객 등급별 선호 차량 사이즈 및 유형 집계
         size_counts = seg.groupby("차량 사이즈")["연료 구분"].value_counts().unstack()
+        size_counts_reset = size_counts.reset_index().melt(id_vars="차량 사이즈", var_name="연료 구분", value_name="선호 차량 수")
         type_counts = seg.groupby("차량 유형")["연료 구분"].value_counts().unstack()
+        type_counts_reset = type_counts.reset_index().melt(id_vars="차량 유형", var_name="연료 구분", value_name="선호 차량 수")
 
         col1, col2 = st.columns([1, 1])
         with col1:
-            # 시각화 - 고객 등급별 선호 차량 사이즈
-            fig, ax = plt.subplots(figsize=(10, 5))
-            size_counts.plot(kind="bar", stacked=True, colormap="viridis", alpha=0.85, ax=ax)
-
-            ax.set_title(f"{grade} 고객 선호 차량 사이즈")
-            ax.set_xlabel("차량 사이즈")
-            ax.set_ylabel("선호 차량 수")
-            ax.legend(title="연료 구분")
-            ax.set_xticklabels(size_counts.index, rotation=0)
-            ax.grid(axis="y", linestyle="--", alpha=0.7)
-
-            st.pyplot(fig)
-
+            fig = px.bar(size_counts_reset, x="차량 사이즈", y="선호 차량 수", color="연료 구분",
+                         title=f"{grade} 고객 선호 차량 사이즈", barmode="stack")
+            st.plotly_chart(fig, use_container_width=True)
         with col2:
-            # 시각화 - 고객 등급별 선호 차량 유형
-            fig, ax = plt.subplots(figsize=(10, 5))
-            type_counts.plot(kind="bar", stacked=True, colormap="plasma", alpha=0.85, ax=ax)
-
-            ax.set_title(f"{grade} 고객 선호 차량 유형")
-            ax.set_xlabel("차량 유형")
-            ax.set_ylabel("선호 차량 수")
-            ax.legend(title="연료 구분")
-            ax.set_xticklabels(type_counts.index, rotation=0)
-            ax.grid(axis="y", linestyle="--", alpha=0.7)
-
-            st.pyplot(fig)
+            fig = px.bar(type_counts_reset, x="차량 유형", y="선호 차량 수", color="연료 구분",
+                         title=f"{grade} 고객 선호 차량 유형", barmode="stack")
+            st.plotly_chart(fig, use_container_width=True)
         
         st.markdown("---")
 
