@@ -29,7 +29,7 @@ elif platform.system() == "Linux":  # Linux (Ubuntu, Docker 등)
     rc("font", family=font_name)
 
 
-st.title("📈 마케팅 전략")
+st.title("마케팅 전략")
 
 st.write("이 페이지에서는 세그먼트에 따른 마케팅 전략을 추천합니다.")
 
