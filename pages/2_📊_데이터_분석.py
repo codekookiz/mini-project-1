@@ -16,6 +16,8 @@ def load_data():
 
 df = load_data()
 
+st.title("데이터 분석")
+
 # 탭 생성
 tab1, tab2 = st.tabs(["고객 데이터 분석", "판매 데이터 분석"])
 

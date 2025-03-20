@@ -63,6 +63,8 @@ df = load_data(data_path)
 
 st.title("고객 정보 입력 & 차량 추천")
 
+st.markdown("---")
+
 budget = st.number_input("구매 예산을 입력하세요. (단위: 만원)", step=500, value=5000)
 region = st.selectbox("거주 지역이 어떻게 되시나요?", [
     '서울특별시', '부산광역시', '인천광역시', '대구광역시', '광주광역시', '대전광역시',
