@@ -7,6 +7,7 @@ import os
 st.set_page_config(
     page_title="현대자동차 고객 분석 시스템",
     page_icon="./images/favicon.ico",
+    layout="wide"  # 와이드 레이아웃 설정
 )
 
 # 현대자동차 로고 & 제목
