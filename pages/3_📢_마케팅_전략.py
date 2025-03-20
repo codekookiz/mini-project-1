@@ -128,7 +128,7 @@ data = {
 }
 
 # 데이터프레임 생성
-df = pd.DataFrame(data)
+card_df = pd.DataFrame(data)
 
 # 첫번째 컬럼("카드사")에 파스텔 스카이블루 색상 적용 함수
 def highlight_first_column(val):
@@ -136,7 +136,7 @@ def highlight_first_column(val):
 
 # 스타일 적용: 전체 텍스트 가운데 정렬, "카드사" 컬럼에만 색상 적용
 styled_df = (
-    df.style
+    card_df.style
     .set_properties(**{'text-align': 'center'})
     .applymap(highlight_first_column, subset=['카드사'])
 )
