@@ -18,6 +18,13 @@ df = load_data()
 
 st.title("데이터 분석")
 
+age_order = ["20대 초반", "20대 중반", "20대 후반", "30대 초반", "30대 중반", "30대 후반",
+             "40대 초반", "40대 중반", "40대 후반", "50대 초반", "50대 중반", "50대 후반",
+             "60대 초반", "60대 중반", "60대 후반", "70대 초반"]
+
+quarter_order = ["2023 1분기", "2023 2분기", "2023 3분기", "2023 4분기", "2024 1분기",
+                "2024 2분기", "2024 3분기", "2024 4분기", "2025 1분기"]
+
 # 탭 생성
 tab1, tab2 = st.tabs(["고객 데이터 분석", "판매 데이터 분석"])
 
@@ -28,24 +35,21 @@ with tab1:
          "연령대별 친환경 차량 선호도", "성별 및 연령대별 차량 선호도"]
     )
 
-    # 연령대 정렬을 위한 순서 지정
-    age_order = sorted(df['연령대'].unique())
-
-    # 연령대별 고객 분포 (막대 그래프 + 선 그래프)
     with subtab1:
         st.subheader("연령대별 고객 분포 분석")
 
         age_count = df["연령대"].value_counts().reset_index()
         age_count.columns = ["연령대", "고객 수"]
-        age_count = age_count.sort_values('연령대')
+        age_count["연령대"] = pd.Categorical(age_count["연령대"], categories=age_order, ordered=True)
+        age_count = age_count.sort_values("연령대")
 
         fig = make_subplots(specs=[[{"secondary_y": True}]])
-        
+
         fig.add_trace(
             go.Bar(x=age_count["연령대"], y=age_count["고객 수"], name="고객 수", 
                 text=age_count["고객 수"], textposition='outside', 
-                marker_color='rgba(0, 32, 91, 0.7)',  # 연한 네이비
-                marker_line_color='rgba(0, 0, 128, 1)',  # 진한 네이비 테두리
+                marker_color='rgba(0, 32, 91, 0.7)',
+                marker_line_color='rgba(0, 0, 128, 1)',
                 marker_line_width=1.5),
             secondary_y=False,
         )
@@ -53,11 +57,10 @@ with tab1:
         fig.add_trace(
             go.Scatter(x=age_count["연령대"], y=age_count["고객 수"], name="추세선", 
                     mode='lines+markers', 
-                    line=dict(color='rgb(25, 25, 112)', width=2),  # 미드나이트 블루
-                    marker=dict(size=5, 
-                                symbol='diamond', 
-                                color='rgb(65, 105, 225)',  # 로열 블루
-                                line=dict(color='rgb(255, 255, 255)', width=1))),  # 마커 테두리
+                    line=dict(color='rgb(25, 25, 112)', width=2),
+                    marker=dict(size=5, symbol='diamond', 
+                                color='rgb(65, 105, 225)',
+                                line=dict(color='rgb(255, 255, 255)', width=1))),
             secondary_y=True,
         )
 
@@ -291,6 +294,7 @@ with tab1:
         eco_types = ["전기", "수소", "하이브리드"]
         eco_pref = df[df['연료 구분'].isin(eco_types)]
         eco_pref = eco_pref.groupby(['연령대', '연료 구분']).size().reset_index(name='구매 수')
+        eco_pref["연령대"] = pd.Categorical(eco_pref["연령대"], categories=age_order, ordered=True)
         eco_pref = eco_pref.sort_values('연령대')
 
         # 그래프 생성
@@ -371,6 +375,8 @@ with tab1:
 
             gender_age_pref = df.groupby(['성별', '연령대'])['최근 구매 제품'].count().reset_index()
             gender_age_pref.columns = ['성별', '연령대', '구매 수']
+            gender_age_pref["연령대"] = pd.Categorical(gender_age_pref["연령대"], categories=age_order, ordered=True)
+            gender_age_pref = gender_age_pref.sort_values('연령대')
 
             fig = px.bar(gender_age_pref, x='연령대', y='구매 수', color='성별', barmode='group',
                         title='성별 및 연령대별 차량 선호도',
@@ -413,9 +419,6 @@ with tab1:
             - **50대 초반까지 남성이 우세**: 50대 초반까지는 남성이 다소 우세하나, 이후 여성 구매 비율이 점진적으로 증가함.
             - **60대 이후 남녀 균형 회복**: 60대 이후부터 남성과 여성의 구매 비율이 비슷해지는 모습을 보임.
             """)
-                        
-
-
 
 # 판매 데이터 분석 탭
 with tab2:
@@ -470,9 +473,6 @@ with tab2:
         - **로열티 프로그램과 혜택**: 할인 혜택, 포인트 시스템 등 장기적인 비용 절감이 가능한 로열티 프로그램을 선호. 건강과 관련된 서비스나 편의성이 높은 제품에 대한 관심이 증가.
         - **건강과 편안함을 중시하는 소비**: 건강에 관심이 많아지고, 자녀가 독립한 후 여행이나 취미 활동을 위한 소비가 증가하는 경향.
         """)
-
-
-
 
     # 고객 구분별 차량 구매 현황 (스택 막대 그래프)
     with subtab2:
@@ -540,6 +540,8 @@ with tab2:
 
             # 데이터 재구성
             price_data = price_data.reset_index().melt(id_vars="연령대", var_name="고객 구분", value_name="평균 거래 금액")
+            price_data["연령대"] = pd.Categorical(price_data["연령대"], categories=age_order, ordered=True)
+            price_data = price_data.sort_values('연령대')
 
             # 스택 막대 그래프 생성
             fig = px.bar(
@@ -599,14 +601,19 @@ with tab2:
         # 분기별 차량 판매 요일 (그룹화된 막대 차트)
         with subtab4:
             st.subheader("분기별 차량 판매 요일")
-            
+
             # 데이터 준비
             weekday_data = df.groupby(["최근 구매 시점", "최근 구매 요일"]).size().reset_index(name="판매 대수")
-            
-            # 요일 순서 정렬을 위한 커스텀 정렬
-            weekday_order = ['평일', '주말']
-            weekday_data['최근 구매 요일'] = pd.Categorical(weekday_data['최근 구매 요일'], categories=weekday_order, ordered=True)
-            weekday_data = weekday_data.sort_values('최근 구매 요일')
+
+            # 최근 구매 시점에 quarter_order 적용
+            weekday_data["최근 구매 시점"] = pd.Categorical(
+                weekday_data["최근 구매 시점"],
+                categories=quarter_order,
+                ordered=True
+            )
+
+            # 지정된 카테고리 순서대로 정렬
+            weekday_data = weekday_data.sort_values("최근 구매 시점")
 
             # 그래프 생성
             fig = px.bar(
@@ -617,7 +624,7 @@ with tab2:
                 barmode="group",  # 그룹화된 막대 그래프
                 title="분기별 차량 판매 요일",
                 labels={"최근 구매 시점": "구매 시점", "판매 대수": "판매 대수"},
-                color_discrete_sequence=['#1E88E5', '#FFC107']  # 파란색과 노란색
+                color_discrete_sequence=['#1E88E5', '#FFC107']
             )
 
             # 레이아웃 설정
@@ -632,7 +639,7 @@ with tab2:
             )
 
             st.plotly_chart(fig, use_container_width=True)
-            st.info('#### 고객 구분별 평균 거래 금액 분석 결과')
+            st.info('#### 분기별 차량 판매 요일 분석 결과')
             st.write("""
 
             ### 1. 30대 중반 ~ 40대 초반: 법인 고객의 평균 거래 금액 증가
@@ -681,7 +688,7 @@ with tab2:
         fig.update_traces(textposition='inside', textinfo='percent+label')
 
         st.plotly_chart(fig, use_container_width=True)
-        st.info('#### 분기별 차량 판매 요일 분석 결과')
+        st.info('#### 고객 등급 분석 결과')
         st.write("""
 
             ### 1. 평일과 주말의 판매량 차이
