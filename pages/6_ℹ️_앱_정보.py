@@ -20,6 +20,9 @@ st.markdown("---")
 
 st.markdown("## 2. 데이터 전처리 및 가공")
 st.write("")
+st.write("#### 원본 데이터셋")
+st.dataframe(pd.read_csv("data/고객db_확장본3.csv").head(5))
+
 st.write("""
 ### 데이터셋 정보
 - 내용 : 현대자동차 회원 및 판매 데이터 (**고객db_확장본3.csv**)
@@ -27,7 +30,7 @@ st.write("""
     - 컬럼 정보
         - 이름, 생년월일, 성별, 휴대폰번호, 고객 세그먼트 등 고객 정보
         - 차량 구분, 구매한 제품, 구매 날짜, 거래 금액, 거래 방식 등 판매 정보
-- 추가 데이터 출처 : **[현대자동차 공식 홈페이지](https://www.hyundai.com/kr/ko/e),통계청 e-나라지표**
+- 추가 데이터 출처 : **[현대자동차 공식 홈페이지](https://www.hyundai.com/kr/ko/e), 통계청 e-나라지표**
 """)
 
 st.write("")
@@ -60,6 +63,9 @@ st.write("""
         - "연료 구분" : **[현대자동차 홈페이지](https://www.hyundai.com/kr/ko/e/all-vehicles)**
         - "모델 사진" : 구글 이미지 검색
 """)
+
+st.write("#### 전처리 후 데이터셋")
+st.dataframe(pd.read_csv("data/고객db_전처리.csv").head(5))
 
 st.write("""
 #### 전처리된 데이터를 CSV 파일로 저장하여 학습 및 예측 모델에서 활용 (파일명 : **고객db_전처리.csv**)
