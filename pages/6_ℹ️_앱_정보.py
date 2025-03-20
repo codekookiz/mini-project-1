@@ -11,7 +11,7 @@ st.write("""
 프로젝트에서 사용된 기술 영역은 다음과 같습니다:
 
 - **데이터 전처리 및 가공**: 원본 데이터의 정제, 컬럼명 및 데이터 타입 수정, 이상치 보정과 신규 컬럼 추가를 통해 분석 효율성을 극대화
-- **인공지능 모델 학습 및 최적화**: 연료 구분별로 최적화된 머신러닝 모델(Decision Tree, Random Forest, Gradient Boosting, Light GBM 등)을 활용하여 맞춤형 차량 추천 시스템 구현
+- **인공지능 모델 학습 및 최적화**: [연료 구분]별로 최적화된 머신러닝 모델(Decision Tree, Random Forest, Gradient Boosting, Light GBM 등)을 활용하여 맞춤형 차량 추천 시스템 구현
 - **Streamlit 기반 웹 애플리케이션 개발**: 직관적인 UI/UX를 제공하는 대시보드와 PWA 지원 웹 앱을 통해 고객 맞춤 서비스와 프로모션 정보를 손쉽게 전달
 - **보안 강화 및 자동 배포**: secrets 관리와 GitHub Actions를 활용한 CI/CD 파이프라인 구축으로 보안성을 확보하고 신속한 업데이트를 지원
 """)
