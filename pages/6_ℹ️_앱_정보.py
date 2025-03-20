@@ -117,7 +117,7 @@ st.write("""
         - 변환 방법 : `get_dummies()` -> One-Hot Encoding
 - 인코딩 완료한 데이터를 기반으로, 특정 연료 구분(예 : 디젤)에 해당하는 데이터 추출하여 학습 진행
     - 각 연료 구분에 대하여 9가지의 인공지능 모델을 활용
-        - `LogisticRegression`, `SVC`, `Decision Tree Classifier`,
+        - `LogisticRegression`, `Support Vector Classification`, `Decision Tree Classifier`,
         - `Random Forest Classifier`, `Gradient Boosting Classifier`, `Gaussian Naive Bayes`,
         - `K-Neighbors Classifier`, `Light GBM Classifier`, `Cat Boost Classifier`
     - 각 모델의 성능을 평가하여 가장 높은 성능을 보인 모델을 최종 선정
@@ -143,9 +143,9 @@ model_data = {
     "휘발유 모델": ["27.3%", "100%", "100%", "100%", "100%", "100%", "100%", "100%", "100%"]
 }
 
-df = pd.DataFrame(model_data, index=["Logistic Regression", "SVC", "Decision Tree Classifier", "Random Forest Classifier",
-                               "Gradient Boosting Classifier", "Gaussian Naive Bayes", "K-Neighbors Classifier", "Light GBM Classifier",
-                               "Cat Boost Classifier"])
+df = pd.DataFrame(model_data, index=["Logistic Regression", "Support Vector Classification", "Decision Tree Classifier",
+                                     "Random Forest Classifier", "Gradient Boosting Classifier", "Gaussian Naive Bayes",
+                                     "K-Neighbors Classifier", "Light GBM Classifier", "Cat Boost Classifier"])
 
 def highlight_rows(row):
     highlight_color = "background-color: lightyellow"
