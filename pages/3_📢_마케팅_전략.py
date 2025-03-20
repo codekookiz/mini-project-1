@@ -29,16 +29,15 @@ elif platform.system() == "Linux":  # Linux (Ubuntu, Docker 등)
     rc("font", family=font_name)
 
 
-st.title("📈 마케팅 전략")
+st.title(" 마케팅 전략")
 
-st.write("이 페이지에서는 세그먼트에 따른 마케팅 전략을 추천합니다.")
 
 df = pd.read_csv("data/고객db_전처리.csv")
 
 st.markdown("---")
 
 # 1. 신용카드 이용 구매 유도 위해 카드사 제휴 확대
-st.subheader("🚗 신용카드 이용 구매 유도 위해 카드사 제휴 확대")
+st.subheader(" 신용카드 이용 구매 유도 위해 카드사 제휴 확대")
 
 # 카드사 제휴의 이점
 st.write("## 카드사 제휴 확대 이점")
@@ -105,8 +104,9 @@ st.markdown("""
 ✅ **프리미엄 차량 구매 시 추가 혜택** : 제네시스, 수입차  
 """)
 
+
 # 카드사별 혜택 비교 시각화
-st.write("## 카드사별 혜택 비교 시각화")
+st.write("### 카드사별 주요 혜택 비교 시각화")
 
 # 카드사별 주요 혜택 데이터
 benefit_data = {
@@ -119,17 +119,36 @@ benefit_data = {
 
 benefit_df = pd.DataFrame(benefit_data)
 
-fig2, ax2 = plt.subplots(figsize=(12, 6))
-sb.barplot(data=benefit_df.melt(id_vars=["카드사"], var_name="혜택 유형", value_name="비율"), 
-           x="카드사", y="비율", hue="혜택 유형", palette="coolwarm", ax=ax2)
-ax2.set_title("카드사별 주요 혜택 비교", fontsize=14, fontweight='bold')
-ax2.set_xlabel("카드사", fontsize=12, labelpad=10)
-ax2.set_ylabel("혜택 비율 (%)", fontsize=12)
-ax2.legend(title="혜택 유형", fontsize=10, title_fontsize=12, loc='upper right', ncol=1, frameon=True)
-ax2.grid(axis='y', linestyle='--', alpha=0.7)
-ax2.tick_params(axis='x', labelrotation=0)
+# 데이터 재구성 (melt)
+benefit_melted = benefit_df.melt(id_vars=["카드사"], var_name="혜택 유형", value_name="비율")
 
-st.pyplot(fig2)
+# 그룹화된 막대 차트 생성
+fig = px.bar(
+    benefit_melted,
+    x="카드사",
+    y="비율",
+    color="혜택 유형",
+    barmode="group",
+    title="카드사별 주요 혜택 비교",
+    labels={"비율": "혜택 비율 / 개월 수", "카드사": "카드사", "혜택 유형": "혜택 유형"},
+    color_discrete_sequence=px.colors.qualitative.Bold  # 선명한 색상 팔레트
+)
+
+# 레이아웃 설정
+fig.update_layout(
+    font=dict(size=14),
+    plot_bgcolor='rgba(0,0,0,0)',
+    xaxis=dict(title="카드사", tickangle=0),
+    yaxis=dict(title="혜택 비율 / 개월 수", range=[0, 65]),  # y축 범위 조정
+    legend_title="혜택 유형"
+)
+
+# 각 막대 위에 값 표시
+fig.update_traces(textposition='outside', texttemplate='%{value}')
+
+# Streamlit에 차트 표시
+st.plotly_chart(fig, use_container_width=True)
+
 st.markdown("---")
 
 # 2. 카테고리별 마케팅 전략 수립
