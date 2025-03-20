@@ -95,7 +95,8 @@ with col1:
     st.markdown("####  데이터 출처")
     st.markdown("""
      **기본 데이터셋** : 하이에듀 고객 DB  
-     **추가 데이터** : [현대자동차 공식 웹사이트](https://www.hyundai.com)
+     **추가 데이터** : [현대자동차 공식 웹사이트](https://www.hyundai.com), 통계청 e-나라지표
+                
     """)
 
 with col2:
