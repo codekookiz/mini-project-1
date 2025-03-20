@@ -194,7 +194,7 @@ if st.button("추천 받기"):
         "G90 (RS4)": "1억 7,520만원"
     }
 
-    recom_list = [i for i in recom_list if int(min_price_list[i].rstrip("만원").replace(",", "")) <= budget]
+    recom_list = [i for i in recom_list if int(min_price_list[i].rstrip("만원").replace(",", "").replace("억 ", "")) <= budget]
 
     tab1, tab2 = st.tabs(["추천 차량 리스트", "전기차 추천"])
 
