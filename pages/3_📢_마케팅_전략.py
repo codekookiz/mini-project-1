@@ -158,43 +158,64 @@ st.subheader("카테고리별 마케팅 전략 수립")
 marketing_class = st.selectbox("마케팅 전략 구분", ["-", "연령대별", "지역별", "고객 등급별"])
 
 if marketing_class == "지역별":
-    st.write("")
+    st.write("## 지역별 마케팅 전략 분석")
 
     col1, col2 = st.columns([1, 1])
-    with col1 : 
-        # 연료 구분 정렬 순서 지정
-        fuel_order = ["전기", "하이브리드", "플러그인 하이브리드", "휘발유", "디젤", "수소"]
 
-        # "연료 구분"을 Categorical 타입으로 변경하여 순서 지정
-        df["연료 구분"] = pd.Categorical(df["연료 구분"], categories=fuel_order, ordered=True)
+    # 연료 구분 정렬 순서 지정
+    fuel_order = ["전기", "하이브리드", "플러그인 하이브리드", "휘발유", "디젤", "수소"]
 
+    # "연료 구분"을 Categorical 타입으로 변경하여 순서 지정
+    df["연료 구분"] = pd.Categorical(df["연료 구분"], categories=fuel_order, ordered=True)
+
+    with col1:
         # 데이터 그룹화 및 시각화를 위한 준비
-        region_df = df.groupby(["거주 지역", "연료 구분"])["연번"].count().unstack()
+        region_df = df.groupby(["거주 지역", "연료 구분"])["연번"].count().unstack(fill_value=0)
+        region_df = region_df.reindex(columns=fuel_order)
 
-        fig1, ax = plt.subplots(figsize=(12, 8))
-        region_df.reindex(columns=fuel_order).plot(kind="barh", stacked=True, ax=ax)
-
-        ax.set_title("거주 지역별 판매 차량 유형")
-        ax.set_xlabel("판매 대수")
-        ax.set_ylabel("거주 지역")
-
-        st.pyplot(fig1)
+        # Plotly 스택 막대 그래프 생성
+        fig1 = px.bar(
+            region_df,
+            x=region_df.index,
+            y=region_df.columns,
+            title="거주 지역별 판매 차량 유형",
+            labels={"value": "판매 대수", "x": "거주 지역"},
+            barmode="stack",
+            color_discrete_sequence=px.colors.qualitative.Set2
+        )
+        fig1.update_layout(
+            xaxis_title="거주 지역",
+            yaxis_title="판매 대수",
+            legend_title="연료 구분",
+            font=dict(size=12),
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+        st.plotly_chart(fig1, use_container_width=True)
 
     with col2:
+        # 모든 마커에 동일한 크기 설정
+        df['size_dummy'] = 10  # 고정 크기 값 추가
+
         # 스캐터 플롯 생성
-        fig2, ax = plt.subplots(figsize=(10, 6))
-        scatter = sb.scatterplot(data=df, x="1인당 GDP (만 원)", y="인구 밀도", hue="거주 지역", palette="Set2", s=100, ax=ax)
+        fig2 = px.scatter(
+            df,
+            x="1인당 GDP (만 원)",
+            y="인구 밀도",
+            color="거주 지역",
+            size='size_dummy',  # 고정 크기 컬럼 사용
+            size_max=15,        # 최대 크기 지정
+            hover_name="거주 지역",
+            title="1인당 GDP와 인구 밀도에 따른 거주 지역",
+            color_discrete_sequence=px.colors.qualitative.Set2
+        )
+        fig2.update_layout(
+            xaxis_title="1인당 GDP (만 원)",
+            yaxis_title="인구 밀도",
+            font=dict(size=12),
+            plot_bgcolor="rgba(0,0,0,0)"
+        )
+        st.plotly_chart(fig2, use_container_width=True)
 
-        # 각 점 옆에 해당 거주 지역 표시
-        for i in range(len(df)):
-            ax.annotate(df["거주 지역"][i], (df["1인당 GDP (만 원)"][i], df["인구 밀도"][i]), 
-                        textcoords="offset points", xytext=(5,5), ha='left', fontsize=9)
-
-        ax.set_title("1인당 GDP와 인구 밀도에 따른 거주 지역")
-        ax.set_xlabel("1인당 GDP (만 원)")
-        ax.set_ylabel("인구 밀도")
-
-        st.pyplot(fig2)
 
     col1, col2 = st.columns([1, 1])
     with col1:
@@ -243,54 +264,66 @@ if marketing_class == "지역별":
     }
 
     col1, col2 = st.columns([1, 1])
+
     with col1:
-        # 지역의 나이대에 따른 선호 차량 사이즈 및 유형
-        # 해당 지역만 추출
-        city = df.loc[df["거주 지역"] == region, :]
-
-        # 연령대별 선호 차량 사이즈 및 유형 집계
-        size_counts = city.groupby("연령대")["차량 사이즈"].value_counts().unstack()
-        type_counts = city.groupby("연령대")["차량 유형"].value_counts().unstack()
-
         if region != "-":
-            # 시각화 - 연령대별 선호 차량 사이즈
-            fig, ax = plt.subplots(figsize=(10, 5))
-            size_counts.plot(kind="bar", stacked=True, colormap="viridis", alpha=0.85, ax=ax)
-
-            ax.set_title(f"{region} 연령대별 선호 차량 사이즈")
-            ax.set_xlabel("연령대")
-            ax.set_ylabel("선호 차량 수")
-            ax.legend(title="차량 사이즈")
-            ax.set_xticklabels(size_counts.index, rotation=60)
-            ax.grid(axis="y", linestyle="--", alpha=0.7)
-
-            st.pyplot(fig)        
-
-            st.write("")
-
+            # 지역 데이터 필터링
+            city = df.loc[df["거주 지역"] == region, :]
+            
+            # 차량 사이즈 분석
+            size_counts = city.groupby(["연령대", "차량 사이즈"]).size().unstack().fillna(0)
+            
+            # Plotly 스택 바 차트
+            fig1 = px.bar(
+                size_counts,
+                x=size_counts.index,
+                y=size_counts.columns,
+                title=f"{region} 연령대별 선호 차량 사이즈",
+                labels={"value": "선호 차량 수", "x": "연령대"},
+                barmode="stack",
+                color_discrete_sequence=px.colors.qualitative.Vivid
+            )
+            fig1.update_layout(
+                xaxis_title="연령대",
+                yaxis_title="선호 차량 수",
+                legend_title="차량 사이즈",
+                xaxis=dict(tickangle=-45),
+                plot_bgcolor='rgba(0,0,0,0)',
+                height=500
+            )
+            st.plotly_chart(fig1, use_container_width=True)
             st.write("📢 **분석 결과**:", analysis[region])
+
     with col2:
         if region != "-":
-            # 시각화 - 연령대별 선호 차량 유형
-            fig, ax = plt.subplots(figsize=(10, 5))
-            type_counts.plot(kind="bar", stacked=True, colormap="plasma", alpha=0.85, ax=ax)
-
-            ax.set_title(f"{region} 연령대별 선호 차량 유형")
-            ax.set_xlabel("연령대")
-            ax.set_ylabel("선호 차량 수")
-            ax.legend(title="차량 유형")
-            ax.set_xticklabels(type_counts.index, rotation=60)
-            ax.grid(axis="y", linestyle="--", alpha=0.7)
-
-            st.pyplot(fig)
-
-            st.write("")
-
+            # 차량 유형 분석
+            type_counts = city.groupby(["연령대", "차량 유형"]).size().unstack().fillna(0)
+            
+            # Plotly 스택 바 차트
+            fig2 = px.bar(
+                type_counts,
+                x=type_counts.index,
+                y=type_counts.columns,
+                title=f"{region} 연령대별 선호 차량 유형",
+                labels={"value": "선호 차량 수", "x": "연령대"},
+                barmode="stack",
+                color_discrete_sequence=px.colors.qualitative.Prism
+            )
+            fig2.update_layout(
+                xaxis_title="연령대",
+                yaxis_title="선호 차량 수",
+                legend_title="차량 유형",
+                xaxis=dict(tickangle=-45),
+                plot_bgcolor='rgba(0,0,0,0)',
+                height=500
+            )
+            st.plotly_chart(fig2, use_container_width=True)
             st.write(" **잠재적 마케팅 전략**:", strategy[region])
+
     if region != "-":
+        st.session_state['search_query'] = region
         st.text("")
 
-        st.session_state['search_query'] = region
 
         # '4_매장_찾기.py'로 이동하는 링크 제공
         st.page_link("pages/4_🗺️_매장_찾기.py", label="지점 및 정비소 찾기", icon="🛞")
