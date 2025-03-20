@@ -150,7 +150,7 @@ st.markdown("---")
 
 st.subheader("카테고리별 마케팅 전략 수립")
 
-marketing_class = st.selectbox("마케팅 전략 구분", ["-", "연령대별", "지역별", "고객 등급별"])
+marketing_class = st.selectbox("마케팅 전략 구분", ["선택하세요.", "연령대별", "지역별", "고객 등급별"])
 
 if marketing_class == "지역별":
     st.write("## 지역별 마케팅 전략 분석")
@@ -234,7 +234,7 @@ if marketing_class == "지역별":
     # 타겟 지역 선택
     st.subheader(" 타겟 지역별 마케팅 전략")
 
-    region = st.selectbox("타겟 지역 선택", ["-", "서울특별시", "경기도 수원시", "울산광역시", "경기도 성남시", "충청남도 천안시"])
+    region = st.selectbox("타겟 지역 선택", ["선택하세요.", "서울특별시", "경기도 수원시", "울산광역시", "경기도 성남시", "충청남도 천안시"])
 
     age_order = ["20대 초반", "20대 중반", "20대 후반", "30대 초반", "30대 중반", "30대 후반", "40대 초반", "40대 중반", "40대 후반",
              "50대 초반", "50대 중반", "50대 후반", "60대 초반", "60대 중반", "60대 후반", "70대 초반"]
@@ -244,7 +244,7 @@ if marketing_class == "지역별":
     col1, col2 = st.columns([1, 1])
 
     with col1:
-        if region != "-":
+        if region != "선택하세요.":
             # 지역 데이터 필터링
             city = df.loc[df["거주 지역"] == region, :]
             
@@ -272,7 +272,7 @@ if marketing_class == "지역별":
             st.plotly_chart(fig1, use_container_width=True)
 
     with col2:
-        if region != "-":
+        if region != "선택하세요.":
             # 차량 유형 분석
             type_counts = city.groupby(["연령대", "차량 유형"]).size().unstack().fillna(0)
             
@@ -296,7 +296,7 @@ if marketing_class == "지역별":
             )
             st.plotly_chart(fig2, use_container_width=True)
 
-    if region != "-":
+    if region != "선택하세요.":
         st.session_state['search_query'] = region
         st.text("")
 
@@ -482,9 +482,9 @@ elif marketing_class == "연령대별":
 
     st.subheader("")
     st.subheader("🎯 연령대별 마케팅 전략")
-    age_group = st.selectbox("타겟 연령대 선택", ["-", "20대", "30대", "40대", "50대", "60대 이상"])
+    age_group = st.selectbox("타겟 연령대 선택", ["선택하세요.", "20대", "30대", "40대", "50대", "60대 이상"])
 
-    if age_group != "-":
+    if age_group != "선택하세요.":
         if age_group == "60대 이상":
             gen = df.loc[(df["연령대"].str.split(" ").str[0]).isin(["60대", "70대"]), :]
         else:
@@ -662,9 +662,9 @@ elif marketing_class == "고객 등급별":
 
     st.subheader("")
     st.subheader("🎯 고객 등급별 마케팅 전략")
-    grade = st.selectbox("타겟 고객 등급 선택", ["-", "신규", "일반", "VIP"])
+    grade = st.selectbox("타겟 고객 등급 선택", ["선택하세요.", "신규", "일반", "VIP"])
 
-    if grade != "-":
+    if grade != "선택하세요.":
         seg = df.loc[df["고객 등급"] == grade, :]
         size_counts = seg.groupby("차량 사이즈")["연료 구분"].value_counts().unstack()
         size_counts_reset = size_counts.reset_index().melt(id_vars="차량 사이즈", var_name="연료 구분", value_name="선호 차량 수")
