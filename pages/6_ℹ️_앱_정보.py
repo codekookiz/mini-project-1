@@ -191,9 +191,9 @@ app_data = {
               "검색 지역의 매장을 찾을 수 있는 서비스", "고객 상담 및 프로모션 관리를 위한 직원용 시스템"]
 }
 
-df = pd.DataFrame(app_data, index=["1", "2", "3", "4", "5"])
+df = pd.DataFrame(app_data)
 
-st.dataframe(df)
+st.dataframe(df, hide_index=True)
 
 st.write("")
 
