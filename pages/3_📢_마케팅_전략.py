@@ -1299,4 +1299,33 @@ elif marketing_class == "고객 등급별":
             st.warning("❌ 해당 이벤트는 예약이 마감되었습니다.")
 
         st.markdown("---")
+
+        st.subheader("📩 이메일 & 문자 발송")
+        st.write("")
+        col1, col2, _ = st.columns([1, 1, 8])
+        with col1:
+            email_sent = st.button("📧 이메일 발송")
+        with col2:
+            sms_sent = st.button("📩 문자 발송")
+
+        if email_sent:
+            st.info("각 고객에게 혜택 안내 이메일을 전송 중입니다. 잠시만 기다려주세요.")
+            
+            progress_bar = st.progress(0)
+            for percent in range(1, 101):
+                time.sleep(0.01)  # 실제 전송 과정에서는 API 호출 등이 이루어질 수 있음
+                progress_bar.progress(percent)
+            
+            st.success("✅ 모든 고객에게 할인 혜택 안내 이메일을 성공적으로 전송하였습니다.")
+        if sms_sent:
+            st.info("각 고객에게 혜택 안내 문자를 전송 중입니다. 잠시만 기다려주세요.")
+            
+            progress_bar = st.progress(0)
+            for percent in range(1, 101):
+                time.sleep(0.01)  # 실제 전송 과정에서는 API 호출 등이 이루어질 수 있음
+                progress_bar.progress(percent)
+            
+            st.success("✅ 모든 고객에게 할인 혜택 안내 문자를 성공적으로 전송하였습니다.")
+
+        st.markdown("---")
         st.write(" **VIP 고객만을 위한 차별화된 프리미엄 혜택을 제공합니다!** 🎖️")
